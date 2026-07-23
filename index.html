@@ -12,6 +12,9 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
+<!-- fonts used by the intake modal -->
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>
@@ -234,6 +237,261 @@ body::-webkit-scrollbar-thumb{
   }
 }
 /* ── END MOBILE ──────────────────────────────────────────── */
+
+
+/* ============================================================
+   GOOD GRACES INTAKE MODAL — everything below is scoped to .gg
+   Site-wide styles above never reach inside it, and it never
+   reaches out.
+   ============================================================ */
+.gg {
+ /* palette */
+ --ink:       #111110;
+ --ink-2:     #4A4642;
+ --ink-3:     #928A82;
+ --cream:     #FDFBF8;
+ --sand:      #F2E7DB;
+ --line:      rgba(17,17,16,.10);
+ --line-2:    rgba(17,17,16,.16);
+ --surface:   rgba(255,255,255,.62);
+ --surface-2: rgba(255,255,255,.80);
+ --ember:     #E2542B;   /* the invitation dot — used sparingly */
+
+ /* type */
+ --sans:  "Archivo", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+ --serif: "Instrument Serif", Georgia, "Times New Roman", serif;
+ --mono:  "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+ --ease: cubic-bezier(.22,.61,.36,1);
+
+ max-width: 880px;
+ font-family: var(--sans);
+ color: var(--ink);
+ text-align: left;
+ -webkit-font-smoothing: antialiased;
+ box-sizing: border-box;
+}
+.gg *, .gg *::before, .gg *::after { box-sizing: border-box; }
+
+/* ---------- modal shell ---------- */
+.gg-overlay {
+ position: fixed; inset: 0; z-index: 99999;
+ display: flex; align-items: flex-start; justify-content: center;
+ padding: 40px 20px; overflow-y: auto;
+ background: rgba(46,32,20,.42);
+ -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+ animation: gg-fade .28s cubic-bezier(.22,.61,.36,1) both;
+}
+.gg-overlay[hidden] { display: none; }
+@keyframes gg-fade { from { opacity: 0; } to { opacity: 1; } }
+@media (max-width: 720px) { .gg-overlay { padding: 16px 12px 32px; } }
+
+/* the panel itself */
+.gg {
+ position: relative;
+ width: 100%;
+ background: linear-gradient(165deg, #FDFBF8 0%, #F8F0E7 46%, #EFDECE 100%);
+ border-radius: 30px;
+ box-shadow: 0 40px 90px -30px rgba(50,32,18,.45);
+ animation: gg-pop .34s cubic-bezier(.22,.61,.36,1) both;
+}
+@keyframes gg-pop { from { opacity: 0; transform: translateY(16px) scale(.985); } to { opacity: 1; transform: none; } }
+
+.gg-close {
+ flex: 0 0 auto; margin-left: 2px;
+ width: 30px; height: 30px; border-radius: 50%;
+ background: transparent; border: 1px solid var(--line);
+ color: var(--ink-3); font-size: 13px; line-height: 1; cursor: pointer;
+ display: flex; align-items: center; justify-content: center;
+ transition: background .2s var(--ease), color .2s var(--ease), border-color .2s var(--ease);
+}
+.gg-close:hover { background: var(--ink); border-color: var(--ink); color: var(--cream); }
+.gg-close:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+/* ---------- meta row ---------- */
+.gg-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 30px; }
+.gg-count {
+ font-family: var(--mono); font-size: 10.5px; letter-spacing: .13em;
+ text-transform: uppercase; color: var(--ink-3);
+}
+.gg-chip {
+ font-family: var(--sans); font-size: 11.5px; font-weight: 600; letter-spacing: -.005em;
+ background: var(--ink); color: var(--cream);
+ border: none; border-radius: 999px; padding: 6px 13px; cursor: pointer;
+ transition: opacity .2s var(--ease);
+}
+.gg-chip:hover { opacity: .82; }
+.gg-chip[hidden] { display: none; }
+
+/* ---------- card ---------- */
+.gg-card { position: relative; }
+.gg-inner { position: relative; padding: 44px 44px 34px; }
+
+/* ---------- progress ---------- */
+.gg-prog { display: flex; gap: 6px; margin-bottom: 10px; }
+.gg-prog span {
+ height: 3px; flex: 1; border-radius: 999px;
+ background: rgba(17,17,16,.10);
+ transition: background .4s var(--ease);
+}
+.gg-prog span[data-on="1"] { background: var(--ink); }
+.gg-proglabel {
+ font-family: var(--mono); font-size: 10.5px; letter-spacing: .13em;
+ text-transform: uppercase; color: var(--ink-3); margin: 0; flex: 1;
+}
+
+/* ---------- steps ---------- */
+.gg-step[hidden] { display: none; }
+.gg-step { animation: gg-rise .5s var(--ease) both; }
+@keyframes gg-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+/* light serif italic over heavy sans */
+.gg-lede {
+ font-family: var(--serif); font-style: italic; font-weight: 400;
+ font-size: clamp(24px, 3.4vw, 32px); line-height: 1.05;
+ color: var(--ink-3); margin: 0 0 2px;
+}
+.gg-q {
+ font-family: var(--sans); font-weight: 800;
+ font-size: clamp(32px, 5vw, 50px); line-height: .98; letter-spacing: -.042em;
+ margin: 0 0 16px;
+}
+.gg-sub { margin: 0 0 30px; color: var(--ink-2); font-size: 16px; line-height: 1.6; max-width: 50ch; }
+
+/* ---------- step 1 cards ---------- */
+.gg-doors { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.gg-door { position: relative; }
+.gg-door input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.gg-door label {
+ display: block; cursor: pointer; height: 100%;
+ padding: 26px 26px 28px;
+ background: var(--surface-2);
+ border: 1px solid var(--line);
+ border-radius: 22px;
+ transition: transform .32s var(--ease), background .28s var(--ease), border-color .28s var(--ease);
+}
+.gg-door label:hover { transform: translateY(-4px); border-color: var(--line-2); }
+.gg-door input:focus-visible + label { outline: 2px solid var(--ink); outline-offset: 3px; }
+.gg-door .k {
+ font-family: var(--mono); font-size: 10.5px; letter-spacing: .13em;
+ text-transform: uppercase; color: var(--ink-3); transition: color .28s var(--ease);
+}
+.gg-door h3 {
+ font-weight: 800; font-size: 25px; letter-spacing: -.035em; line-height: 1.05;
+ margin: 16px 0 10px;
+}
+.gg-door p { margin: 0; font-size: 14.5px; line-height: 1.55; color: var(--ink-2); transition: color .28s var(--ease); }
+.gg-door input:checked + label { background: var(--ink); border-color: var(--ink); transform: translateY(-4px); }
+.gg-door input:checked + label h3 { color: var(--cream); }
+.gg-door input:checked + label p { color: rgba(253,251,248,.72); }
+.gg-door input:checked + label .k { color: var(--ember); }
+
+/* ---------- fields ---------- */
+.gg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 20px; }
+.gg-field { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.gg-field.wide { grid-column: 1 / -1; }
+.gg-field > label {
+ font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em;
+ text-transform: uppercase; color: var(--ink-3);
+}
+.gg-field > label .opt { text-transform: none; letter-spacing: 0; font-family: var(--sans); opacity: .8; }
+
+.gg input[type="text"], .gg input[type="email"], .gg input[type="tel"],
+.gg select, .gg textarea {
+ font-family: var(--sans); font-size: 15px; color: var(--ink);
+ background: rgba(255,255,255,.72);
+ border: 1px solid var(--line);
+ border-radius: 14px;
+ padding: 14px 16px; width: 100%;
+ transition: border-color .2s var(--ease), background .2s var(--ease), box-shadow .2s var(--ease);
+}
+.gg textarea { resize: vertical; min-height: 96px; line-height: 1.55; }
+.gg select { appearance: none; -webkit-appearance: none; cursor: pointer; }
+.gg .gg-selectwrap { position: relative; }
+.gg .gg-selectwrap::after {
+ content: ""; position: absolute; right: 18px; top: 50%; pointer-events: none;
+ width: 7px; height: 7px; border-right: 1.5px solid var(--ink-3); border-bottom: 1.5px solid var(--ink-3);
+ transform: translateY(-70%) rotate(45deg);
+}
+.gg input::placeholder, .gg textarea::placeholder { color: var(--ink-3); opacity: .75; }
+.gg input:focus, .gg select:focus, .gg textarea:focus {
+ outline: none; background: #fff; border-color: var(--ink);
+ box-shadow: 0 0 0 3px rgba(17,17,16,.07);
+}
+.gg [aria-invalid="true"] { border-color: var(--ember); }
+.gg-err { font-size: 13px; color: var(--ember); margin: 0; }
+.gg-err:empty { display: none; }
+
+/* ---------- chips ---------- */
+.gg-chips { display: flex; flex-wrap: wrap; gap: 9px; }
+.gg-chips > div { position: relative; }
+.gg-chips input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.gg-chips label {
+ display: block; cursor: pointer; font-size: 14.5px; line-height: 1; font-weight: 500;
+ padding: 12px 18px; border: 1px solid var(--line); border-radius: 999px;
+ background: rgba(255,255,255,.72); color: var(--ink-2);
+ transition: all .2s var(--ease);
+}
+.gg-chips label:hover { border-color: var(--line-2); color: var(--ink); }
+.gg-chips input:checked + label { background: var(--ink); border-color: var(--ink); color: var(--cream); }
+.gg-chips input:focus-visible + label { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+/* ---------- consent ---------- */
+.gg-consent { display: flex; gap: 12px; align-items: flex-start; font-size: 14px; color: var(--ink-2); line-height: 1.55; }
+.gg-consent input { margin: 2px 0 0; accent-color: var(--ink); width: 17px; height: 17px; flex: 0 0 auto; }
+.gg-consent label {
+ font-family: var(--sans); font-size: 14px; letter-spacing: 0; text-transform: none; color: var(--ink-2);
+}
+
+/* ---------- footer nav ---------- */
+.gg-foot-nav {
+ position: relative;
+ display: flex; align-items: center; justify-content: space-between; gap: 16px;
+ padding: 22px 44px 30px;
+}
+.gg-btn {
+ font-family: var(--sans); font-size: 15px; font-weight: 600; letter-spacing: -.012em;
+ padding: 15px 32px; border-radius: 999px; border: 1px solid transparent; cursor: pointer;
+ transition: transform .22s var(--ease), background .22s var(--ease), opacity .22s var(--ease);
+}
+.gg-btn.primary { background: var(--ink); color: var(--cream); }
+.gg-btn.primary:hover { transform: translateY(-2px); }
+.gg-btn.primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+.gg-btn.ghost { background: var(--surface-2); color: var(--ink); border-color: var(--line); }
+.gg-btn.ghost:hover { transform: translateY(-2px); border-color: var(--line-2); }
+.gg-btn.ghost[hidden] { visibility: hidden; display: inline-block; }
+.gg-btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.gg-foot-nav[hidden] { display: none; }
+
+/* ---------- done ---------- */
+.gg-done { padding: 46px 0 40px; text-align: center; }
+.gg-done .gg-lede, .gg-done .gg-q { text-align: center; }
+.gg-done .gg-q { max-width: 16ch; margin-inline: auto; }
+.gg-done p { color: var(--ink-2); font-size: 16px; line-height: 1.6; max-width: 44ch; margin: 18px auto 0; }
+.gg-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ember); margin: 0 auto 26px; }
+
+.gg-hp { position: absolute; left: -9999px; opacity: 0; height: 0; }
+
+.gg-fail {
+ margin: 24px 0 0; padding: 16px 18px;
+ background: rgba(226,84,43,.08); border: 1px solid rgba(226,84,43,.28);
+ border-radius: 14px; font-size: 14.5px; line-height: 1.55; color: var(--ink-2);
+}
+.gg-fail[hidden] { display: none; }
+.gg-fail a { color: var(--ink); font-weight: 600; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 780px) {
+ .gg-inner { padding: 28px 22px 26px; }
+ .gg-foot-nav { padding: 18px 22px 24px; }
+ .gg-grid, .gg-doors { grid-template-columns: 1fr; }
+ .gg-count { display: none; }
+ .gg-btn { padding: 14px 24px; font-size: 14.5px; }
+}
+@media (prefers-reduced-motion: reduce) {
+ .gg *, .gg *::before { animation: none !important; transition: none !important; }
+}
+/* ── END INTAKE MODAL ────────────────────────────────────── */
 </style>
 </head>
 
@@ -256,6 +514,7 @@ body::-webkit-scrollbar-thumb{
     </div>
 
     <a href="mailto:info@goodgraces.app?subject=General%20Inquiry%20-%20Good%20Graces&body=Hi%20Good%20Graces%20team%2C%0A%0AI%20came%20across%20your%20platform%20and%20would%20love%20to%20learn%20more.%0A%0AWhat%20would%20be%20the%20best%20next%20step%3F%0A%0AThanks%2C"
+    data-gg-open
     class="px-5 py-2 rounded-full bg-black text-white text-sm font-medium hover:scale-105 transition inline-block">
     Contact
     </a>
@@ -294,11 +553,13 @@ body::-webkit-scrollbar-thumb{
         <div class="flex flex-wrap gap-4">
 
           <a href="mailto:info@goodgraces.app?subject=Church%20Partnership%20Interest&body=Hi%20Good%20Graces%2C%0A%0AI%20am%20interested%20in%20partnering%20with%20your%20platform%20for%20our%20church.%0A%0ACould%20you%20share%20more%20about%3A%0A-%20How%20church%20onboarding%20works%0A-%20Pricing%20or%20plans%0A-%20Implementation%20timeline%0A%0ALooking%20forward%20to%20connecting%2C"
+          data-gg-open data-gg-path="church"
           class="px-8 py-4 bg-black text-white rounded-full font-medium hover:scale-105 transition inline-block">
           Partner With Us
           </a>
 
           <a href="mailto:info@goodgraces.app?subject=Platform%20Demo%20Request&body=Hi%2C%0A%0AI%20would%20love%20to%20see%20a%20demo%20or%20learn%20more%20about%20how%20the%20platform%20works.%0A%0AIs%20there%20a%20walkthrough%20or%20early%20access%20available%3F%0A%0AThanks%2C"
+data-gg-open
 class="px-8 py-4 glass rounded-full font-medium hover:scale-105 transition inline-block">
 View Platform
 </a>
@@ -602,7 +863,7 @@ View Platform
       <div class="soft-card p-8 fade-up text-center">
         <div class="text-4xl mb-5">○</div>
         <h3 class="text-xl font-bold mb-3">
-          Simple & Predictable
+          Simple &amp; Predictable
         </h3>
 
         <p class="text-black/65 leading-relaxed">
@@ -776,7 +1037,7 @@ View Platform
           </div>
 
           <p class="text-black/70">
-            Multi-campus & large church networks
+            Multi-campus &amp; large church networks
           </p>
 
         </div>
@@ -948,11 +1209,13 @@ View Platform
       <div class="flex flex-wrap justify-center gap-5">
 
         <a href="mailto:info@goodgraces.app?subject=Church%20Collaboration%20-%20Good%20Graces&body=Hi%20team%2C%0A%0AI%20represent%20a%20church%20and%20would%20like%20to%20explore%20working%20with%20Good%20Graces.%0A%0AWe%20are%20looking%20to%20improve%20our%20community%20communication%20and%20digital%20presence.%0A%0ACan%20we%20set%20up%20a%20conversation%3F%0A%0AThanks%2C"
+data-gg-open data-gg-path="church"
 class="px-8 py-4 bg-white text-black rounded-full font-semibold hover:scale-105 transition inline-block">
 Partner With Us
 </a>
 
 <a href="mailto:info@goodgraces.app?subject=Investor%20Deck%20Request%20-%20Good%20Graces&body=Hi%2C%0A%0AI%20am%20interested%20in%20learning%20more%20about%20Good%20Graces%20as%20an%20investment%20opportunity.%0A%0ACould%20you%20please%20share%20your%20investor%20deck%20and%20any%20current%20traction%20or%20roadmap%20details%3F%0A%0AThanks%2C"
+data-gg-open data-gg-path="investor"
 class="px-8 py-4 border border-white/20 rounded-full font-semibold hover:bg-white hover:text-black transition inline-block">
 Request Investor Deck
 </a>
@@ -983,6 +1246,362 @@ Request Investor Deck
 
 </footer>
 
+
+<!-- ============ INTAKE MODAL ============ -->
+<div class="gg-overlay" id="ggOverlay" hidden>
+<div class="gg" id="gg" role="dialog" aria-modal="true" aria-label="Good Graces interest form">
+
+ <form id="ggForm" novalidate>
+   <div class="gg-card">
+     <div class="gg-inner">
+
+       <div class="gg-prog" id="ggProg">
+         <span data-i="1"></span><span data-i="2"></span><span data-i="3"></span>
+       </div>
+       <div class="gg-meta">
+         <p class="gg-proglabel" id="ggProgLabel">Who you are</p>
+         <button type="button" class="gg-chip" id="ggChip" hidden></button>
+         <span class="gg-count" id="ggCount">Step 1 of 3</span>
+         <button type="button" class="gg-close" id="ggClose" aria-label="Close">&#10005;</button>
+       </div>
+
+       <!-- ══════════ STEP 1 — the fork ══════════ -->
+       <section class="gg-step" data-step="1">
+         <p class="gg-lede">Let's start with</p>
+         <h2 class="gg-q">who you are.</h2>
+         <p class="gg-sub">Pick one and we'll only ask what's relevant to you. Takes about a minute.</p>
+
+         <div class="gg-doors">
+           <div class="gg-door">
+             <input type="radio" name="path" id="pathChurch" value="church">
+             <label for="pathChurch">
+               <span class="k">For churches</span>
+               <h3>I'm with a church</h3>
+               <p>You lead, staff, or volunteer at a congregation and want to see how Good Graces could work for your people.</p>
+             </label>
+           </div>
+           <div class="gg-door">
+             <input type="radio" name="path" id="pathInvestor" value="investor">
+             <label for="pathInvestor">
+               <span class="k">For investors</span>
+               <h3>I'm an investor</h3>
+               <p>You're evaluating Good Graces as an opportunity and want the deck, the numbers, or a conversation.</p>
+             </label>
+           </div>
+         </div>
+         <p class="gg-err" data-err="path" style="margin-top:14px"></p>
+       </section>
+
+       <!-- ══════════ STEP 2 — CHURCH ══════════ -->
+       <section class="gg-step" data-step="2" data-path="church" hidden>
+         <p class="gg-lede">Tell us about</p>
+         <h2 class="gg-q">your church.</h2>
+         <p class="gg-sub">Just the basics, so we can reach you and size things properly.</p>
+
+         <div class="gg-grid">
+           <div class="gg-field">
+             <label for="c_name">Full name</label>
+             <input type="text" id="c_name" name="name" autocomplete="name" data-req>
+             <p class="gg-err" data-err="c_name"></p>
+           </div>
+           <div class="gg-field">
+             <label for="c_role">Your role</label>
+             <div class="gg-selectwrap">
+               <select id="c_role" name="role" data-req>
+                 <option value="">Select one</option>
+                 <option>Lead / senior pastor</option>
+                 <option>Associate or campus pastor</option>
+                 <option>Church administrator</option>
+                 <option>Communications or media</option>
+                 <option>Worship or ministry lead</option>
+                 <option>Volunteer or member</option>
+                 <option>Other</option>
+               </select>
+             </div>
+             <p class="gg-err" data-err="c_role"></p>
+           </div>
+           <div class="gg-field">
+             <label for="c_church">Church name</label>
+             <input type="text" id="c_church" name="church_name" data-req>
+             <p class="gg-err" data-err="c_church"></p>
+           </div>
+           <div class="gg-field">
+             <label for="c_city">City &amp; state</label>
+             <input type="text" id="c_city" name="city_state" placeholder="San Diego, CA" data-req>
+             <p class="gg-err" data-err="c_city"></p>
+           </div>
+           <div class="gg-field">
+             <label for="c_email">Email</label>
+             <input type="email" id="c_email" name="email" autocomplete="email" data-req data-email>
+             <p class="gg-err" data-err="c_email"></p>
+           </div>
+           <div class="gg-field">
+             <label for="c_phone">Phone <span class="opt">— optional</span></label>
+             <input type="tel" id="c_phone" name="phone" autocomplete="tel">
+           </div>
+           <div class="gg-field">
+             <label for="c_size">Active congregation size</label>
+             <div class="gg-selectwrap">
+               <select id="c_size" name="congregation_size" data-req>
+                 <option value="">Select a range</option>
+                 <option>Under 150</option>
+                 <option>150–500</option>
+                 <option>500–2,000</option>
+                 <option>2,000+</option>
+                 <option>Multi-campus network</option>
+               </select>
+             </div>
+             <p class="gg-err" data-err="c_size"></p>
+           </div>
+           <div class="gg-field">
+             <label for="c_site">Website or social <span class="opt">— optional</span></label>
+             <input type="text" id="c_site" name="website">
+           </div>
+         </div>
+       </section>
+
+       <!-- ══════════ STEP 2 — INVESTOR ══════════ -->
+       <section class="gg-step" data-step="2" data-path="investor" hidden>
+         <p class="gg-lede">Tell us about</p>
+         <h2 class="gg-q">you.</h2>
+         <p class="gg-sub">Enough context to send you the right materials.</p>
+
+         <div class="gg-grid">
+           <div class="gg-field">
+             <label for="i_name">Full name</label>
+             <input type="text" id="i_name" name="name" autocomplete="name" data-req>
+             <p class="gg-err" data-err="i_name"></p>
+           </div>
+           <div class="gg-field">
+             <label for="i_firm">Firm or organization <span class="opt">— optional</span></label>
+             <input type="text" id="i_firm" name="firm">
+           </div>
+           <div class="gg-field">
+             <label for="i_title">Title <span class="opt">— optional</span></label>
+             <input type="text" id="i_title" name="title">
+           </div>
+           <div class="gg-field">
+             <label for="i_type">Investor type</label>
+             <div class="gg-selectwrap">
+               <select id="i_type" name="investor_type" data-req>
+                 <option value="">Select one</option>
+                 <option>Angel</option>
+                 <option>Venture fund</option>
+                 <option>Family office</option>
+                 <option>Faith-based or mission fund</option>
+                 <option>Strategic / operator</option>
+                 <option>Syndicate or SPV</option>
+                 <option>Other</option>
+               </select>
+             </div>
+             <p class="gg-err" data-err="i_type"></p>
+           </div>
+           <div class="gg-field">
+             <label for="i_email">Email</label>
+             <input type="email" id="i_email" name="email" autocomplete="email" data-req data-email>
+             <p class="gg-err" data-err="i_email"></p>
+           </div>
+           <div class="gg-field">
+             <label for="i_phone">Phone <span class="opt">— optional</span></label>
+             <input type="tel" id="i_phone" name="phone" autocomplete="tel">
+           </div>
+           <div class="gg-field">
+             <label for="i_check">Typical check size</label>
+             <div class="gg-selectwrap">
+               <select id="i_check" name="check_size" data-req>
+                 <option value="">Select a range</option>
+                 <option>Under $25k</option>
+                 <option>$25k–$100k</option>
+                 <option>$100k–$500k</option>
+                 <option>$500k–$1M</option>
+                 <option>$1M+</option>
+                 <option>Still exploring</option>
+               </select>
+             </div>
+             <p class="gg-err" data-err="i_check"></p>
+           </div>
+           <div class="gg-field">
+             <label for="i_link">LinkedIn or firm site <span class="opt">— optional</span></label>
+             <input type="text" id="i_link" name="website">
+           </div>
+         </div>
+       </section>
+
+       <!-- ══════════ STEP 3 — CHURCH ══════════ -->
+       <section class="gg-step" data-step="3" data-path="church" hidden>
+         <p class="gg-lede">How you reach people</p>
+         <h2 class="gg-q">right now.</h2>
+         <p class="gg-sub">Select everything your church currently relies on during the week.</p>
+
+         <div class="gg-grid">
+           <div class="gg-field wide">
+             <label id="lbl_tools">Current tools</label>
+             <div class="gg-chips" role="group" aria-labelledby="lbl_tools" data-reqgroup="current_tools">
+               <div><input type="checkbox" id="t1" name="current_tools" value="Group texting"><label for="t1">Group texting</label></div>
+               <div><input type="checkbox" id="t2" name="current_tools" value="Email newsletter"><label for="t2">Email newsletter</label></div>
+               <div><input type="checkbox" id="t3" name="current_tools" value="Facebook group or page"><label for="t3">Facebook group or page</label></div>
+               <div><input type="checkbox" id="t4" name="current_tools" value="Instagram"><label for="t4">Instagram</label></div>
+               <div><input type="checkbox" id="t5" name="current_tools" value="GroupMe or WhatsApp"><label for="t5">GroupMe or WhatsApp</label></div>
+               <div><input type="checkbox" id="t6" name="current_tools" value="Church management software"><label for="t6">Church management software</label></div>
+               <div><input type="checkbox" id="t7" name="current_tools" value="An existing church app"><label for="t7">An existing church app</label></div>
+               <div><input type="checkbox" id="t8" name="current_tools" value="Sunday announcements"><label for="t8">Sunday announcements</label></div>
+               <div><input type="checkbox" id="t9" name="current_tools" value="Printed bulletin"><label for="t9">Printed bulletin</label></div>
+               <div><input type="checkbox" id="t10" name="current_tools" value="Nothing consistent"><label for="t10">Nothing consistent</label></div>
+             </div>
+             <p class="gg-err" data-err="current_tools"></p>
+           </div>
+
+           <div class="gg-field wide">
+             <label for="c_pain">What's hardest about it right now?</label>
+             <textarea id="c_pain" name="pain_point" placeholder="Announcements get lost, volunteers are hard to organize, giving lives somewhere else…"></textarea>
+           </div>
+
+           <div class="gg-field">
+             <label for="c_heard">How did you hear about Good Graces?</label>
+             <div class="gg-selectwrap">
+               <select id="c_heard" name="heard_from" data-req>
+                 <option value="">Select one</option>
+                 <option>Another church</option>
+                 <option>A friend or colleague</option>
+                 <option>Someone on the Good Graces team</option>
+                 <option>Instagram</option>
+                 <option>TikTok</option>
+                 <option>LinkedIn</option>
+                 <option>Search</option>
+                 <option>A conference or event</option>
+                 <option>Other</option>
+               </select>
+             </div>
+             <p class="gg-err" data-err="c_heard"></p>
+           </div>
+           <div class="gg-field">
+             <label for="c_heard_more">Who or where, specifically? <span class="opt">— optional</span></label>
+             <input type="text" id="c_heard_more" name="heard_from_detail">
+           </div>
+
+           <div class="gg-field wide">
+             <label for="c_notes">Anything else we should know? <span class="opt">— optional</span></label>
+             <textarea id="c_notes" name="notes"></textarea>
+           </div>
+
+           <div class="gg-field wide">
+             <div class="gg-consent">
+               <input type="checkbox" id="c_consent" name="consent" value="yes" data-req>
+               <label for="c_consent">Good Graces can email or text me about this inquiry.</label>
+             </div>
+             <p class="gg-err" data-err="c_consent"></p>
+           </div>
+         </div>
+       </section>
+
+       <!-- ══════════ STEP 3 — INVESTOR ══════════ -->
+       <section class="gg-step" data-step="3" data-path="investor" hidden>
+         <p class="gg-lede">What would be</p>
+         <h2 class="gg-q">useful to you?</h2>
+         <p class="gg-sub">Select everything you'd like us to send or set up.</p>
+
+         <div class="gg-grid">
+           <div class="gg-field wide">
+             <label id="lbl_ask">What you're after</label>
+             <div class="gg-chips" role="group" aria-labelledby="lbl_ask" data-reqgroup="interests">
+               <div><input type="checkbox" id="a1" name="interests" value="Investor deck"><label for="a1">Investor deck</label></div>
+               <div><input type="checkbox" id="a2" name="interests" value="Financial model"><label for="a2">Financial model</label></div>
+               <div><input type="checkbox" id="a3" name="interests" value="Product demo"><label for="a3">Product demo</label></div>
+               <div><input type="checkbox" id="a4" name="interests" value="Founder conversation"><label for="a4">Founder conversation</label></div>
+               <div><input type="checkbox" id="a5" name="interests" value="Traction and roadmap"><label for="a5">Traction and roadmap</label></div>
+               <div><input type="checkbox" id="a6" name="interests" value="Just following along"><label for="a6">Just following along</label></div>
+             </div>
+             <p class="gg-err" data-err="interests"></p>
+           </div>
+
+           <div class="gg-field">
+             <label for="i_timeline">Your timeline</label>
+             <div class="gg-selectwrap">
+               <select id="i_timeline" name="timeline" data-req>
+                 <option value="">Select one</option>
+                 <option>Actively deploying now</option>
+                 <option>Next 1–3 months</option>
+                 <option>Next 3–6 months</option>
+                 <option>Watching for later</option>
+               </select>
+             </div>
+             <p class="gg-err" data-err="i_timeline"></p>
+           </div>
+           <div class="gg-field">
+             <label for="i_stage">Stage you typically back <span class="opt">— optional</span></label>
+             <div class="gg-selectwrap">
+               <select id="i_stage" name="stage_focus">
+                 <option value="">Select one</option>
+                 <option>Pre-seed</option>
+                 <option>Seed</option>
+                 <option>Series A</option>
+                 <option>Stage agnostic</option>
+               </select>
+             </div>
+           </div>
+
+           <div class="gg-field">
+             <label for="i_heard">How did you hear about Good Graces?</label>
+             <div class="gg-selectwrap">
+               <select id="i_heard" name="heard_from" data-req>
+                 <option value="">Select one</option>
+                 <option>A founder or portfolio company</option>
+                 <option>Another investor</option>
+                 <option>Someone on the Good Graces team</option>
+                 <option>LinkedIn</option>
+                 <option>Instagram</option>
+                 <option>Search</option>
+                 <option>A pitch event or demo day</option>
+                 <option>Other</option>
+               </select>
+             </div>
+             <p class="gg-err" data-err="i_heard"></p>
+           </div>
+           <div class="gg-field">
+             <label for="i_heard_more">Who or where, specifically? <span class="opt">— optional</span></label>
+             <input type="text" id="i_heard_more" name="heard_from_detail">
+           </div>
+
+           <div class="gg-field wide">
+             <label for="i_notes">Anything you want us to know? <span class="opt">— optional</span></label>
+             <textarea id="i_notes" name="notes" placeholder="Thesis fit, questions, other faith-tech you've backed…"></textarea>
+           </div>
+
+           <div class="gg-field wide">
+             <div class="gg-consent">
+               <input type="checkbox" id="i_consent" name="consent" value="yes" data-req>
+               <label for="i_consent">Good Graces can email or text me about this inquiry.</label>
+             </div>
+             <p class="gg-err" data-err="i_consent"></p>
+           </div>
+         </div>
+       </section>
+
+       <!-- ══════════ DONE ══════════ -->
+       <section class="gg-step gg-done" data-step="done" hidden>
+         <div class="gg-dot"></div>
+         <p class="gg-lede">Thank you —</p>
+         <h2 class="gg-q">we've got it.</h2>
+         <p id="ggDoneMsg"></p>
+       </section>
+
+       <p class="gg-fail" id="ggFail" hidden></p>
+
+       <input type="text" class="gg-hp" name="company_website" tabindex="-1" autocomplete="off" aria-hidden="true">
+     </div>
+
+     <div class="gg-foot-nav" id="ggNav">
+       <button type="button" class="gg-btn ghost" id="ggBack" hidden>Back</button>
+       <button type="button" class="gg-btn primary" id="ggNext">Continue</button>
+     </div>
+   </div>
+ </form>
+</div>
+</div>
+
+<iframe name="gg_sink" id="ggSink" style="display:none;width:0;height:0;border:0" title="Submission target" aria-hidden="true"></iframe>
+
+
 <script>
 
 const observer = new IntersectionObserver((entries)=>{
@@ -999,6 +1618,354 @@ document.querySelectorAll('.fade-up').forEach(el=>{
   observer.observe(el);
 });
 
+</script>
+
+
+<script>
+/* ============================================================
+  INTAKE MODAL
+  ------------------------------------------------------------
+  sheetUrl   — your Google Apps Script Web App URL (/exec).
+  webhookUrl — optional second destination (GoHighLevel inbound
+               webhook, Zapier, Make). Leave "" to skip.
+  Both empty? The form falls back to a pre-filled email.
+
+  Any element with data-gg-open opens the modal.
+  Add data-gg-path="church" or "investor" to skip the fork and
+  land the visitor straight on step 2 of that path.
+  ============================================================ */
+const GG_CONFIG = {
+ sheetUrl: "https://script.google.com/macros/s/AKfycbwX1AQ5lQr3WhmyehdSJyrSwRuwEnBi8T67OE8NhBQjPpZJ9ugpvI6IZRqIB5OfQ021/exec",
+ webhookUrl: "",
+ fallbackEmail: "info@goodgraces.app",
+ redirectUrl: "",
+ debug: true,     // set to false once it's working; logs to the browser console
+
+ triggerSelector: "[data-gg-open], a[href='#contact'], a[href='#get-in-touch']"
+};
+
+(function () {
+ const form      = document.getElementById("ggForm");
+ const nav       = document.getElementById("ggNav");
+ const back      = document.getElementById("ggBack");
+ const next      = document.getElementById("ggNext");
+ const chip      = document.getElementById("ggChip");
+ const count     = document.getElementById("ggCount");
+ const prog      = document.getElementById("ggProg");
+ const progLabel = document.getElementById("ggProgLabel");
+ const doneMsg   = document.getElementById("ggDoneMsg");
+ const fail      = document.getElementById("ggFail");
+
+ const LABELS = {
+   "":       ["Who you are", "Your details", "Where you're at"],
+   church:   ["Who you are", "Your church", "How you communicate"],
+   investor: ["Who you are", "Your details", "What you need"]
+ };
+
+ let step = 1;
+ let path = "";
+
+ const visible = () =>
+   [...form.querySelectorAll('.gg-step[data-step="' + step + '"]')]
+     .filter(s => !s.dataset.path || s.dataset.path === path);
+
+ function render() {
+   form.querySelectorAll(".gg-step").forEach(s => { s.hidden = true; });
+   visible().forEach(s => { s.hidden = false; });
+
+   const done = step === "done";
+   count.textContent = done ? "Complete" : "Step " + step + " of 3";
+
+   [...prog.children].forEach((seg, i) => {
+     seg.dataset.on = (done || i + 1 <= step) ? "1" : "0";
+   });
+   progLabel.textContent = done ? "Submitted" : (LABELS[path] || LABELS[""])[step - 1];
+
+   if (path && !done) {
+     chip.hidden = false;
+     chip.textContent = path === "church" ? "Church" : "Investor";
+     chip.title = "Change this answer";
+   } else {
+     chip.hidden = true;
+   }
+
+   back.hidden = step === 1 || done;
+   next.textContent = step === 3 ? "Send it over" : "Continue";
+   nav.hidden = done;
+ }
+
+ /* ---------- validation ---------- */
+ function setErr(key, msg) {
+   const el = form.querySelector('[data-err="' + key + '"]');
+   if (el) el.textContent = msg || "";
+ }
+
+ function validate() {
+   let ok = true, firstBad = null;
+
+   if (step === 1) {
+     if (!path) { setErr("path", "Pick one to continue."); ok = false; }
+     else setErr("path", "");
+     return ok;
+   }
+
+   visible().forEach(section => {
+     section.querySelectorAll("[data-req]").forEach(f => {
+       const key = f.id || f.name;
+       let bad = "";
+       if (f.type === "checkbox") {
+         if (!f.checked) bad = "Please check this to continue.";
+       } else if (!f.value.trim()) {
+         bad = "This one's required.";
+       } else if (f.hasAttribute("data-email") && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(f.value.trim())) {
+         bad = "Check the email address — it looks incomplete.";
+       }
+       f.setAttribute("aria-invalid", bad ? "true" : "false");
+       setErr(key, bad);
+       if (bad) { ok = false; firstBad = firstBad || f; }
+     });
+
+     section.querySelectorAll("[data-reqgroup]").forEach(g => {
+       const key = g.dataset.reqgroup;
+       const any = [...g.querySelectorAll("input")].some(i => i.checked);
+       setErr(key, any ? "" : "Select at least one.");
+       if (!any) { ok = false; firstBad = firstBad || g.querySelector("input"); }
+     });
+   });
+
+   if (firstBad) firstBad.focus();
+   return ok;
+ }
+
+ /* ---------- payload ---------- */
+ function payload() {
+   const data = { path: path, submitted_at: new Date().toISOString(), source_url: location.href };
+   const q = new URLSearchParams(location.search);
+   ["utm_source","utm_medium","utm_campaign","utm_content","utm_term"].forEach(k => {
+     if (q.get(k)) data[k] = q.get(k);
+   });
+
+   form.querySelectorAll('.gg-step[data-path="' + path + '"]').forEach(section => {
+     section.querySelectorAll("input, select, textarea").forEach(f => {
+       if (!f.name || f.name === "path") return;
+       if (f.type === "checkbox") {
+         if (!f.checked) return;
+         if (f.name === "consent") { data.consent = true; return; }
+         (data[f.name] = data[f.name] || []).push(f.value);
+       } else if (f.value.trim()) {
+         data[f.name] = f.value.trim();
+       }
+     });
+   });
+   Object.keys(data).forEach(k => { if (Array.isArray(data[k])) data[k] = data[k].join(", "); });
+   return data;
+ }
+
+ function mailtoHref(d) {
+   const body = Object.entries(d).map(([k, v]) => k.replace(/_/g, " ") + ": " + v).join("\n");
+   const subject = (d.path === "church" ? "Church interest — " : "Investor interest — ") + (d.name || "New inquiry");
+   return "mailto:" + GG_CONFIG.fallbackEmail +
+     "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+ }
+
+ function showFail(d) {
+   fail.hidden = false;
+   fail.textContent = "That didn't send — nothing was saved. This usually means the page is running inside a preview or sandbox that blocks outside requests. Try again from the live page, or ";
+   const a = document.createElement("a");
+   a.href = mailtoHref(d);
+   a.textContent = "send it by email instead";
+   fail.appendChild(a);
+   fail.appendChild(document.createTextNode("."));
+   fail.scrollIntoView({ behavior: "smooth", block: "center" });
+ }
+
+ /* Method A — readable fetch. Works when Apps Script returns CORS headers,
+    and is the only method that can actually confirm the row was written. */
+ async function postReadable(url, d) {
+   try {
+     const r = await fetch(url, {
+       method: "POST",
+       headers: { "Content-Type": "text/plain;charset=utf-8" },
+       body: JSON.stringify(d),
+       redirect: "follow"
+     });
+     const j = await r.json().catch(() => null);
+     if (GG_CONFIG.debug) console.log("[GG] A/fetch:", r.status, j);
+     return r.ok && (!j || j.ok !== false);
+   } catch (e) {
+     if (GG_CONFIG.debug) console.warn("[GG] A/fetch blocked:", e.message);
+     return false;
+   }
+ }
+
+ /* Method B — a real form POST into a hidden iframe. This is a browser
+    navigation, not an XHR, so CORS never applies. */
+ function postViaForm(url, d) {
+   return new Promise(resolve => {
+     const sink = document.getElementById("ggSink");
+     const f = document.createElement("form");
+     f.method = "POST"; f.action = url; f.target = "gg_sink"; f.style.display = "none";
+     Object.entries(d).forEach(([k, v]) => {
+       const i = document.createElement("input");
+       i.type = "hidden"; i.name = k; i.value = String(v);
+       f.appendChild(i);
+     });
+     document.body.appendChild(f);
+
+     let settled = false;
+     const finish = ok => {
+       if (settled) return;
+       settled = true;
+       f.remove();
+       if (GG_CONFIG.debug) console.log("[GG] B/form post:", ok ? "sent" : "blocked");
+       resolve(ok);
+     };
+     sink.addEventListener("load", () => finish(true), { once: true });
+     setTimeout(() => finish(true), 4000);
+     try { f.submit(); } catch (e) { finish(false); }
+   });
+ }
+
+ async function submit() {
+   if (form.querySelector(".gg-hp").value) return;   // bot
+   const d = payload();
+   fail.hidden = true;
+   next.disabled = true;
+   next.textContent = "Sending…";
+   if (GG_CONFIG.debug) console.log("[GG] payload:", d);
+
+   let delivered = false;
+   if (GG_CONFIG.sheetUrl) {
+     delivered = await postReadable(GG_CONFIG.sheetUrl, d);
+     if (!delivered) delivered = await postViaForm(GG_CONFIG.sheetUrl, d);
+   }
+
+   if (GG_CONFIG.webhookUrl) {
+     try {
+       const r = await fetch(GG_CONFIG.webhookUrl, {
+         method: "POST",
+         headers: { "Content-Type": "application/json" },
+         body: JSON.stringify(d)
+       });
+       delivered = delivered || r.ok;
+     } catch (e) { /* sheet is the source of truth */ }
+   }
+
+   next.disabled = false;
+   next.textContent = "Send it over";
+
+   if (!delivered) { showFail(d); return; }
+
+   doneMsg.textContent = d.path === "church"
+     ? "We'll follow up at " + (d.email || "your email") + " within two business days with next steps for " + (d.church_name || "your church") + "."
+     : "We'll send materials to " + (d.email || "your email") + " within two business days and follow up to find a time.";
+
+   step = "done";
+   render();
+   document.getElementById("gg").scrollIntoView({ behavior: "smooth", block: "start" });
+
+   if (GG_CONFIG.redirectUrl) setTimeout(() => { location.href = GG_CONFIG.redirectUrl; }, 2500);
+ }
+
+ /* ---------- events ---------- */
+ form.querySelectorAll('input[name="path"]').forEach(r => {
+   r.addEventListener("change", () => {
+     path = r.value;
+     setErr("path", "");
+     progLabel.textContent = LABELS[path][step - 1];
+     chip.hidden = false;
+     chip.textContent = path === "church" ? "Church" : "Investor";
+   });
+ });
+
+ next.addEventListener("click", () => {
+   if (!validate()) return;
+   if (step === 3) { submit(); return; }
+   step++;
+   render();
+   const h = form.querySelector(".gg-step:not([hidden]) .gg-q");
+   if (h) { h.setAttribute("tabindex", "-1"); h.focus({ preventScroll: true }); }
+   document.getElementById("gg").scrollIntoView({ behavior: "smooth", block: "start" });
+ });
+
+ back.addEventListener("click", () => { if (step > 1) { step--; fail.hidden = true; render(); } });
+ chip.addEventListener("click", () => { step = 1; render(); });
+
+ form.addEventListener("submit", e => e.preventDefault());
+ form.addEventListener("keydown", e => {
+   if (e.key === "Enter" && e.target.tagName !== "TEXTAREA") { e.preventDefault(); next.click(); }
+ });
+
+ /* ---------- modal open / close ---------- */
+ const overlay = document.getElementById("ggOverlay");
+ const closeBtn = document.getElementById("ggClose");
+ let lastFocused = null;
+
+ function reset() {
+   form.reset();
+   form.querySelectorAll('[aria-invalid="true"]').forEach(f => f.setAttribute("aria-invalid", "false"));
+   form.querySelectorAll(".gg-err").forEach(el => { el.textContent = ""; });
+   fail.hidden = true;
+   step = 1; path = "";
+   render();
+ }
+
+ function openModal(preset) {
+   lastFocused = document.activeElement;
+
+   // a CTA can pre-answer step 1 and drop the visitor straight into step 2
+   if (preset === "church" || preset === "investor") {
+     const radio = form.querySelector('input[name="path"][value="' + preset + '"]');
+     if (radio) radio.checked = true;
+     path = preset;
+     if (step === 1) step = 2;
+     render();
+   }
+
+   overlay.hidden = false;
+   document.body.style.overflow = "hidden";
+   const first = form.querySelector(".gg-step:not([hidden]) input, .gg-step:not([hidden]) select");
+   if (first) first.focus({ preventScroll: true });
+ }
+
+ function closeModal() {
+   overlay.hidden = true;
+   document.body.style.overflow = "";
+   if (lastFocused && lastFocused.focus) lastFocused.focus();
+   // always start clean on the next open — clears fields, errors, path and step
+   reset();
+ }
+
+ /* Delegated so CTAs added later still work */
+ document.addEventListener("click", e => {
+   const t = e.target.closest && e.target.closest(GG_CONFIG.triggerSelector);
+   if (!t) return;
+   e.preventDefault();
+   openModal(t.getAttribute("data-gg-path"));
+ });
+
+ closeBtn.addEventListener("click", closeModal);
+ overlay.addEventListener("mousedown", e => { if (e.target === overlay) closeModal(); });
+ document.addEventListener("keydown", e => {
+   if (e.key === "Escape" && !overlay.hidden) closeModal();
+ });
+
+ // keep tabbing inside the dialog while it's open
+ overlay.addEventListener("keydown", e => {
+   if (e.key !== "Tab") return;
+   const f = [...overlay.querySelectorAll('button, input, select, textarea, a[href]')]
+     .filter(el => !el.disabled && el.offsetParent !== null);
+   if (!f.length) return;
+   const first = f[0], last = f[f.length - 1];
+   if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+   else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+ });
+
+ // open from anywhere: GoodGracesForm.open() or GoodGracesForm.open('investor')
+ window.GoodGracesForm = { open: openModal, close: closeModal };
+
+ render();
+})();
 </script>
 
 </body>
