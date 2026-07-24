@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>Campaigns | Good Graces Admin</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+*{ margin:0; padding:0; box-sizing:border-box; }
+body{ font-family:'Inter',sans-serif; background:#f6f3ee; color:#111111; overflow-x:hidden; }
+::selection{ background:#111; color:white; }
+
+.hero-gradient{
+  background:
+  radial-gradient(circle at top left, rgba(255,255,255,.7), transparent 35%),
+  radial-gradient(circle at bottom right, rgba(210,194,174,.45), transparent 35%),
+  linear-gradient(to bottom, #f7f4ef, #ece5dc);
+}
+
+.grid-lines{
+  background-image:
+  linear-gradient(rgba(0,0,0,.04) 1px, transparent 1px),
+  linear-gradient(90deg, rgba(0,0,0,.04) 1px, transparent 1px);
+  background-size:60px 60px;
+}
+
+.soft-card{
+  background:white; border:1px solid rgba(0,0,0,.06);
+  border-radius:30px; box-shadow:0 15px 40px rgba(0,0,0,.05);
+}
+
+.gg-input {
+ font-family: "Archivo", sans-serif; font-size: 15px; color: #111110;
+ background: rgba(255,255,255,.72); border: 1px solid rgba(17,17,16,.10);
+ border-radius: 14px; padding: 14px 16px; width: 100%; transition: all .2s ease;
+}
+.gg-input:focus {
+ outline: none; background: #fff; border-color: #111110;
+ box-shadow: 0 0 0 3px rgba(17,17,16,.07);
+}
+
+.gg-label {
+ font-family: "IBM Plex Mono", monospace; font-size: 10.5px; 
+ letter-spacing: .12em; text-transform: uppercase; color: #928A82;
+ display: block; margin-bottom: 8px;
+}
+
+.fade-in { animation: fadeIn 0.4s cubic-bezier(.22,.61,.36,1) forwards; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+#dashboard-view { display: none; }
+</style>
+</head>
+
+<body class="min-h-screen hero-gradient relative">
+
+  <div class="absolute inset-0 grid-lines opacity-40 pointer-events-none"></div>
+
+  <!-- LOGIN VIEW -->
+  <main id="login-view" class="relative z-10 flex flex-col items-center justify-center min-h-screen px-6 py-20">
+    <div class="mb-10 text-center">
+        <h1 class="text-3xl font-extrabold tracking-tight mb-2">Console</h1>
+        <p class="text-black/60">Good Graces Marketing Operations</p>
+    </div>
+    <div class="soft-card w-full max-w-md p-10 fade-in">
+        <form id="loginForm" class="space-y-6" novalidate>
+            <div>
+                <label for="email" class="gg-label">Email Address</label>
+                <input type="email" id="email" class="gg-input" placeholder="name@goodgraces.app" required>
+            </div>
+            <p id="loginError" class="text-red-500 text-sm hidden font-medium">Invalid credentials. Use avelino@ or nora@.</p>
+            <button type="submit" class="w-full px-8 py-4 bg-black text-white rounded-full font-medium hover:scale-[1.02] transition-transform">
+                Access System
+            </button>
+        </form>
+    </div>
+  </main>
+
+  <!-- DASHBOARD VIEW -->
+  <main id="dashboard-view" class="relative z-10 min-h-screen px-6 py-12">
+      <div class="max-w-6xl mx-auto">
+          
+        <!-- Header -->
+        <header class="flex items-center justify-between mb-10">
+            <div class="flex items-center gap-4">
+                <span class="font-bold tracking-tight text-xl">Good Graces</span>
+                <span class="text-black/30">|</span>
+                <span class="font-medium text-black/60">Campaign Manager</span>
+            </div>
+            <div class="flex items-center gap-6 text-sm font-medium">
+                <span id="userGreeting" class="text-black/60"></span>
+                <button id="logoutBtn" class="hover:text-black transition">Sign Out</button>
+            </div>
+        </header>
+
+        <!-- Workspace -->
+        <div class="grid lg:grid-cols-12 gap-8">
+            
+            <!-- Left: CRM Inputs -->
+            <div class="lg:col-span-5 space-y-6 fade-in">
+                <div class="soft-card p-8">
+                    <div class="mb-8">
+                        <span class="gg-label">Active Template</span>
+                        <h2 class="text-2xl font-bold tracking-tight">Beta Cohort Outreach</h2>
+                        <p class="text-sm text-black/60 mt-1">Sending from: <span id="fromAddress" class="font-medium text-black"></span></p>
+                    </div>
+                    
+                    <form id="crmForm" class="space-y-5">
+                        <div>
+                            <label for="toEmail" class="gg-label">Destination Email</label>
+                            <input type="email" id="toEmail" class="gg-input" placeholder="hello@church.com" required>
+                        </div>
+                        <div>
+                            <label for="pastorName" class="gg-label">Pastor Last Name</label>
+                            <input type="text" id="pastorName" class="gg-input" placeholder="e.g. Smith" required>
+                        </div>
+                        <div>
+                            <label for="churchName" class="gg-label">Church Name</label>
+                            <input type="text" id="churchName" class="gg-input" placeholder="e.g. Grace Fellowship" required>
+                        </div>
+
+                        <div class="pt-6 border-t border-black/10 mt-6">
+                            <button type="button" id="sendEmailBtn" class="w-full px-8 py-4 bg-[#FF6B52] text-white rounded-full font-bold hover:scale-[1.02] transition-transform">
+                                Deploy HTML Email
+                            </button>
+                            <p id="statusMsg" class="text-center text-sm font-medium mt-4 hidden"></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Right: Template Reference -->
+            <div class="lg:col-span-7 fade-in" style="animation-delay: 0.1s;">
+                <div class="soft-card p-8 h-full bg-white/50 backdrop-blur-sm">
+                    <div class="flex items-center justify-between mb-6">
+                        <span class="gg-label !mb-0">Template Structure Reference</span>
+                        <span class="text-xs font-medium px-3 py-1 bg-black/5 rounded-full">Auto-injects HTML</span>
+                    </div>
+                    
+                    <!-- Visual indicator of the template being used -->
+                    <div class="border border-black/10 rounded-2xl p-6 bg-white space-y-4 text-sm text-black/70 font-sans">
+                        <p><strong>Subject:</strong> Building Good Graces alongside [Church Name]</p>
+                        <hr class="border-black/5">
+                        <p>Pastor [Last Name],</p>
+                        <p>My name is [Your Name]. I'm building an app called Good Graces, here in San Diego. We're in beta right now, and we're bringing on five local churches to build it alongside us before we open it to anyone else. I'd like <strong>[Church Name]</strong> to be one of them.</p>
+                        <p class="italic text-black/40">...[Middle HTML sections auto-generated]...</p>
+                        <p>[Your Name] <br> Founder, Good Graces &middot; [Your Email]</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+      </div>
+  </main>
+
+<script>
+    const admins = {
+        "avelino@goodgraces.app": { name: "Avelino", email: "avelino@goodgraces.app" },
+        "nora@goodgraces.app": { name: "Nora", email: "nora@goodgraces.app" }
+    };
+
+    let currentUser = null;
+
+    const loginView = document.getElementById('login-view');
+    const dashboardView = document.getElementById('dashboard-view');
+    const loginForm = document.getElementById('loginForm');
+    const loginError = document.getElementById('loginError');
+    const emailInput = document.getElementById('email');
+    
+    const userGreeting = document.getElementById('userGreeting');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const fromAddress = document.getElementById('fromAddress');
+    
+    const sendEmailBtn = document.getElementById('sendEmailBtn');
+    const statusMsg = document.getElementById('statusMsg');
+
+    // --- Authentication ---
+    loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = emailInput.value.trim().toLowerCase();
+        
+        if (admins[email]) {
+            currentUser = admins[email];
+            loginError.classList.add('hidden');
+            loginView.style.display = 'none';
+            dashboardView.style.display = 'block';
+            
+            userGreeting.textContent = currentUser.name;
+            fromAddress.textContent = currentUser.email;
+        } else {
+            loginError.classList.remove('hidden');
+        }
+    });
+
+    logoutBtn.addEventListener('click', () => {
+        currentUser = null;
+        loginForm.reset();
+        document.getElementById('crmForm').reset();
+        dashboardView.style.display = 'none';
+        loginView.style.display = 'flex';
+        statusMsg.classList.add('hidden');
+    });
+
+    // --- CRM Execution ---
+    sendEmailBtn.addEventListener('click', async () => {
+        const toEmail = document.getElementById('toEmail').value.trim();
+        const pastorName = document.getElementById('pastorName').value.trim();
+        const churchName = document.getElementById('churchName').value.trim();
+
+        if(!toEmail || !pastorName || !churchName) {
+            return alert("Please fill in all CRM fields.");
+        }
+
+        sendEmailBtn.textContent = "Deploying...";
+        sendEmailBtn.disabled = true;
+        statusMsg.classList.add('hidden');
+
+        try {
+            // Update this URL to point to your live Node.js server (e.g., on Vercel or Render)
+            // Example: const backendURL = 'https://goodgraces-api.onrender.com/api/send-beta-email';
+            const backendURL = 'http://localhost:3000/api/send-beta-email'; // Local dev fallback
+
+            const response = await fetch(backendURL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    toEmail: toEmail,
+                    pastorName: pastorName,
+                    churchName: churchName,
+                    senderEmail: currentUser.email,
+                    senderName: currentUser.name
+                })
+            });
+
+            if (response.ok) {
+                statusMsg.textContent = "HTML Email successfully embedded and deployed.";
+                statusMsg.className = "text-center text-sm font-medium mt-4 text-green-600 block";
+                document.getElementById('toEmail').value = '';
+                document.getElementById('pastorName').value = '';
+                document.getElementById('churchName').value = '';
+            } else {
+                throw new Error('Server error');
+            }
+        } catch (error) {
+            statusMsg.textContent = "Failed to connect to email server. Check backend connection.";
+            statusMsg.className = "text-center text-sm font-medium mt-4 text-red-500 block";
+        } finally {
+            sendEmailBtn.textContent = "Deploy HTML Email";
+            sendEmailBtn.disabled = false;
+        }
+    });
+</script>
+
+</body>
+</html>
