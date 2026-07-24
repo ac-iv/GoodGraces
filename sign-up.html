@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>Church Beta Sign-Up | Good Graces</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="icon" type="image/png" href="img/favicon.png">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:'Inter',sans-serif;
+  background:#f6f3ee;
+  color:#111111;
+  overflow-x:hidden;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+::selection{
+  background:#111;
+  color:white;
+}
+
+.grid-lines{
+  background-image:
+  linear-gradient(rgba(0,0,0,.04) 1px, transparent 1px),
+  linear-gradient(90deg, rgba(0,0,0,.04) 1px, transparent 1px);
+  background-size:60px 60px;
+}
+
+/* ============================================================
+   GOOD GRACES INTAKE FORM (Standalone Adaptation)
+   ============================================================ */
+.gg {
+ /* palette */
+ --ink:       #111110;
+ --ink-2:     #4A4642;
+ --ink-3:     #928A82;
+ --cream:     #FDFBF8;
+ --sand:      #F2E7DB;
+ --line:      rgba(17,17,16,.10);
+ --line-2:    rgba(17,17,16,.16);
+ --surface:   rgba(255,255,255,.62);
+ --surface-2: rgba(255,255,255,.80);
+ --ember:     #E2542B; 
+
+ /* type */
+ --sans:  "Archivo", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+ --serif: "Instrument Serif", Georgia, "Times New Roman", serif;
+ --mono:  "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+ --ease: cubic-bezier(.22,.61,.36,1);
+
+ width: 100%;
+ max-width: 880px;
+ margin: 40px auto;
+ font-family: var(--sans);
+ color: var(--ink);
+ text-align: left;
+ -webkit-font-smoothing: antialiased;
+ position: relative;
+ background: linear-gradient(165deg, #FDFBF8 0%, #F8F0E7 46%, #EFDECE 100%);
+ border-radius: 30px;
+ box-shadow: 0 40px 90px -30px rgba(50,32,18,.15);
+ animation: gg-pop .4s cubic-bezier(.22,.61,.36,1) both;
+}
+
+@keyframes gg-pop { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+
+.gg-meta { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 30px; }
+.gg-count {
+ font-family: var(--mono); font-size: 10.5px; letter-spacing: .13em;
+ text-transform: uppercase; color: var(--ink-3);
+}
+
+.gg-inner { position: relative; padding: 44px 44px 34px; }
+
+/* ---------- progress ---------- */
+.gg-prog { display: flex; gap: 6px; margin-bottom: 10px; }
+.gg-prog span {
+ height: 3px; flex: 1; border-radius: 999px;
+ background: rgba(17,17,16,.10);
+ transition: background .4s var(--ease);
+}
+.gg-prog span[data-on="1"] { background: var(--ink); }
+.gg-proglabel {
+ font-family: var(--mono); font-size: 10.5px; letter-spacing: .13em;
+ text-transform: uppercase; color: var(--ink-3); margin: 0;
+}
+
+/* ---------- steps ---------- */
+.gg-step[hidden] { display: none; }
+.gg-step { animation: gg-rise .5s var(--ease) both; }
+@keyframes gg-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+.gg-lede {
+ font-family: var(--serif); font-style: italic; font-weight: 400;
+ font-size: clamp(24px, 3.4vw, 32px); line-height: 1.05;
+ color: var(--ink-3); margin: 0 0 2px;
+}
+.gg-q {
+ font-family: var(--sans); font-weight: 800;
+ font-size: clamp(32px, 5vw, 50px); line-height: .98; letter-spacing: -.042em;
+ margin: 0 0 16px;
+}
+.gg-sub { margin: 0 0 30px; color: var(--ink-2); font-size: 16px; line-height: 1.6; max-width: 50ch; }
+
+/* ---------- fields ---------- */
+.gg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 20px; }
+.gg-field { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.gg-field.wide { grid-column: 1 / -1; }
+.gg-field > label {
+ font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em;
+ text-transform: uppercase; color: var(--ink-3);
+}
+.gg-field > label .opt { text-transform: none; letter-spacing: 0; font-family: var(--sans); opacity: .8; }
+
+.gg input[type="text"], .gg input[type="email"], .gg input[type="tel"],
+.gg select, .gg textarea {
+ font-family: var(--sans); font-size: 15px; color: var(--ink);
+ background: rgba(255,255,255,.72);
+ border: 1px solid var(--line);
+ border-radius: 14px;
+ padding: 14px 16px; width: 100%;
+ transition: border-color .2s var(--ease), background .2s var(--ease), box-shadow .2s var(--ease);
+}
+.gg textarea { resize: vertical; min-height: 96px; line-height: 1.55; }
+.gg select { appearance: none; -webkit-appearance: none; cursor: pointer; }
+.gg .gg-selectwrap { position: relative; }
+.gg .gg-selectwrap::after {
+ content: ""; position: absolute; right: 18px; top: 50%; pointer-events: none;
+ width: 7px; height: 7px; border-right: 1.5px solid var(--ink-3); border-bottom: 1.5px solid var(--ink-3);
+ transform: translateY(-70%) rotate(45deg);
+}
+.gg input::placeholder, .gg textarea::placeholder { color: var(--ink-3); opacity: .75; }
+.gg input:focus, .gg select:focus, .gg textarea:focus {
+ outline: none; background: #fff; border-color: var(--ink);
+ box-shadow: 0 0 0 3px rgba(17,17,16,.07);
+}
+.gg [aria-invalid="true"] { border-color: var(--ember); }
+.gg-err { font-size: 13px; color: var(--ember); margin: 0; }
+.gg-err:empty { display: none; }
+
+/* ---------- chips ---------- */
+.gg-chips { display: flex; flex-wrap: wrap; gap: 9px; }
+.gg-chips > div { position: relative; }
+.gg-chips input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.gg-chips label {
+ display: block; cursor: pointer; font-size: 14.5px; line-height: 1; font-weight: 500;
+ padding: 12px 18px; border: 1px solid var(--line); border-radius: 999px;
+ background: rgba(255,255,255,.72); color: var(--ink-2);
+ transition: all .2s var(--ease);
+}
+.gg-chips label:hover { border-color: var(--line-2); color: var(--ink); }
+.gg-chips input:checked + label { background: var(--ink); border-color: var(--ink); color: var(--cream); }
+.gg-chips input:focus-visible + label { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+/* ---------- consent ---------- */
+.gg-consent { display: flex; gap: 12px; align-items: flex-start; font-size: 14px; color: var(--ink-2); line-height: 1.55; }
+.gg-consent input { margin: 2px 0 0; accent-color: var(--ink); width: 17px; height: 17px; flex: 0 0 auto; }
+.gg-consent label {
+ font-family: var(--sans); font-size: 14px; letter-spacing: 0; text-transform: none; color: var(--ink-2);
+}
+
+/* ---------- footer nav ---------- */
+.gg-foot-nav {
+ position: relative;
+ display: flex; align-items: center; justify-content: space-between; gap: 16px;
+ padding: 22px 44px 30px;
+}
+.gg-btn {
+ font-family: var(--sans); font-size: 15px; font-weight: 600; letter-spacing: -.012em;
+ padding: 15px 32px; border-radius: 999px; border: 1px solid transparent; cursor: pointer;
+ transition: transform .22s var(--ease), background .22s var(--ease), opacity .22s var(--ease);
+}
+.gg-btn.primary { background: var(--ink); color: var(--cream); }
+.gg-btn.primary:hover { transform: translateY(-2px); }
+.gg-btn.primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+.gg-btn.ghost { background: var(--surface-2); color: var(--ink); border-color: var(--line); }
+.gg-btn.ghost:hover { transform: translateY(-2px); border-color: var(--line-2); }
+.gg-btn.ghost[hidden] { visibility: hidden; display: inline-block; }
+.gg-btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.gg-foot-nav[hidden] { display: none; }
+
+/* ---------- done ---------- */
+.gg-done { padding: 46px 0 40px; text-align: center; }
+.gg-done .gg-lede, .gg-done .gg-q { text-align: center; }
+.gg-done .gg-q { max-width: 16ch; margin-inline: auto; }
+.gg-done p { color: var(--ink-2); font-size: 16px; line-height: 1.6; max-width: 44ch; margin: 18px auto 0; }
+.gg-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ember); margin: 0 auto 26px; }
+
+.gg-hp { position: absolute; left: -9999px; opacity: 0; height: 0; }
+
+.gg-fail {
+ margin: 24px 0 0; padding: 16px 18px;
+ background: rgba(226,84,43,.08); border: 1px solid rgba(226,84,43,.28);
+ border-radius: 14px; font-size: 14.5px; line-height: 1.55; color: var(--ink-2);
+}
+.gg-fail[hidden] { display: none; }
+.gg-fail a { color: var(--ink); font-weight: 600; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 780px) {
+ .gg-inner { padding: 28px 22px 26px; }
+ .gg-foot-nav { padding: 18px 22px 24px; }
+ .gg-grid { grid-template-columns: 1fr; }
+ .gg-count { display: none; }
+ .gg-btn { padding: 14px 24px; font-size: 14.5px; }
+}
+@media (prefers-reduced-motion: reduce) {
+ .gg *, .gg *::before { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+
+<body>
+
+  <div class="fixed inset-0 grid-lines opacity-30 pointer-events-none -z-10"></div>
+
+  <!-- NAV (Simplified for standalone page) -->
+  <nav class="w-full z-50 px-6 lg:px-12 py-8 flex justify-center">
+    <a href="index.html" class="hover:opacity-80 transition">
+      <img src="img/logo.png" alt="Good Graces" class="h-8 w-auto object-contain">
+    </a>
+  </nav>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-grow flex items-center justify-center px-4 pb-20">
+
+    <div class="gg" id="gg" role="main" aria-label="Good Graces Beta Sign-Up">
+      <form id="ggForm" novalidate>
+        
+        <!-- Hidden input locking this strictly to the church flow -->
+        <input type="hidden" name="path" value="church">
+
+        <div class="gg-card">
+          <div class="gg-inner">
+
+            <div class="gg-prog" id="ggProg">
+              <span data-i="1"></span><span data-i="2"></span>
+            </div>
+            
+            <div class="gg-meta">
+              <p class="gg-proglabel" id="ggProgLabel">Your details</p>
+              <span class="gg-count" id="ggCount">Step 1 of 2</span>
+            </div>
+
+            <!-- ══════════ STEP 1 — CHURCH DETAILS ══════════ -->
+            <section class="gg-step" data-step="1">
+              <p class="gg-lede">Tell us about</p>
+              <h2 class="gg-q">your church.</h2>
+              <p class="gg-sub"><strong>Good Graces</strong> beta is currently prioritizing active congregations. Provide your details below so we can accurately size your network.</p>
+
+              <div class="gg-grid">
+                <div class="gg-field">
+                  <label for="c_name">Full name</label>
+                  <input type="text" id="c_name" name="name" autocomplete="name" data-req>
+                  <p class="gg-err" data-err="c_name"></p>
+                </div>
+                <div class="gg-field">
+                  <label for="c_role">Your role</label>
+                  <div class="gg-selectwrap">
+                    <select id="c_role" name="role" data-req>
+                      <option value="">Select one</option>
+                      <option>Lead / senior pastor</option>
+                      <option>Associate or campus pastor</option>
+                      <option>Church administrator</option>
+                      <option>Communications or media</option>
+                      <option>Worship or ministry lead</option>
+                      <option>Volunteer or member</option>
+                      <option>Other</option>
+                    </select>
+                  </div>
+                  <p class="gg-err" data-err="c_role"></p>
+                </div>
+                <div class="gg-field">
+                  <label for="c_church">Church name</label>
+                  <input type="text" id="c_church" name="church_name" data-req>
+                  <p class="gg-err" data-err="c_church"></p>
+                </div>
+                <div class="gg-field">
+                  <label for="c_city">City &amp; state</label>
+                  <input type="text" id="c_city" name="city_state" placeholder="San Diego, CA" data-req>
+                  <p class="gg-err" data-err="c_city"></p>
+                </div>
+                <div class="gg-field">
+                  <label for="c_email">Email</label>
+                  <input type="email" id="c_email" name="email" autocomplete="email" data-req data-email>
+                  <p class="gg-err" data-err="c_email"></p>
+                </div>
+                <div class="gg-field">
+                  <label for="c_phone">Phone <span class="opt">— optional</span></label>
+                  <input type="tel" id="c_phone" name="phone" autocomplete="tel">
+                </div>
+                <div class="gg-field">
+                  <label for="c_size">Active congregation size</label>
+                  <div class="gg-selectwrap">
+                    <select id="c_size" name="congregation_size" data-req>
+                      <option value="">Select a range</option>
+                      <option>Under 150</option>
+                      <option>150–500</option>
+                      <option>500–2,000</option>
+                      <option>2,000+</option>
+                      <option>Multi-campus network</option>
+                    </select>
+                  </div>
+                  <p class="gg-err" data-err="c_size"></p>
+                </div>
+                <div class="gg-field">
+                  <label for="c_site">Website or social <span class="opt">— optional</span></label>
+                  <input type="text" id="c_site" name="website">
+                </div>
+              </div>
+            </section>
+
+            <!-- ══════════ STEP 2 — COMMUNICATION ══════════ -->
+            <section class="gg-step" data-step="2" hidden>
+              <p class="gg-lede">How you reach people</p>
+              <h2 class="gg-q">right now.</h2>
+              <p class="gg-sub">Select everything your church currently relies on during the week.</p>
+
+              <div class="gg-grid">
+                <div class="gg-field wide">
+                  <label id="lbl_tools">Current tools</label>
+                  <div class="gg-chips" role="group" aria-labelledby="lbl_tools" data-reqgroup="current_tools">
+                    <div><input type="checkbox" id="t1" name="current_tools" value="Group texting"><label for="t1">Group texting</label></div>
+                    <div><input type="checkbox" id="t2" name="current_tools" value="Email newsletter"><label for="t2">Email newsletter</label></div>
+                    <div><input type="checkbox" id="t3" name="current_tools" value="Facebook group or page"><label for="t3">Facebook group or page</label></div>
+                    <div><input type="checkbox" id="t4" name="current_tools" value="Instagram"><label for="t4">Instagram</label></div>
+                    <div><input type="checkbox" id="t5" name="current_tools" value="GroupMe or WhatsApp"><label for="t5">GroupMe or WhatsApp</label></div>
+                    <div><input type="checkbox" id="t6" name="current_tools" value="Church management software"><label for="t6">Church management software</label></div>
+                    <div><input type="checkbox" id="t7" name="current_tools" value="An existing church app"><label for="t7">An existing church app</label></div>
+                    <div><input type="checkbox" id="t8" name="current_tools" value="Sunday announcements"><label for="t8">Sunday announcements</label></div>
+                    <div><input type="checkbox" id="t9" name="current_tools" value="Printed bulletin"><label for="t9">Printed bulletin</label></div>
+                    <div><input type="checkbox" id="t10" name="current_tools" value="Nothing consistent"><label for="t10">Nothing consistent</label></div>
+                  </div>
+                  <p class="gg-err" data-err="current_tools"></p>
+                </div>
+
+                <div class="gg-field wide">
+                  <label for="c_pain">What's hardest about it right now?</label>
+                  <textarea id="c_pain" name="pain_point" placeholder="Announcements get lost, volunteers are hard to organize, giving lives somewhere else…"></textarea>
+                </div>
+
+                <div class="gg-field">
+                  <label for="c_heard">How did you hear about Good Graces?</label>
+                  <div class="gg-selectwrap">
+                    <select id="c_heard" name="heard_from" data-req>
+                      <option value="">Select one</option>
+                      <option>Another church</option>
+                      <option>A friend or colleague</option>
+                      <option>Someone on the Good Graces team</option>
+                      <option>Instagram</option>
+                      <option>TikTok</option>
+                      <option>LinkedIn</option>
+                      <option>Search</option>
+                      <option>A conference or event</option>
+                      <option>Other</option>
+                    </select>
+                  </div>
+                  <p class="gg-err" data-err="c_heard"></p>
+                </div>
+                <div class="gg-field">
+                  <label for="c_heard_more">Who or where, specifically? <span class="opt">— optional</span></label>
+                  <input type="text" id="c_heard_more" name="heard_from_detail">
+                </div>
+
+                <div class="gg-field wide">
+                  <label for="c_notes">Anything else we should know? <span class="opt">— optional</span></label>
+                  <textarea id="c_notes" name="notes"></textarea>
+                </div>
+
+                <div class="gg-field wide">
+                  <div class="gg-consent">
+                    <input type="checkbox" id="c_consent" name="consent" value="yes" data-req>
+                    <label for="c_consent">Good Graces can email or text me about this inquiry.</label>
+                  </div>
+                  <p class="gg-err" data-err="c_consent"></p>
+                </div>
+              </div>
+            </section>
+
+            <!-- ══════════ DONE ══════════ -->
+            <section class="gg-step gg-done" data-step="done" hidden>
+              <div class="gg-dot"></div>
+              <p class="gg-lede">Thank you —</p>
+              <h2 class="gg-q">we've got it.</h2>
+              <p id="ggDoneMsg"></p>
+            </section>
+
+            <p class="gg-fail" id="ggFail" hidden></p>
+
+            <input type="text" class="gg-hp" name="company_website" tabindex="-1" autocomplete="off" aria-hidden="true">
+          </div>
+
+          <div class="gg-foot-nav" id="ggNav">
+            <button type="button" class="gg-btn ghost" id="ggBack" hidden>Back</button>
+            <button type="button" class="gg-btn primary" id="ggNext">Continue</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </main>
+
+<iframe name="gg_sink" id="ggSink" style="display:none;width:0;height:0;border:0" title="Submission target" aria-hidden="true"></iframe>
+
+<script>
+const GG_CONFIG = {
+ sheetUrl: "https://script.google.com/macros/s/AKfycbzVELQ_yx-oEtSfZlOG_YXYFpKgr-bqE8cgk2fPux0oU0wuRsSnnctIgCHSafRg_7PL/exec",
+ webhookUrl: "",
+ fallbackEmail: "avelino@goodgraces.app",
+ redirectUrl: "",
+ debug: true
+};
+
+(function () {
+ const form      = document.getElementById("ggForm");
+ const nav       = document.getElementById("ggNav");
+ const back      = document.getElementById("ggBack");
+ const next      = document.getElementById("ggNext");
+ const count     = document.getElementById("ggCount");
+ const prog      = document.getElementById("ggProg");
+ const progLabel = document.getElementById("ggProgLabel");
+ const doneMsg   = document.getElementById("ggDoneMsg");
+ const fail      = document.getElementById("ggFail");
+
+ const LABELS = ["Your details", "How you communicate"];
+ let step = 1;
+
+ const visible = () => [...form.querySelectorAll('.gg-step[data-step="' + step + '"]')];
+
+ function render() {
+   form.querySelectorAll(".gg-step").forEach(s => { s.hidden = true; });
+   visible().forEach(s => { s.hidden = false; });
+
+   const done = step === "done";
+   count.textContent = done ? "Complete" : "Step " + step + " of 2";
+
+   [...prog.children].forEach((seg, i) => {
+     seg.dataset.on = (done || i + 1 <= step) ? "1" : "0";
+   });
+   
+   if(!done) {
+     progLabel.textContent = LABELS[step - 1];
+   } else {
+     progLabel.textContent = "Submitted";
+   }
+
+   back.hidden = step === 1 || done;
+   next.textContent = step === 2 ? "Send it over" : "Continue";
+   nav.hidden = done;
+ }
+
+ function setErr(key, msg) {
+   const el = form.querySelector('[data-err="' + key + '"]');
+   if (el) el.textContent = msg || "";
+ }
+
+ function validate() {
+   let ok = true, firstBad = null;
+
+   visible().forEach(section => {
+     section.querySelectorAll("[data-req]").forEach(f => {
+       const key = f.id || f.name;
+       let bad = "";
+       if (f.type === "checkbox") {
+         if (!f.checked) bad = "Please check this to continue.";
+       } else if (!f.value.trim()) {
+         bad = "This one's required.";
+       } else if (f.hasAttribute("data-email") && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(f.value.trim())) {
+         bad = "Check the email address — it looks incomplete.";
+       }
+       f.setAttribute("aria-invalid", bad ? "true" : "false");
+       setErr(key, bad);
+       if (bad) { ok = false; firstBad = firstBad || f; }
+     });
+
+     section.querySelectorAll("[data-reqgroup]").forEach(g => {
+       const key = g.dataset.reqgroup;
+       const any = [...g.querySelectorAll("input")].some(i => i.checked);
+       setErr(key, any ? "" : "Select at least one.");
+       if (!any) { ok = false; firstBad = firstBad || g.querySelector("input"); }
+     });
+   });
+
+   if (firstBad) firstBad.focus();
+   return ok;
+ }
+
+ function payload() {
+   const data = { path: "church", submitted_at: new Date().toISOString(), source_url: location.href };
+   const q = new URLSearchParams(location.search);
+   ["utm_source","utm_medium","utm_campaign","utm_content","utm_term"].forEach(k => {
+     if (q.get(k)) data[k] = q.get(k);
+   });
+
+   form.querySelectorAll("input, select, textarea").forEach(f => {
+     if (!f.name || f.name === "path") return;
+     if (f.type === "checkbox") {
+       if (!f.checked) return;
+       if (f.name === "consent") { data.consent = true; return; }
+       (data[f.name] = data[f.name] || []).push(f.value);
+     } else if (f.value.trim()) {
+       data[f.name] = f.value.trim();
+     }
+   });
+   
+   Object.keys(data).forEach(k => { if (Array.isArray(data[k])) data[k] = data[k].join(", "); });
+   return data;
+ }
+
+ function mailtoHref(d) {
+   const body = Object.entries(d).map(([k, v]) => k.replace(/_/g, " ") + ": " + v).join("\n");
+   const subject = "Church Beta Sign-Up — " + (d.name || "New inquiry");
+   return "mailto:" + GG_CONFIG.fallbackEmail + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+ }
+
+ function showFail(d) {
+   fail.hidden = false;
+   fail.textContent = "That didn't send — nothing was saved. This usually means the page is running inside a preview or sandbox that blocks outside requests. Try again from the live page, or ";
+   const a = document.createElement("a");
+   a.href = mailtoHref(d);
+   a.textContent = "send it by email instead";
+   fail.appendChild(a);
+   fail.appendChild(document.createTextNode("."));
+   fail.scrollIntoView({ behavior: "smooth", block: "center" });
+ }
+
+ async function postReadable(url, d) {
+   try {
+     const r = await fetch(url, {
+       method: "POST",
+       headers: { "Content-Type": "text/plain;charset=utf-8" },
+       body: JSON.stringify(d),
+       redirect: "follow"
+     });
+     const j = await r.json().catch(() => null);
+     return r.ok && (!j || j.ok !== false);
+   } catch (e) {
+     return false;
+   }
+ }
+
+ function postViaForm(url, d) {
+   return new Promise(resolve => {
+     const sink = document.getElementById("ggSink");
+     const f = document.createElement("form");
+     f.method = "POST"; f.action = url; f.target = "gg_sink"; f.style.display = "none";
+     Object.entries(d).forEach(([k, v]) => {
+       const i = document.createElement("input");
+       i.type = "hidden"; i.name = k; i.value = String(v);
+       f.appendChild(i);
+     });
+     document.body.appendChild(f);
+
+     let settled = false;
+     const finish = ok => {
+       if (settled) return;
+       settled = true;
+       f.remove();
+       resolve(ok);
+     };
+     sink.addEventListener("load", () => finish(true), { once: true });
+     setTimeout(() => finish(true), 4000);
+     try { f.submit(); } catch (e) { finish(false); }
+   });
+ }
+
+ async function submit() {
+   if (form.querySelector(".gg-hp").value) return; 
+   const d = payload();
+   fail.hidden = true;
+   next.disabled = true;
+   next.textContent = "Sending…";
+
+   let delivered = false;
+   if (GG_CONFIG.sheetUrl) {
+     delivered = await postReadable(GG_CONFIG.sheetUrl, d);
+     if (!delivered) delivered = await postViaForm(GG_CONFIG.sheetUrl, d);
+   }
+
+   next.disabled = false;
+   next.textContent = "Send it over";
+
+   if (!delivered) { showFail(d); return; }
+
+   doneMsg.innerHTML = "We'll follow up at <strong>" + (d.email || "your email") + "</strong> within two business days with next steps for onboarding <strong>" + (d.church_name || "your church") + "</strong>.";
+
+   step = "done";
+   render();
+   document.getElementById("gg").scrollIntoView({ behavior: "smooth", block: "start" });
+
+   if (GG_CONFIG.redirectUrl) setTimeout(() => { location.href = GG_CONFIG.redirectUrl; }, 2500);
+ }
+
+ next.addEventListener("click", () => {
+   if (!validate()) return;
+   if (step === 2) { submit(); return; }
+   step++;
+   render();
+   const h = form.querySelector(".gg-step:not([hidden]) .gg-q");
+   if (h) { h.setAttribute("tabindex", "-1"); h.focus({ preventScroll: true }); }
+   document.getElementById("gg").scrollIntoView({ behavior: "smooth", block: "start" });
+ });
+
+ back.addEventListener("click", () => { 
+   if (step > 1) { 
+     step--; 
+     fail.hidden = true; 
+     render(); 
+   } 
+ });
+
+ form.addEventListener("submit", e => e.preventDefault());
+ form.addEventListener("keydown", e => {
+   if (e.key === "Enter" && e.target.tagName !== "TEXTAREA") { e.preventDefault(); next.click(); }
+ });
+
+ render();
+})();
+</script>
+
+</body>
+</html>
