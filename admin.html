@@ -1,266 +1,929 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-<title>Campaigns | Good Graces Admin</title>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Console | Good Graces</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-
-<script src="https://cdn.tailwindcss.com"></script>
-
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
-*{ margin:0; padding:0; box-sizing:border-box; }
-body{ font-family:'Inter',sans-serif; background:#f6f3ee; color:#111111; overflow-x:hidden; }
-::selection{ background:#111; color:white; }
-
-.hero-gradient{
-  background:
-  radial-gradient(circle at top left, rgba(255,255,255,.7), transparent 35%),
-  radial-gradient(circle at bottom right, rgba(210,194,174,.45), transparent 35%),
-  linear-gradient(to bottom, #f7f4ef, #ece5dc);
+*{margin:0;padding:0;box-sizing:border-box}
+[hidden]{display:none !important}   /* must outrank #login{display:flex} and .btn{display:inline-flex} */
+:root{
+  --ink:#111110; --ink-2:#4A4642; --ink-3:#928A82;
+  --line:rgba(17,17,16,.10); --ember:#FF6B52; --ok:#2E7D52;
+  --sans:"Archivo",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --serif:"Instrument Serif",Georgia,serif;
+  --ease:cubic-bezier(.22,.61,.36,1);
 }
-
-.grid-lines{
-  background-image:
-  linear-gradient(rgba(0,0,0,.04) 1px, transparent 1px),
-  linear-gradient(90deg, rgba(0,0,0,.04) 1px, transparent 1px);
+body{
+  font-family:var(--sans); color:var(--ink); min-height:100vh;
+  background:
+    radial-gradient(circle at top left, rgba(255,255,255,.7), transparent 35%),
+    radial-gradient(circle at bottom right, rgba(210,194,174,.45), transparent 35%),
+    linear-gradient(to bottom,#f7f4ef,#ece5dc);
+  background-attachment:fixed;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;opacity:.4;
+  background-image:linear-gradient(rgba(0,0,0,.04) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(0,0,0,.04) 1px,transparent 1px);
   background-size:60px 60px;
 }
+::selection{background:#111;color:#fff}
 
-.soft-card{
-  background:white; border:1px solid rgba(0,0,0,.06);
-  border-radius:30px; box-shadow:0 15px 40px rgba(0,0,0,.05);
+.soft-card{background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:30px;box-shadow:0 15px 40px rgba(0,0,0,.05)}
+.lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);display:block;margin-bottom:8px}
+.inp{
+  font-family:var(--sans);font-size:15px;color:var(--ink);width:100%;
+  background:rgba(255,255,255,.72);border:1px solid var(--line);border-radius:14px;
+  padding:14px 16px;transition:all .2s var(--ease);
 }
+.inp:focus{outline:none;background:#fff;border-color:var(--ink);box-shadow:0 0 0 3px rgba(17,17,16,.07)}
+textarea.inp{resize:vertical;min-height:84px;line-height:1.55}
+select.inp{appearance:none;-webkit-appearance:none;cursor:pointer}
+.selwrap{position:relative}
+.selwrap::after{content:"";position:absolute;right:18px;top:50%;pointer-events:none;width:7px;height:7px;
+  border-right:1.5px solid var(--ink-3);border-bottom:1.5px solid var(--ink-3);transform:translateY(-70%) rotate(45deg)}
+.hint{font-family:var(--mono);font-size:10px;letter-spacing:.05em;color:var(--ink-3);margin-top:7px;line-height:1.5}
 
-.gg-input {
- font-family: "Archivo", sans-serif; font-size: 15px; color: #111110;
- background: rgba(255,255,255,.72); border: 1px solid rgba(17,17,16,.10);
- border-radius: 14px; padding: 14px 16px; width: 100%; transition: all .2s ease;
-}
-.gg-input:focus {
- outline: none; background: #fff; border-color: #111110;
- box-shadow: 0 0 0 3px rgba(17,17,16,.07);
-}
+.btn{font-family:var(--sans);font-size:15px;font-weight:600;padding:15px 26px;border-radius:999px;
+  border:1px solid transparent;cursor:pointer;transition:transform .2s var(--ease),opacity .2s var(--ease);
+  display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn:hover:not(:disabled){transform:translateY(-2px)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn.dark{background:var(--ink);color:#fff}
+.btn.ember{background:var(--ember);color:#111}
+.btn.ghost{background:rgba(255,255,255,.8);color:var(--ink);border-color:var(--line)}
+.btn.w{width:100%}
+.btn.sm{padding:11px 18px;font-size:13.5px}
 
-.gg-label {
- font-family: "IBM Plex Mono", monospace; font-size: 10.5px; 
- letter-spacing: .12em; text-transform: uppercase; color: #928A82;
- display: block; margin-bottom: 8px;
-}
+.wrap{position:relative;z-index:10;max-width:1400px;margin:0 auto;padding:28px 24px 80px}
 
-.fade-in { animation: fadeIn 0.4s cubic-bezier(.22,.61,.36,1) forwards; }
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+/* login */
+#login{position:relative;z-index:10;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+#login .head{text-align:center;margin-bottom:36px}
+#login .head .k{font-family:var(--serif);font-style:italic;font-size:26px;color:var(--ink-3);line-height:1}
+#login .head h1{font-size:38px;font-weight:800;letter-spacing:-.04em;line-height:1}
+.err{color:#D33A1F;font-size:13.5px;font-weight:500;margin-top:4px}
 
-#dashboard-view { display: none; }
+/* header */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:26px;
+  background:rgba(255,255,255,.6);border:1px solid var(--line);border-radius:999px;padding:14px 26px;
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.topbar .l{display:flex;align-items:center;gap:14px}
+.topbar .nm{font-weight:700;letter-spacing:-.03em;font-size:17px}
+.topbar .div{color:rgba(0,0,0,.22)}
+.topbar .sub{font-size:14px;color:var(--ink-2)}
+.topbar .r{display:flex;align-items:center;gap:20px;font-size:13.5px}
+.topbar button{background:none;border:0;font-family:var(--sans);font-size:13.5px;font-weight:500;color:var(--ink-3);cursor:pointer}
+.topbar button:hover{color:var(--ink)}
+
+.cols{display:grid;grid-template-columns:minmax(0,440px) minmax(0,1fr);gap:24px;align-items:start}
+@media(max-width:1080px){.cols{grid-template-columns:1fr}}
+.pad{padding:30px}
+
+/* template picker */
+.tpl{display:flex;flex-direction:column;gap:10px;margin-bottom:26px}
+.tpl button{
+  text-align:left;background:rgba(255,255,255,.6);border:1px solid var(--line);border-radius:20px;
+  padding:16px 18px;cursor:pointer;font-family:var(--sans);transition:all .22s var(--ease);
+}
+.tpl button:hover{border-color:rgba(17,17,16,.2);transform:translateY(-2px)}
+.tpl button[data-on="1"]{background:var(--ink);border-color:var(--ink)}
+.tpl .t{font-size:16px;font-weight:700;letter-spacing:-.02em;display:block}
+.tpl .d{font-size:13px;color:var(--ink-3);margin-top:3px;display:block;line-height:1.45}
+.tpl button[data-on="1"] .t{color:#fff}
+.tpl button[data-on="1"] .d{color:rgba(255,255,255,.6)}
+
+.rule{height:1px;background:var(--line);margin:24px 0}
+.fields > div{margin-bottom:18px}
+
+/* status */
+.status{margin-top:16px;padding:14px 16px;border-radius:14px;font-size:13.5px;line-height:1.5}
+.status[hidden]{display:none}
+.status.good{background:rgba(46,125,82,.08);border:1px solid rgba(46,125,82,.3);color:#1E5537}
+.status.bad{background:rgba(211,58,31,.07);border:1px solid rgba(211,58,31,.28);color:#8C2915}
+.status code{font-family:var(--mono);font-size:12px}
+
+/* preview */
+.pvhead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:24px 28px 0}
+.seg{display:flex;gap:4px;background:rgba(17,17,16,.05);border-radius:999px;padding:4px}
+.seg button{font-family:var(--sans);font-size:12.5px;font-weight:600;color:var(--ink-3);background:none;
+  border:0;border-radius:999px;padding:7px 15px;cursor:pointer;transition:.2s var(--ease)}
+.seg button[data-on="1"]{background:var(--ink);color:#fff}
+.env{padding:18px 28px 0}
+.envrow{display:flex;gap:10px;font-size:13.5px;line-height:1.6;padding:6px 0;border-bottom:1px solid var(--line)}
+.envrow .k{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);width:70px;flex:0 0 70px;padding-top:4px}
+.envrow .v{min-width:0;word-break:break-word}
+.envrow .v.e{color:var(--ink-3);font-style:italic}
+.frame-wrap{padding:22px 28px 28px;display:flex;justify-content:center}
+#frame{width:100%;max-width:620px;height:720px;border:1px solid var(--line);border-radius:20px;background:#fff;transition:max-width .3s var(--ease)}
+#frame.mob{max-width:390px}
+
+#toast{position:fixed;left:50%;bottom:30px;transform:translate(-50%,20px);background:var(--ink);color:#fff;
+  font-size:14px;font-weight:500;padding:14px 24px;border-radius:999px;opacity:0;pointer-events:none;
+  transition:.25s var(--ease);z-index:150;box-shadow:0 18px 40px -14px rgba(0,0,0,.5)}
+#toast[data-on="1"]{opacity:1;transform:translate(-50%,0)}
+.copybox{position:fixed;left:-9999px;top:0;width:600px}
 </style>
 </head>
+<body>
 
-<body class="min-h-screen hero-gradient relative">
+<!-- ══════ LOGIN ══════ -->
+<div id="login">
+  <div class="head">
+    <p class="k">Good Graces</p>
+    <h1>Console</h1>
+    <p id="buildLogin" style="font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-top:10px"></p>
+  </div>
+  <div class="soft-card" style="width:100%;max-width:420px;padding:38px">
+    <form id="loginForm" novalidate>
+      <div style="margin-bottom:20px">
+        <label class="lbl" for="lgWho">Who's sending</label>
+        <div class="selwrap">
+          <select id="lgWho" class="inp">
+            <option value="avelino">Avelino &mdash; avelino@goodgraces.app</option>
+            <option value="nora">Nora &mdash; nora@goodgraces.app</option>
+          </select>
+        </div>
+        <p class="hint">Sets the signature, the sign-off name, and the From line on the draft.</p>
+      </div>
+      <div style="margin-bottom:22px">
+        <label class="lbl" for="lgKey">Passcode</label>
+        <input type="password" id="lgKey" class="inp" placeholder="••••••••" autocomplete="off">
+      </div>
+      <div style="margin-bottom:22px" id="lgKeyWrap" hidden>
+        <label class="lbl" for="lgSecret">Send key</label>
+        <input type="password" id="lgSecret" class="inp" placeholder="SHARED_SECRET" autocomplete="off">
+        <p class="hint">From your Apps Script. Kept in memory for this session only.</p>
+      </div>
+      <p id="lgErr" class="err" hidden></p>
+      <button type="submit" class="btn dark w" style="margin-top:6px">Open console</button>
+    </form>
+  </div>
+</div>
 
-  <div class="absolute inset-0 grid-lines opacity-40 pointer-events-none"></div>
+<!-- ══════ CONSOLE ══════ -->
+<div class="wrap" id="app" hidden>
 
-  <!-- LOGIN VIEW -->
-  <main id="login-view" class="relative z-10 flex flex-col items-center justify-center min-h-screen px-6 py-20">
-    <div class="mb-10 text-center">
-        <h1 class="text-3xl font-extrabold tracking-tight mb-2">Console</h1>
-        <p class="text-black/60">Good Graces Marketing Operations</p>
+  <div class="topbar">
+    <div class="l">
+      <span class="nm">Good Graces</span>
+      <span class="div">|</span>
+      <span class="sub">Campaign Manager</span>
     </div>
-    <div class="soft-card w-full max-w-md p-10 fade-in">
-        <form id="loginForm" class="space-y-6" novalidate>
-            <div>
-                <label for="email" class="gg-label">Email Address</label>
-                <input type="email" id="email" class="gg-input" placeholder="name@goodgraces.app" required>
-            </div>
-            <p id="loginError" class="text-red-500 text-sm hidden font-medium">Invalid credentials. Use avelino@ or nora@.</p>
-            <button type="submit" class="w-full px-8 py-4 bg-black text-white rounded-full font-medium hover:scale-[1.02] transition-transform">
-                Access System
-            </button>
-        </form>
+    <div class="r">
+      <span style="font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)" id="buildTop"></span>
+      <span style="color:var(--ink-3)" id="who">—</span>
+      <button id="btnOut">Sign out</button>
     </div>
-  </main>
+  </div>
 
-  <!-- DASHBOARD VIEW -->
-  <main id="dashboard-view" class="relative z-10 min-h-screen px-6 py-12">
-      <div class="max-w-6xl mx-auto">
-          
-        <!-- Header -->
-        <header class="flex items-center justify-between mb-10">
-            <div class="flex items-center gap-4">
-                <span class="font-bold tracking-tight text-xl">Good Graces</span>
-                <span class="text-black/30">|</span>
-                <span class="font-medium text-black/60">Campaign Manager</span>
-            </div>
-            <div class="flex items-center gap-6 text-sm font-medium">
-                <span id="userGreeting" class="text-black/60"></span>
-                <button id="logoutBtn" class="hover:text-black transition">Sign Out</button>
-            </div>
-        </header>
+  <div class="cols">
 
-        <!-- Workspace -->
-        <div class="grid lg:grid-cols-12 gap-8">
-            
-            <!-- Left: CRM Inputs -->
-            <div class="lg:col-span-5 space-y-6 fade-in">
-                <div class="soft-card p-8">
-                    <div class="mb-8">
-                        <span class="gg-label">Active Template</span>
-                        <h2 class="text-2xl font-bold tracking-tight">Beta Cohort Outreach</h2>
-                        <p class="text-sm text-black/60 mt-1">Sending from: <span id="fromAddress" class="font-medium text-black"></span></p>
-                    </div>
-                    
-                    <form id="crmForm" class="space-y-5">
-                        <div>
-                            <label for="toEmail" class="gg-label">Destination Email</label>
-                            <input type="email" id="toEmail" class="gg-input" placeholder="hello@church.com" required>
-                        </div>
-                        <div>
-                            <label for="pastorName" class="gg-label">Pastor Last Name</label>
-                            <input type="text" id="pastorName" class="gg-input" placeholder="e.g. Smith" required>
-                        </div>
-                        <div>
-                            <label for="churchName" class="gg-label">Church Name</label>
-                            <input type="text" id="churchName" class="gg-input" placeholder="e.g. Grace Fellowship" required>
-                        </div>
+    <!-- LEFT -->
+    <div class="soft-card pad">
+      <span class="lbl">Choose a message</span>
+      <div class="tpl" id="tplList"></div>
 
-                        <div class="pt-6 border-t border-black/10 mt-6">
-                            <button type="button" id="sendEmailBtn" class="w-full px-8 py-4 bg-[#FF6B52] text-white rounded-full font-bold hover:scale-[1.02] transition-transform">
-                                Deploy HTML Email
-                            </button>
-                            <p id="statusMsg" class="text-center text-sm font-medium mt-4 hidden"></p>
-                        </div>
-                    </form>
-                </div>
-            </div>
+      <div class="rule"></div>
 
-            <!-- Right: Template Reference -->
-            <div class="lg:col-span-7 fade-in" style="animation-delay: 0.1s;">
-                <div class="soft-card p-8 h-full bg-white/50 backdrop-blur-sm">
-                    <div class="flex items-center justify-between mb-6">
-                        <span class="gg-label !mb-0">Template Structure Reference</span>
-                        <span class="text-xs font-medium px-3 py-1 bg-black/5 rounded-full">Auto-injects HTML</span>
-                    </div>
-                    
-                    <!-- Visual indicator of the template being used -->
-                    <div class="border border-black/10 rounded-2xl p-6 bg-white space-y-4 text-sm text-black/70 font-sans">
-                        <p><strong>Subject:</strong> Building Good Graces alongside [Church Name]</p>
-                        <hr class="border-black/5">
-                        <p>Pastor [Last Name],</p>
-                        <p>My name is [Your Name]. I'm building an app called Good Graces, here in San Diego. We're in beta right now, and we're bringing on five local churches to build it alongside us before we open it to anyone else. I'd like <strong>[Church Name]</strong> to be one of them.</p>
-                        <p class="italic text-black/40">...[Middle HTML sections auto-generated]...</p>
-                        <p>[Your Name] <br> Founder, Good Graces &middot; [Your Email]</p>
-                    </div>
-                </div>
-            </div>
+      <span class="lbl">Recipient</span>
+      <div style="margin-bottom:18px">
+        <input type="email" id="fTo" class="inp" placeholder="pastor@church.org" autocomplete="off" spellcheck="false">
+      </div>
 
+      <div class="fields" id="fields"></div>
+
+      <div style="margin-bottom:18px">
+        <label class="lbl" for="fSubj">Subject line</label>
+        <div class="selwrap"><select id="fSubj" class="inp"></select></div>
+      </div>
+      <div id="subjCustomWrap" hidden style="margin-bottom:18px">
+        <label class="lbl" for="fSubjCustom">Custom subject</label>
+        <input type="text" id="fSubjCustom" class="inp" placeholder="Type it out">
+      </div>
+
+      <div class="rule"></div>
+
+      <button class="btn ember w" id="btnEml" disabled>Create draft &nbsp;&rarr;</button>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+        <button class="btn ghost sm" id="btnRich" disabled>Copy for Gmail</button>
+        <button class="btn ghost sm" id="btnCopy" disabled>Copy HTML</button>
+      </div>
+      <button class="btn dark w" id="btnSend" disabled hidden style="margin-top:10px">Send directly</button>
+      <button type="button" id="btnTest" hidden style="background:none;border:0;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);cursor:pointer;margin-top:14px;width:100%;">Test mailer connection</button>
+
+      <div class="status" id="status" hidden></div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="soft-card">
+      <div class="pvhead">
+        <span class="lbl" style="margin:0">Live preview</span>
+        <div class="seg">
+          <button id="segD" data-on="1">Desktop</button>
+          <button id="segM" data-on="0">Mobile</button>
         </div>
       </div>
-  </main>
+      <div class="env">
+        <div class="envrow"><span class="k">To</span><span class="v e" id="envTo">—</span></div>
+        <div class="envrow"><span class="k">From</span><span class="v" id="envFrom">—</span></div>
+        <div class="envrow"><span class="k">Subject</span><span class="v e" id="envSubj">—</span></div>
+      </div>
+      <div class="frame-wrap"><iframe id="frame" title="Preview"></iframe></div>
+    </div>
+
+  </div>
+</div>
+
+<iframe name="gg_sink" id="ggSink" style="display:none;width:0;height:0;border:0" title="sink" aria-hidden="true"></iframe>
+<div id="toast"></div>
+<div class="copybox" id="copybox" contenteditable="true" aria-hidden="true"></div>
 
 <script>
-    const admins = {
-        "avelino@goodgraces.app": { name: "Avelino", email: "avelino@goodgraces.app" },
-        "nora@goodgraces.app": { name: "Nora", email: "nora@goodgraces.app" }
-    };
+/* ══════════════════════════════════════════════════════════
+   CONFIG — set this to your Apps Script /exec URL
+   ══════════════════════════════════════════════════════════ */
+const BUILD = "b9 \u00b7 24 Jul";   // bump me when you edit; shown on screen
+const PAGE_PASSCODE = "graces";        // page gate only. Not security.
 
-    let currentUser = null;
+const PEOPLE = {
+  "avelino": {
+    name: "Avelino Cortina IV", first: "Avelino",
+    email: "avelino@goodgraces.app", title: "Founder",
+    api: "https://script.google.com/macros/s/AKfycbwZP7PYdPF_JNEKDS4spipRtRHZGQaJ2lLlWSgwjziPQDfFCE4yTeeOOsJZIGEIcxJC/exec"
+  },
+  "nora": {
+    name: "Nora", first: "Nora",
+    email: "nora@goodgraces.app", title: "Co-founder",
+    api: ""   // <- paste Nora's own /exec URL here (separate deployment)
+  }
+};
 
-    const loginView = document.getElementById('login-view');
-    const dashboardView = document.getElementById('dashboard-view');
-    const loginForm = document.getElementById('loginForm');
-    const loginError = document.getElementById('loginError');
-    const emailInput = document.getElementById('email');
-    
-    const userGreeting = document.getElementById('userGreeting');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const fromAddress = document.getElementById('fromAddress');
-    
-    const sendEmailBtn = document.getElementById('sendEmailBtn');
-    const statusMsg = document.getElementById('statusMsg');
+/* Direct send is OFF. Drafts open in your own mail app, from your own
+   address — no backend, no key, no quota, and it works for both of you.
+   Only flip this on if you want the console to fire mail itself; it then
+   needs gg-mailer.gs deployed under EACH sender's Google account, with
+   that person's /exec URL in their PEOPLE entry as `api`. */
+const ENABLE_DIRECT_SEND = true;
 
-    // --- Authentication ---
-    loginForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const email = emailInput.value.trim().toLowerCase();
-        
-        if (admins[email]) {
-            currentUser = admins[email];
-            loginError.classList.add('hidden');
-            loginView.style.display = 'none';
-            dashboardView.style.display = 'block';
-            
-            userGreeting.textContent = currentUser.name;
-            fromAddress.textContent = currentUser.email;
-        } else {
-            loginError.classList.remove('hidden');
-        }
+/* Templates are base64-packed on purpose. Raw email HTML inside a
+   an inline script block is fragile: one stray closing tag, or an
+   editor reformatting the file, silently ends the script and the browser
+   renders the rest of the page as markup. Encoded, that cannot happen. */
+const TEMPLATES_B64 =
+  "W3siaWQiOiAiYmV0YS1vdXRyZWFjaCIsICJuYW1lIjogIkJldGEgQ29ob3J0IE91dHJlYWNoIiwgImRlc2MiOiAiVGhlIGZ1bGwgcGl0Y2gs" +
+  "IHdpdGggbW9ja3Vwcy4gRmlyc3QgdG91Y2guIiwgInN1YmplY3RzIjogWyJIb3cge3tjaHVyY2h9fSBzdGF5cyBjb25uZWN0ZWQgYmV0d2Vl" +
+  "biBTdW5kYXlzIiwgIkZpdmUgU2FuIERpZWdvIGNodXJjaGVzIOKAlCBpcyB7e2NodXJjaH19IG9uZT8iLCAiQnVpbGRpbmcgc29tZXRoaW5n" +
+  "IGZvciBjaHVyY2hlcyBsaWtlIHt7Y2h1cmNofX0iLCAiQSBxdWljayBxdWVzdGlvbiwgUGFzdG9yIHt7bGFzdH19Il0sICJmaWVsZHMiOiBb" +
+  "eyJrZXkiOiAibGFzdCIsICJsYWJlbCI6ICJQYXN0b3IncyBsYXN0IG5hbWUiLCAicGxhY2Vob2xkZXIiOiAiV2hpdGZpZWxkIiwgInJlcXVp" +
+  "cmVkIjogdHJ1ZSwgImhpbnQiOiAiUmVuZGVycyBhcyDigJxQYXN0b3IgV2hpdGZpZWxkLOKAnSJ9LCB7ImtleSI6ICJjaHVyY2giLCAibGFi" +
+  "ZWwiOiAiQ2h1cmNoIG5hbWUiLCAicGxhY2Vob2xkZXIiOiAiQ2FueW9uIFJpZGdlIENodXJjaCIsICJyZXF1aXJlZCI6IHRydWV9LCB7Imtl" +
+  "eSI6ICJub3RlIiwgImxhYmVsIjogIk9wZW5pbmcgbGluZSIsICJwbGFjZWhvbGRlciI6ICJJIGRyb3ZlIHBhc3QgeW91ciBidWlsZGluZyBv" +
+  "biBBZGFtcyBmb3IgYSB5ZWFyIGJlZm9yZSBJIGxvb2tlZCB5b3UgdXAuIiwgInR5cGUiOiAidGV4dGFyZWEiLCAicmVxdWlyZWQiOiBmYWxz" +
+  "ZSwgImJsb2NrIjogIjxwIGNsYXNzPVwiYm9keS1tXCIgc3R5bGU9XCJtYXJnaW46MCAwIDIwcHggMDsgY29sb3I6IzRFNEU0QTsgZm9udC1z" +
+  "aXplOjE2cHg7IGxpbmUtaGVpZ2h0OjEuNzI7XCI+e3tjb250ZW50fX08L3A+IiwgImhpbnQiOiAiU2l0cyBhYm92ZSB0aGUgaW50cm8uIE9u" +
+  "ZSBzcGVjaWZpYywgdHJ1ZSBzZW50ZW5jZSBvdXRwZXJmb3JtcyBhbnkgc3ViamVjdCBsaW5lLiJ9XSwgImh0bWwiOiAiPCFET0NUWVBFIGh0" +
+  "bWw+XG48aHRtbCBsYW5nPVwiZW5cIiB4bWxucz1cImh0dHA6Ly93d3cudzMub3JnLzE5OTkveGh0bWxcIiB4bWxuczp2PVwidXJuOnNjaGVt" +
+  "YXMtbWljcm9zb2Z0LWNvbTp2bWxcIiB4bWxuczpvPVwidXJuOnNjaGVtYXMtbWljcm9zb2Z0LWNvbTpvZmZpY2U6b2ZmaWNlXCI+XG48aGVh" +
+  "ZD5cbiAgPG1ldGEgY2hhcnNldD1cInV0Zi04XCI+XG4gIDxtZXRhIG5hbWU9XCJ2aWV3cG9ydFwiIGNvbnRlbnQ9XCJ3aWR0aD1kZXZpY2Ut" +
+  "d2lkdGhcIj5cbiAgPG1ldGEgaHR0cC1lcXVpdj1cIlgtVUEtQ29tcGF0aWJsZVwiIGNvbnRlbnQ9XCJJRT1lZGdlXCI+XG4gIDxtZXRhIG5h" +
+  "bWU9XCJ4LWFwcGxlLWRpc2FibGUtbWVzc2FnZS1yZWZvcm1hdHRpbmdcIj5cbiAgPHRpdGxlPkdvb2RHcmFjZXMg4oCUIEJldGEgQ29ob3J0" +
+  "PC90aXRsZT5cbiAgPHN0eWxlPlxuICAgIGh0bWwsIGJvZHkge1xuICAgICAgbWFyZ2luOiAwIGF1dG8gIWltcG9ydGFudDtcbiAgICAgIHBh" +
+  "ZGRpbmc6IDAgIWltcG9ydGFudDtcbiAgICAgIGhlaWdodDogMTAwJSAhaW1wb3J0YW50O1xuICAgICAgd2lkdGg6IDEwMCUgIWltcG9ydGFu" +
+  "dDtcbiAgICAgIGJhY2tncm91bmQtY29sb3I6ICNFREVDRUE7XG4gICAgfVxuICAgICogeyAtbXMtdGV4dC1zaXplLWFkanVzdDogMTAwJTsg" +
+  "LXdlYmtpdC10ZXh0LXNpemUtYWRqdXN0OiAxMDAlOyB9XG4gICAgdGFibGUsIHRkIHsgbXNvLXRhYmxlLWxzcGFjZTogMHB0ICFpbXBvcnRh" +
+  "bnQ7IG1zby10YWJsZS1yc3BhY2U6IDBwdCAhaW1wb3J0YW50OyB9XG4gICAgdGFibGUgeyBib3JkZXItc3BhY2luZzogMCAhaW1wb3J0YW50" +
+  "OyBib3JkZXItY29sbGFwc2U6IGNvbGxhcHNlICFpbXBvcnRhbnQ7IHRhYmxlLWxheW91dDogZml4ZWQgIWltcG9ydGFudDsgbWFyZ2luOiAw" +
+  "IGF1dG8gIWltcG9ydGFudDsgfVxuICAgIGltZyB7IC1tcy1pbnRlcnBvbGF0aW9uLW1vZGU6IGJpY3ViaWM7IGJvcmRlcjogMDsgaGVpZ2h0" +
+  "OiBhdXRvOyBsaW5lLWhlaWdodDogMTAwJTsgb3V0bGluZTogbm9uZTsgdGV4dC1kZWNvcmF0aW9uOiBub25lOyBkaXNwbGF5OiBibG9jazsg" +
+  "fVxuICAgIGEgeyB0ZXh0LWRlY29yYXRpb246IG5vbmU7IH1cblxuICAgIEBtZWRpYSBzY3JlZW4gYW5kIChtYXgtd2lkdGg6IDYwMHB4KSB7" +
+  "XG4gICAgICAuZW1haWwtY29udGFpbmVyIHsgd2lkdGg6IDEwMCUgIWltcG9ydGFudDsgbWFyZ2luOiBhdXRvICFpbXBvcnRhbnQ7IH1cbiAg" +
+  "ICAgIC5ndXQgeyBwYWRkaW5nLWxlZnQ6IDE2cHggIWltcG9ydGFudDsgcGFkZGluZy1yaWdodDogMTZweCAhaW1wb3J0YW50OyB9XG4gICAg" +
+  "ICAucGFkIHsgcGFkZGluZy1sZWZ0OiAyNHB4ICFpbXBvcnRhbnQ7IHBhZGRpbmctcmlnaHQ6IDI0cHggIWltcG9ydGFudDsgfVxuICAgICAg" +
+  "LmgxLW0geyBmb250LXNpemU6IDM1cHggIWltcG9ydGFudDsgbGluZS1oZWlnaHQ6IDEuMCAhaW1wb3J0YW50OyBsZXR0ZXItc3BhY2luZzog" +
+  "LTEuNXB4ICFpbXBvcnRhbnQ7IH1cbiAgICAgIC5oMi1tIHsgZm9udC1zaXplOiAyNXB4ICFpbXBvcnRhbnQ7IGxpbmUtaGVpZ2h0OiAxLjA4" +
+  "ICFpbXBvcnRhbnQ7IH1cbiAgICAgIC5wdWxsLW0geyBmb250LXNpemU6IDIycHggIWltcG9ydGFudDsgbGluZS1oZWlnaHQ6IDEuMyAhaW1w" +
+  "b3J0YW50OyB9XG4gICAgICAuYm9keS1tIHsgZm9udC1zaXplOiAxNnB4ICFpbXBvcnRhbnQ7IH1cbiAgICB9XG4gIDwvc3R5bGU+XG48L2hl" +
+  "YWQ+XG48Ym9keSB3aWR0aD1cIjEwMCVcIiBzdHlsZT1cIm1hcmdpbjowOyBwYWRkaW5nOjAgIWltcG9ydGFudDsgbXNvLWxpbmUtaGVpZ2h0" +
+  "LXJ1bGU6ZXhhY3RseTsgYmFja2dyb3VuZC1jb2xvcjojRURFQ0VBO1wiPlxuPGNlbnRlciBzdHlsZT1cIndpZHRoOjEwMCU7IGJhY2tncm91" +
+  "bmQtY29sb3I6I0VERUNFQTtcIj5cblxuICA8IS0tIFByZWhlYWRlciAtLT5cbiAgPGRpdiBzdHlsZT1cImRpc3BsYXk6bm9uZTsgZm9udC1z" +
+  "aXplOjFweDsgbGluZS1oZWlnaHQ6MXB4OyBtYXgtaGVpZ2h0OjA7IG1heC13aWR0aDowOyBvcGFjaXR5OjA7IG92ZXJmbG93OmhpZGRlbjsg" +
+  "bXNvLWhpZGU6YWxsOyBmb250LWZhbWlseTpzYW5zLXNlcmlmO1wiPlxuICAgIFdlJ3JlIGluIGJldGEgYW5kIHRha2luZyBmaXZlIFNhbiBE" +
+  "aWVnbyBjaHVyY2hlcyBpbiB0byBidWlsZCBhbG9uZ3NpZGUgdXMuIFNwb3RzIGdvIGluIHRoZSBvcmRlciBwZW9wbGUgcmVwbHkuXG4gIDwv" +
+  "ZGl2PlxuXG4gIDx0YWJsZSBhbGlnbj1cImNlbnRlclwiIHJvbGU9XCJwcmVzZW50YXRpb25cIiBjZWxsc3BhY2luZz1cIjBcIiBjZWxscGFk" +
+  "ZGluZz1cIjBcIiBib3JkZXI9XCIwXCIgd2lkdGg9XCI2MDBcIiBjbGFzcz1cImVtYWlsLWNvbnRhaW5lclwiIHN0eWxlPVwibWFyZ2luOmF1" +
+  "dG87IGJhY2tncm91bmQtY29sb3I6I0ZGRkZGRjtcIj5cblxuICAgIDwhLS0g4pWQ4pWQIEdMQVNTIFBJTEwgTkFWIOKVkOKVkCAtLT5cbiAg" +
+  "ICA8dHI+XG4gICAgICA8dGQgY2xhc3M9XCJndXRcIiBzdHlsZT1cInBhZGRpbmc6MjJweCAyNHB4IDAgMjRweDtcIj5cbiAgICAgICAgPHRh" +
+  "YmxlIHJvbGU9XCJwcmVzZW50YXRpb25cIiBjZWxsc3BhY2luZz1cIjBcIiBjZWxscGFkZGluZz1cIjBcIiBib3JkZXI9XCIwXCIgd2lkdGg9" +
+  "XCIxMDAlXCIgc3R5bGU9XCJiYWNrZ3JvdW5kLWNvbG9yOiNGRkZGRkY7IGJvcmRlcjoxcHggc29saWQgI0U2RTVFMjsgYm9yZGVyLXJhZGl1" +
+  "czoxMDBweDtcIj5cbiAgICAgICAgICA8dHI+XG4gICAgICAgICAgICA8dGQgc3R5bGU9XCJwYWRkaW5nOjE1cHggMjZweDsgZm9udC1mYW1p" +
+  "bHk6J0hlbHZldGljYSBOZXVlJyxIZWx2ZXRpY2EsQXJpYWwsc2Fucy1zZXJpZjtcIj5cbiAgICAgICAgICAgICAgPHRhYmxlIHJvbGU9XCJw" +
+  "cmVzZW50YXRpb25cIiBjZWxsc3BhY2luZz1cIjBcIiBjZWxscGFkZGluZz1cIjBcIiBib3JkZXI9XCIwXCIgd2lkdGg9XCIxMDAlXCI+XG4g" +
+  "ICAgICAgICAgICAgICAgPHRyPlxuICAgICAgICAgICAgICAgICAgPHRkIGFsaWduPVwibGVmdFwiIHN0eWxlPVwiZm9udC1zaXplOjE2cHg7" +
+  "IGZvbnQtd2VpZ2h0OjcwMDsgbGV0dGVyLXNwYWNpbmc6LTAuNXB4OyBjb2xvcjojMEEwQTBBO1wiPkdvb2RHcmFjZXM8L3RkPlxuICAgICAg" +
+  "ICAgICAgICAgICAgPHRkIGFsaWduPVwicmlnaHRcIiBzdHlsZT1cImZvbnQtc2l6ZToxMHB4OyBmb250LXdlaWdodDo3MDA7IGxldHRlci1z" +
+  "cGFjaW5nOjEuOHB4OyB0ZXh0LXRyYW5zZm9ybTp1cHBlcmNhc2U7IGNvbG9yOiM4QzhDODg7XCI+PHNwYW4gc3R5bGU9XCJjb2xvcjojRkY2" +
+  "QjUyO1wiPiZidWxsOzwvc3Bhbj4mbmJzcDsgQmV0YSAmbWlkZG90OyBTYW4gRGllZ288L3RkPlxuICAgICAgICAgICAgICAgIDwvdHI+XG4g" +
+  "ICAgICAgICAgICAgIDwvdGFibGU+XG4gICAgICAgICAgICA8L3RkPlxuICAgICAgICAgIDwvdHI+XG4gICAgICAgIDwvdGFibGU+XG4gICAg" +
+  "ICA8L3RkPlxuICAgIDwvdHI+XG5cbiAgICA8IS0tIOKVkOKVkCBIRVJPIOKVkOKVkCAtLT5cbiAgICA8dHI+XG4gICAgICA8dGQgY2xhc3M9" +
+  "XCJwYWRcIiBzdHlsZT1cInBhZGRpbmc6NTJweCA0NHB4IDAgNDRweDsgdGV4dC1hbGlnbjpsZWZ0OyBmb250LWZhbWlseTonSGVsdmV0aWNh" +
+  "IE5ldWUnLEhlbHZldGljYSxBcmlhbCxzYW5zLXNlcmlmO1wiPlxuICAgICAgICA8aDEgY2xhc3M9XCJoMS1tXCIgc3R5bGU9XCJtYXJnaW46" +
+  "MDsgZm9udC1zaXplOjQ3cHg7IGxpbmUtaGVpZ2h0OjEuMDsgZm9udC13ZWlnaHQ6ODAwOyBjb2xvcjojMEEwQTBBOyBsZXR0ZXItc3BhY2lu" +
+  "ZzotMi4xcHg7XCI+XG4gICAgICAgICAgWW91ciBXaG9sZSBDaHVyY2g8YnI+PHNwYW4gc3R5bGU9XCJjb2xvcjojRkY2QjUyO1wiPmluIE9u" +
+  "ZSBBcHAuPC9zcGFuPlxuICAgICAgICA8L2gxPlxuICAgICAgPC90ZD5cbiAgICA8L3RyPlxuXG4gICAgPHRyPlxuICAgICAgPHRkIGNsYXNz" +
+  "PVwicGFkXCIgc3R5bGU9XCJwYWRkaW5nOjIycHggNDRweCAwIDQ0cHg7IGZvbnQtZmFtaWx5OidIZWx2ZXRpY2EgTmV1ZScsSGVsdmV0aWNh" +
+  "LEFyaWFsLHNhbnMtc2VyaWY7XCI+XG4gICAgICAgIDxwIGNsYXNzPVwiYm9keS1tXCIgc3R5bGU9XCJtYXJnaW46MDsgY29sb3I6IzRFNEU0" +
+  "QTsgZm9udC1zaXplOjE3cHg7IGxpbmUtaGVpZ2h0OjEuNjI7XCI+XG4gICAgICAgICAgQW5ub3VuY2VtZW50cywgcHJheWVyLCB5b3VyIGNh" +
+  "bGVuZGFyLCBhbmQgZ2l2aW5nIOKAlCBwbHVzIGEgd2F5IGZvciBuZXcgcGVvcGxlIHRvIGFjdHVhbGx5IGZpbmQgeW91LlxuICAgICAgICA8" +
+  "L3A+XG4gICAgICA8L3RkPlxuICAgIDwvdHI+XG5cbiAgICA8IS0tIFRocmVlIG1vY2t1cHMsIG1pZGRsZSByYWlzZWQgLS0+XG4gICAgPHRy" +
+  "PlxuICAgICAgPHRkIGNsYXNzPVwiZ3V0XCIgc3R5bGU9XCJwYWRkaW5nOjM0cHggMjRweCAwIDI0cHg7IGZvbnQtc2l6ZTowOyBsaW5lLWhl" +
+  "aWdodDowO1wiPlxuICAgICAgICA8dGFibGUgcm9sZT1cInByZXNlbnRhdGlvblwiIGNlbGxzcGFjaW5nPVwiMFwiIGNlbGxwYWRkaW5nPVwi" +
+  "MFwiIGJvcmRlcj1cIjBcIiB3aWR0aD1cIjEwMCVcIiBzdHlsZT1cInRhYmxlLWxheW91dDpmaXhlZDtcIj5cbiAgICAgICAgICA8dHI+XG4g" +
+  "ICAgICAgICAgICA8dGQgd2lkdGg9XCIxODRcIiB2YWxpZ249XCJib3R0b21cIiBzdHlsZT1cIndpZHRoOjMzLjMzJTsgcGFkZGluZzoyMnB4" +
+  "IDVweCAwIDA7IGZvbnQtc2l6ZTowOyBsaW5lLWhlaWdodDowO1wiPlxuICAgICAgICAgICAgICA8aW1nIHNyYz1cImh0dHBzOi8vZ29vZGdy" +
+  "YWNlcy5hcHAvaW1nL25ldy1tb2NrdXBzLzIucG5nXCIgd2lkdGg9XCIxNzlcIiBhbHQ9XCJDb21tdW5pdHkgZmVlZFwiIHN0eWxlPVwid2lk" +
+  "dGg6MTAwJTsgbWF4LXdpZHRoOjE3OXB4OyBoZWlnaHQ6YXV0bzsgZGlzcGxheTpibG9jaztcIj5cbiAgICAgICAgICAgIDwvdGQ+XG4gICAg" +
+  "ICAgICAgICA8dGQgd2lkdGg9XCIxODRcIiB2YWxpZ249XCJib3R0b21cIiBzdHlsZT1cIndpZHRoOjMzLjMzJTsgcGFkZGluZzowIDVweCAw" +
+  "IDVweDsgZm9udC1zaXplOjA7IGxpbmUtaGVpZ2h0OjA7XCI+XG4gICAgICAgICAgICAgIDxpbWcgc3JjPVwiaHR0cHM6Ly9nb29kZ3JhY2Vz" +
+  "LmFwcC9pbWcvbmV3LW1vY2t1cHMvNS5wbmdcIiB3aWR0aD1cIjE3OVwiIGFsdD1cIkhvbWUgZGFzaGJvYXJkXCIgc3R5bGU9XCJ3aWR0aDox" +
+  "MDAlOyBtYXgtd2lkdGg6MTc5cHg7IGhlaWdodDphdXRvOyBkaXNwbGF5OmJsb2NrO1wiPlxuICAgICAgICAgICAgPC90ZD5cbiAgICAgICAg" +
+  "ICAgIDx0ZCB3aWR0aD1cIjE4NFwiIHZhbGlnbj1cImJvdHRvbVwiIHN0eWxlPVwid2lkdGg6MzMuMzMlOyBwYWRkaW5nOjIycHggMCAwIDVw" +
+  "eDsgZm9udC1zaXplOjA7IGxpbmUtaGVpZ2h0OjA7XCI+XG4gICAgICAgICAgICAgIDxpbWcgc3JjPVwiaHR0cHM6Ly9nb29kZ3JhY2VzLmFw" +
+  "cC9pbWcvbmV3LW1vY2t1cHMvNC5wbmdcIiB3aWR0aD1cIjE3OVwiIGFsdD1cIkdpdmluZ1wiIHN0eWxlPVwid2lkdGg6MTAwJTsgbWF4LXdp" +
+  "ZHRoOjE3OXB4OyBoZWlnaHQ6YXV0bzsgZGlzcGxheTpibG9jaztcIj5cbiAgICAgICAgICAgIDwvdGQ+XG4gICAgICAgICAgPC90cj5cbiAg" +
+  "ICAgICAgPC90YWJsZT5cbiAgICAgIDwvdGQ+XG4gICAgPC90cj5cblxuICAgIDwhLS0g4pWQ4pWQIFBBTkVMOiBUSEUgTEVUVEVSIOKVkOKV" +
+  "kCAtLT5cbiAgICA8dHI+XG4gICAgICA8dGQgY2xhc3M9XCJndXRcIiBzdHlsZT1cInBhZGRpbmc6MzZweCAyNHB4IDAgMjRweDtcIj5cbiAg" +
+  "ICAgICAgPHRhYmxlIHJvbGU9XCJwcmVzZW50YXRpb25cIiBjZWxsc3BhY2luZz1cIjBcIiBjZWxscGFkZGluZz1cIjBcIiBib3JkZXI9XCIw" +
+  "XCIgd2lkdGg9XCIxMDAlXCIgc3R5bGU9XCJiYWNrZ3JvdW5kLWNvbG9yOiNGRkZGRkY7IGJvcmRlcjoxcHggc29saWQgI0U2RTVFMjsgYm9y" +
+  "ZGVyLXJhZGl1czoyNHB4O1wiPlxuICAgICAgICAgIDx0cj5cbiAgICAgICAgICAgIDx0ZCBjbGFzcz1cInBhZFwiIHN0eWxlPVwicGFkZGlu" +
+  "ZzozOHB4IDM0cHggMzRweCAzNHB4OyBmb250LWZhbWlseTonSGVsdmV0aWNhIE5ldWUnLEhlbHZldGljYSxBcmlhbCxzYW5zLXNlcmlmO1wi" +
+  "PlxuICAgICAgICAgICAgICA8cCBjbGFzcz1cImJvZHktbVwiIHN0eWxlPVwibWFyZ2luOjAgMCAyMHB4IDA7IGNvbG9yOiMwQTBBMEE7IGZv" +
+  "bnQtc2l6ZToxNnB4OyBsaW5lLWhlaWdodDoxLjcyO1wiPlBhc3RvciB7e2xhc3R9fSw8L3A+XG5cbiAgICAgICAgICAgICAge3tub3RlfX1c" +
+  "blxuICAgICAgICAgICAgICA8cCBjbGFzcz1cImJvZHktbVwiIHN0eWxlPVwibWFyZ2luOjAgMCAyMHB4IDA7IGNvbG9yOiM0RTRFNEE7IGZv" +
+  "bnQtc2l6ZToxNnB4OyBsaW5lLWhlaWdodDoxLjcyO1wiPlxuICAgICAgICAgICAgICAgIE15IG5hbWUgaXMge3tzZW5kZXJfZmlyc3R9fS4g" +
+  "SSdtIGJ1aWxkaW5nIGFuIGFwcCBjYWxsZWQgR29vZCBHcmFjZXMsIGhlcmUgaW4gU2FuIERpZWdvLiBXZSdyZSBpbiBiZXRhIHJpZ2h0IG5v" +
+  "dywgYW5kIHdlJ3JlIGJyaW5naW5nIG9uIGZpdmUgbG9jYWwgY2h1cmNoZXMgdG8gYnVpbGQgaXQgYWxvbmdzaWRlIHVzIGJlZm9yZSB3ZSBv" +
+  "cGVuIGl0IHRvIGFueW9uZSBlbHNlLiBJJ2QgbGlrZSB7e2NodXJjaH19IHRvIGJlIG9uZSBvZiB0aGVtLlxuICAgICAgICAgICAgICA8L3A+" +
+  "XG5cbiAgICAgICAgICAgICAgPHAgY2xhc3M9XCJib2R5LW1cIiBzdHlsZT1cIm1hcmdpbjowIDAgMjBweCAwOyBjb2xvcjojNEU0RTRBOyBm" +
+  "b250LXNpemU6MTZweDsgbGluZS1oZWlnaHQ6MS43MjtcIj5cbiAgICAgICAgICAgICAgICBIZXJlJ3Mgd2hhdCBJIGtlZXAgcnVubmluZyBp" +
+  "bnRvLiBNb3N0IGNodXJjaGVzIGFyZSBzdGF5aW5nIGNvbm5lY3RlZCBhY3Jvc3MgZm91ciBvciBmaXZlIHBsYWNlcyBhdCBvbmNlIOKAlCBh" +
+  "IGdyb3VwIHRleHQgZm9yIHZvbHVudGVlcnMsIGEgRmFjZWJvb2sgcGFnZSBub2JvZHkgY2hlY2tzLCBhbiBlbWFpbCBsaXN0LCBhIGJ1bGxl" +
+  "dGluIHNvbWVib2R5IGxheXMgb3V0IG9uIFNhdHVyZGF5IG5pZ2h0LCBhbmQgYSBzZXBhcmF0ZSBsaW5rIHdoZW4gaXQncyB0aW1lIHRvIGdp" +
+  "dmUuIE5vbmUgb2YgaXQgdGFsa3MgdG8gZWFjaCBvdGhlciwgYW5kIHRoZSBwZW9wbGUgd2hvIG1vc3QgbmVlZCB0byBoZWFyIHNvbWV0aGlu" +
+  "ZyBhcmUgdXN1YWxseSB0aGUgb25lcyB3aG8gbWlzcyBpdC5cbiAgICAgICAgICAgICAgPC9wPlxuXG4gICAgICAgICAgICAgIDxwIGNsYXNz" +
+  "PVwiYm9keS1tXCIgc3R5bGU9XCJtYXJnaW46MCAwIDMwcHggMDsgY29sb3I6IzRFNEU0QTsgZm9udC1zaXplOjE2cHg7IGxpbmUtaGVpZ2h0" +
+  "OjEuNzI7XCI+XG4gICAgICAgICAgICAgICAgQW5kIHdoZW4gc29tZWJvZHkgbW92ZXMgdG8gdG93biBhbmQgZ29lcyBsb29raW5nIGZvciBh" +
+  "IGNodXJjaCwgdGhlcmUncyBhIGdvb2QgY2hhbmNlIHRoZXkgbmV2ZXIgZmluZCB5b3VycyBhdCBhbGwuXG4gICAgICAgICAgICAgIDwvcD5c" +
+  "blxuICAgICAgICAgICAgICA8dGFibGUgcm9sZT1cInByZXNlbnRhdGlvblwiIGNlbGxzcGFjaW5nPVwiMFwiIGNlbGxwYWRkaW5nPVwiMFwi" +
+  "IGJvcmRlcj1cIjBcIiB3aWR0aD1cIjEwMCVcIj5cbiAgICAgICAgICAgICAgICA8dHI+XG4gICAgICAgICAgICAgICAgICA8dGQgc3R5bGU9" +
+  "XCJib3JkZXItbGVmdDozcHggc29saWQgI0ZGNkI1MjsgcGFkZGluZzoycHggMCAycHggMjBweDtcIj5cbiAgICAgICAgICAgICAgICAgICAg" +
+  "PHAgY2xhc3M9XCJwdWxsLW1cIiBzdHlsZT1cIm1hcmdpbjowOyBmb250LXNpemU6MjNweDsgbGluZS1oZWlnaHQ6MS4zOyBmb250LXdlaWdo" +
+  "dDo3MDA7IGNvbG9yOiMwQTBBMEE7IGxldHRlci1zcGFjaW5nOi0wLjhweDtcIj5cbiAgICAgICAgICAgICAgICAgICAgICBBIGNodXJjaCBz" +
+  "aG91bGRuJ3QgYmUgaGFyZCB0byBmaW5kLiBBbmQgeW91ciBwZW9wbGUgc2hvdWxkbid0IGhhdmUgdG8gY2hlY2sgZm91ciBwbGFjZXMgdG8g" +
+  "a25vdyB3aGF0J3MgaGFwcGVuaW5nIHRoaXMgd2Vlay5cbiAgICAgICAgICAgICAgICAgICAgPC9wPlxuICAgICAgICAgICAgICAgICAgPC90" +
+  "ZD5cbiAgICAgICAgICAgICAgICA8L3RyPlxuICAgICAgICAgICAgICA8L3RhYmxlPlxuICAgICAgICAgICAgPC90ZD5cbiAgICAgICAgICA8" +
+  "L3RyPlxuICAgICAgICA8L3RhYmxlPlxuICAgICAgPC90ZD5cbiAgICA8L3RyPlxuXG4gICAgPCEtLSDilZDilZAgU0VDVElPTiBIRUFESU5H" +
+  "IOKVkOKVkCAtLT5cbiAgICA8dHI+XG4gICAgICA8dGQgY2xhc3M9XCJwYWRcIiBzdHlsZT1cInBhZGRpbmc6NDhweCA0NHB4IDAgNDRweDsg" +
+  "Zm9udC1mYW1pbHk6J0hlbHZldGljYSBOZXVlJyxIZWx2ZXRpY2EsQXJpYWwsc2Fucy1zZXJpZjtcIj5cbiAgICAgICAgPGRpdiBzdHlsZT1c" +
+  "ImhlaWdodDozcHg7IHdpZHRoOjQ0cHg7IGJhY2tncm91bmQtY29sb3I6I0ZGNkI1MjsgZm9udC1zaXplOjA7IGxpbmUtaGVpZ2h0OjA7IGJv" +
+  "cmRlci1yYWRpdXM6MTAwcHg7XCI+Jm5ic3A7PC9kaXY+XG4gICAgICAgIDxwIHN0eWxlPVwibWFyZ2luOjIwcHggMCAxMnB4IDA7IGZvbnQt" +
+  "c2l6ZToxMHB4OyBmb250LXdlaWdodDo3MDA7IGxldHRlci1zcGFjaW5nOjEuOHB4OyB0ZXh0LXRyYW5zZm9ybTp1cHBlcmNhc2U7IGNvbG9y" +
+  "OiM4QzhDODg7XCI+V2hhdCdzIGluc2lkZTwvcD5cbiAgICAgICAgPHAgY2xhc3M9XCJoMi1tXCIgc3R5bGU9XCJtYXJnaW46MDsgZm9udC1z" +
+  "aXplOjI5cHg7IGxpbmUtaGVpZ2h0OjEuMDg7IGZvbnQtd2VpZ2h0OjgwMDsgY29sb3I6IzBBMEEwQTsgbGV0dGVyLXNwYWNpbmc6LTEuMnB4" +
+  "O1wiPkJ1aWx0IGZvciB0aGUgd2hvbGUgd2Vlayw8YnI+bm90IGp1c3QgU3VuZGF5IG1vcm5pbmcuPC9wPlxuICAgICAgPC90ZD5cbiAgICA8" +
+  "L3RyPlxuXG4gICAgPCEtLSDilZDilZAgUEFORUw6IEZFQVRVUkVTIOKVkOKVkCAtLT5cbiAgICA8dHI+XG4gICAgICA8dGQgY2xhc3M9XCJn" +
+  "dXRcIiBzdHlsZT1cInBhZGRpbmc6MjZweCAyNHB4IDAgMjRweDtcIj5cbiAgICAgICAgPHRhYmxlIHJvbGU9XCJwcmVzZW50YXRpb25cIiBj" +
+  "ZWxsc3BhY2luZz1cIjBcIiBjZWxscGFkZGluZz1cIjBcIiBib3JkZXI9XCIwXCIgd2lkdGg9XCIxMDAlXCIgc3R5bGU9XCJiYWNrZ3JvdW5k" +
+  "LWNvbG9yOiNGRkZGRkY7IGJvcmRlcjoxcHggc29saWQgI0U2RTVFMjsgYm9yZGVyLXJhZGl1czoyNHB4O1wiPlxuICAgICAgICAgIDx0cj5c" +
+  "biAgICAgICAgICAgIDx0ZCBjbGFzcz1cInBhZFwiIHN0eWxlPVwicGFkZGluZzoxMnB4IDM0cHggMTRweCAzNHB4OyBmb250LWZhbWlseTon" +
+  "SGVsdmV0aWNhIE5ldWUnLEhlbHZldGljYSxBcmlhbCxzYW5zLXNlcmlmO1wiPlxuICAgICAgICAgICAgICA8dGFibGUgcm9sZT1cInByZXNl" +
+  "bnRhdGlvblwiIGNlbGxzcGFjaW5nPVwiMFwiIGNlbGxwYWRkaW5nPVwiMFwiIGJvcmRlcj1cIjBcIiB3aWR0aD1cIjEwMCVcIj5cbiAgICAg" +
+  "ICAgICAgICAgICA8dHI+XG4gICAgICAgICAgICAgICAgICA8dGQgc3R5bGU9XCJwYWRkaW5nOjIycHggMDtcIj5cbiAgICAgICAgICAgICAg" +
+  "ICAgICAgPHAgc3R5bGU9XCJtYXJnaW46MCAwIDdweCAwOyBmb250LXNpemU6MThweDsgZm9udC13ZWlnaHQ6NzAwOyBjb2xvcjojMEEwQTBB" +
+  "OyBsZXR0ZXItc3BhY2luZzotMC41cHg7XCI+T25lIHBsYWNlIHlvdXIgcGVvcGxlIGFjdHVhbGx5IGNoZWNrPC9wPlxuICAgICAgICAgICAg" +
+  "ICAgICAgICA8cCBzdHlsZT1cIm1hcmdpbjowOyBjb2xvcjojNkI2QjY2OyBmb250LXNpemU6MTVweDsgbGluZS1oZWlnaHQ6MS42MjtcIj5B" +
+  "bm5vdW5jZW1lbnRzLCBwcmF5ZXIgcmVxdWVzdHMsIGFuZCBhIGRhaWx5IGludml0YXRpb24gbGFuZCBpbiBhIHNpbmdsZSBmZWVkLiBOb3Ro" +
+  "aW5nIGdldHMgYnVyaWVkIHVuZGVyIGEgZ3JvdXAgY2hhdCBhYm91dCB0aGUgcG90bHVjay48L3A+XG4gICAgICAgICAgICAgICAgICA8L3Rk" +
+  "PlxuICAgICAgICAgICAgICAgIDwvdHI+XG4gICAgICAgICAgICAgICAgPHRyPlxuICAgICAgICAgICAgICAgICAgPHRkIHN0eWxlPVwicGFk" +
+  "ZGluZzoyMnB4IDA7IGJvcmRlci10b3A6MXB4IHNvbGlkICNFRUVERUE7XCI+XG4gICAgICAgICAgICAgICAgICAgIDxwIHN0eWxlPVwibWFy" +
+  "Z2luOjAgMCA3cHggMDsgZm9udC1zaXplOjE4cHg7IGZvbnQtd2VpZ2h0OjcwMDsgY29sb3I6IzBBMEEwQTsgbGV0dGVyLXNwYWNpbmc6LTAu" +
+  "NXB4O1wiPk5ldyBwZW9wbGUgY2FuIGZpbmQgeW91PC9wPlxuICAgICAgICAgICAgICAgICAgICA8cCBzdHlsZT1cIm1hcmdpbjowOyBjb2xv" +
+  "cjojNkI2QjY2OyBmb250LXNpemU6MTVweDsgbGluZS1oZWlnaHQ6MS42MjtcIj5BbnlvbmUgc2VhcmNoaW5nIGluIHRoZSBhcHAgc2VlcyBj" +
+  "aHVyY2hlcyBuZWFyIHRoZW0gYnkgbG9jYXRpb24gYW5kIHRyYWRpdGlvbi4gU29tZW9uZSBuZXcgdG8gdGhlIGFyZWEsIG9yIGp1c3QgbG9v" +
+  "a2luZyBhZ2FpbiwgZmluZHMgeW91IG9uIHB1cnBvc2UgaW5zdGVhZCBvZiBieSBhY2NpZGVudC48L3A+XG4gICAgICAgICAgICAgICAgICA8" +
+  "L3RkPlxuICAgICAgICAgICAgICAgIDwvdHI+XG4gICAgICAgICAgICAgICAgPHRyPlxuICAgICAgICAgICAgICAgICAgPHRkIHN0eWxlPVwi" +
+  "cGFkZGluZzoyMnB4IDA7IGJvcmRlci10b3A6MXB4IHNvbGlkICNFRUVERUE7XCI+XG4gICAgICAgICAgICAgICAgICAgIDxwIHN0eWxlPVwi" +
+  "bWFyZ2luOjAgMCA3cHggMDsgZm9udC1zaXplOjE4cHg7IGZvbnQtd2VpZ2h0OjcwMDsgY29sb3I6IzBBMEEwQTsgbGV0dGVyLXNwYWNpbmc6" +
+  "LTAuNXB4O1wiPkEgY2FsZW5kYXIgdGhhdCBjYXJyaWVzIGl0c2VsZjwvcD5cbiAgICAgICAgICAgICAgICAgICAgPHAgc3R5bGU9XCJtYXJn" +
+  "aW46MDsgY29sb3I6IzZCNkI2NjsgZm9udC1zaXplOjE1cHg7IGxpbmUtaGVpZ2h0OjEuNjI7XCI+U2VydmljZXMsIHNtYWxsIGdyb3Vwcywg" +
+  "QmlibGUgc3R1ZHksIGFuZCB5b3V0aCBhbGwgbGl2ZSBvbiBvbmUgY2FsZW5kYXIgd2l0aCB2b2x1bnRlZXIgc2lnbi11cHMgYXR0YWNoZWQg" +
+  "4oCUIHNvIG5vYm9keSBoYXMgdG8gc2VuZCB0aGUgcmVtaW5kZXIgdGhyZWUgdGltZXMuPC9wPlxuICAgICAgICAgICAgICAgICAgPC90ZD5c" +
+  "biAgICAgICAgICAgICAgICA8L3RyPlxuICAgICAgICAgICAgICAgIDx0cj5cbiAgICAgICAgICAgICAgICAgIDx0ZCBzdHlsZT1cInBhZGRp" +
+  "bmc6MjJweCAwOyBib3JkZXItdG9wOjFweCBzb2xpZCAjRUVFREVBO1wiPlxuICAgICAgICAgICAgICAgICAgICA8cCBzdHlsZT1cIm1hcmdp" +
+  "bjowIDAgN3B4IDA7IGZvbnQtc2l6ZToxOHB4OyBmb250LXdlaWdodDo3MDA7IGNvbG9yOiMwQTBBMEE7IGxldHRlci1zcGFjaW5nOi0wLjVw" +
+  "eDtcIj5HaXZpbmcsIGhhbmRsZWQgZW5kIHRvIGVuZDwvcD5cbiAgICAgICAgICAgICAgICAgICAgPHAgc3R5bGU9XCJtYXJnaW46MDsgY29s" +
+  "b3I6IzZCNkI2NjsgZm9udC1zaXplOjE1cHg7IGxpbmUtaGVpZ2h0OjEuNjI7XCI+VGl0aGVzLCBvbmUtdGltZSBnaWZ0cywgcmVjdXJyaW5n" +
+  "IGdpdmluZywgYW5kIGNhbXBhaWducyBmb3IgdGhlIHJvb2Ygb3IgdGhlIG1pc3Npb24gdHJpcC4gTm9ib2R5IGdldHMgYm91bmNlZCB0byBh" +
+  "IHRoaXJkLXBhcnR5IHBhZ2UgdGhleSBkb24ndCB0cnVzdC48L3A+XG4gICAgICAgICAgICAgICAgICA8L3RkPlxuICAgICAgICAgICAgICAg" +
+  "IDwvdHI+XG4gICAgICAgICAgICAgIDwvdGFibGU+XG4gICAgICAgICAgICA8L3RkPlxuICAgICAgICAgIDwvdHI+XG4gICAgICAgIDwvdGFi" +
+  "bGU+XG4gICAgICA8L3RkPlxuICAgIDwvdHI+XG5cbiAgICA8IS0tIOKVkOKVkCBBRE1JTiBWSUVXIOKVkOKVkCAtLT5cbiAgICA8dHI+XG4g" +
+  "ICAgICA8dGQgY2xhc3M9XCJwYWRcIiBzdHlsZT1cInBhZGRpbmc6NDRweCA0NHB4IDAgNDRweDsgZm9udC1mYW1pbHk6J0hlbHZldGljYSBO" +
+  "ZXVlJyxIZWx2ZXRpY2EsQXJpYWwsc2Fucy1zZXJpZjtcIj5cbiAgICAgICAgPHAgc3R5bGU9XCJtYXJnaW46MCAwIDEwcHggMDsgZm9udC1z" +
+  "aXplOjEwcHg7IGZvbnQtd2VpZ2h0OjcwMDsgbGV0dGVyLXNwYWNpbmc6MS44cHg7IHRleHQtdHJhbnNmb3JtOnVwcGVyY2FzZTsgY29sb3I6" +
+  "IzhDOEM4ODtcIj48c3BhbiBzdHlsZT1cImNvbG9yOiNGRjZCNTI7XCI+JmJ1bGw7PC9zcGFuPiZuYnNwOyBPbiB5b3VyIHNpZGUgb2YgaXQ8" +
+  "L3A+XG4gICAgICAgIDxwIGNsYXNzPVwiYm9keS1tXCIgc3R5bGU9XCJtYXJnaW46MDsgY29sb3I6IzRFNEU0QTsgZm9udC1zaXplOjE2cHg7" +
+  "IGxpbmUtaGVpZ2h0OjEuNzI7XCI+XG4gICAgICAgICAgQW5kIHRoZSBzdGFmZiB2aWV3IGlzIGJ1aWx0IHRoZSBzYW1lIHdheSDigJQgZ2l2" +
+  "aW5nLCBjYW1wYWlnbnMsIGFuZCB3aGF0J3MgYWN0dWFsbHkgY29taW5nIGluLCB3aXRob3V0IGV4cG9ydGluZyBhIHNwcmVhZHNoZWV0IHRv" +
+  "IGZpbmQgb3V0LlxuICAgICAgICA8L3A+XG4gICAgICA8L3RkPlxuICAgIDwvdHI+XG5cbiAgICA8dHI+XG4gICAgICA8dGQgY2xhc3M9XCJn" +
+  "dXRcIiBzdHlsZT1cInBhZGRpbmc6MjRweCAyNHB4IDAgMjRweDsgZm9udC1zaXplOjA7IGxpbmUtaGVpZ2h0OjA7XCI+XG4gICAgICAgIDxp" +
+  "bWcgc3JjPVwiaHR0cHM6Ly9nb29kZ3JhY2VzLmFwcC9pbWcvbW9ja3VwLXRhYmxldDgucG5nXCIgd2lkdGg9XCI1NTJcIiBhbHQ9XCJHb29k" +
+  "R3JhY2VzIGFkbWluIOKAlCBnaXZpbmcgYW5kIGNhbXBhaWduIG1hbmFnZW1lbnRcIiBzdHlsZT1cIndpZHRoOjEwMCU7IG1heC13aWR0aDo1" +
+  "NTJweDsgaGVpZ2h0OmF1dG87IGRpc3BsYXk6YmxvY2s7IG1hcmdpbjowIGF1dG87IGJvcmRlci1yYWRpdXM6MjBweDtcIj5cbiAgICAgIDwv" +
+  "dGQ+XG4gICAgPC90cj5cblxuICAgIDwhLS0g4pWQ4pWQIFBBTkVMOiBUSEUgQVNLIOKVkOKVkCAtLT5cbiAgICA8dHI+XG4gICAgICA8dGQg" +
+  "Y2xhc3M9XCJndXRcIiBzdHlsZT1cInBhZGRpbmc6NDBweCAyNHB4IDAgMjRweDtcIj5cbiAgICAgICAgPHRhYmxlIHJvbGU9XCJwcmVzZW50" +
+  "YXRpb25cIiBjZWxsc3BhY2luZz1cIjBcIiBjZWxscGFkZGluZz1cIjBcIiBib3JkZXI9XCIwXCIgd2lkdGg9XCIxMDAlXCIgc3R5bGU9XCJi" +
+  "YWNrZ3JvdW5kLWNvbG9yOiNGRkZGRkY7IGJvcmRlcjoxcHggc29saWQgI0U2RTVFMjsgYm9yZGVyLXJhZGl1czoyNHB4O1wiPlxuICAgICAg" +
+  "ICAgIDx0cj5cbiAgICAgICAgICAgIDx0ZCBjbGFzcz1cInBhZFwiIHN0eWxlPVwicGFkZGluZzozOHB4IDM0cHggMzZweCAzNHB4OyBmb250" +
+  "LWZhbWlseTonSGVsdmV0aWNhIE5ldWUnLEhlbHZldGljYSxBcmlhbCxzYW5zLXNlcmlmO1wiPlxuICAgICAgICAgICAgICA8ZGl2IHN0eWxl" +
+  "PVwiaGVpZ2h0OjNweDsgd2lkdGg6NDRweDsgYmFja2dyb3VuZC1jb2xvcjojRkY2QjUyOyBmb250LXNpemU6MDsgbGluZS1oZWlnaHQ6MDsg" +
+  "Ym9yZGVyLXJhZGl1czoxMDBweDtcIj4mbmJzcDs8L2Rpdj5cbiAgICAgICAgICAgICAgPHAgc3R5bGU9XCJtYXJnaW46MjBweCAwIDEycHgg" +
+  "MDsgZm9udC1zaXplOjEwcHg7IGZvbnQtd2VpZ2h0OjcwMDsgbGV0dGVyLXNwYWNpbmc6MS44cHg7IHRleHQtdHJhbnNmb3JtOnVwcGVyY2Fz" +
+  "ZTsgY29sb3I6IzhDOEM4ODtcIj5XaHkgSSdtIHdyaXRpbmcgbm93PC9wPlxuICAgICAgICAgICAgICA8cCBjbGFzcz1cImgyLW1cIiBzdHls" +
+  "ZT1cIm1hcmdpbjowIDAgMjJweCAwOyBmb250LXNpemU6MjlweDsgbGluZS1oZWlnaHQ6MS4wODsgZm9udC13ZWlnaHQ6ODAwOyBjb2xvcjoj" +
+  "MEEwQTBBOyBsZXR0ZXItc3BhY2luZzotMS4ycHg7XCI+Rml2ZSBjaHVyY2hlcy4gU2FuIERpZWdvLjxicj5UaGF0J3MgdGhlIHdob2xlIGJl" +
+  "dGEuPC9wPlxuXG4gICAgICAgICAgICAgIDxwIGNsYXNzPVwiYm9keS1tXCIgc3R5bGU9XCJtYXJnaW46MCAwIDIwcHggMDsgY29sb3I6IzRF" +
+  "NEU0QTsgZm9udC1zaXplOjE2cHg7IGxpbmUtaGVpZ2h0OjEuNzI7XCI+XG4gICAgICAgICAgICAgICAgVGhlIHByb2R1Y3QgaXMgc3RpbGwg" +
+  "c29mdCBlbm91Z2ggdG8gY2hhbmdlLCBhbmQgSSdkIHJhdGhlciBzaGFwZSBpdCBhcm91bmQgZml2ZSBjaHVyY2hlcyB3aG8gdGVsbCBtZSBw" +
+  "bGFpbmx5IHdoYXQncyBicm9rZW4gdGhhbiBsYXVuY2ggdG8gYSBodW5kcmVkIHdobyBuZXZlciBzYXkgYSB3b3JkLiBCZXRhIGNodXJjaGVz" +
+  "IGdldCB0aGUgYXBwIGVhcmx5LCBhIGRpcmVjdCBsaW5lIHRvIG1lLCBhbmQgcmVhbCBzYXkgaW4gd2hhdCB3ZSBidWlsZCBuZXh0LlxuICAg" +
+  "ICAgICAgICAgICA8L3A+XG4gICAgICAgICAgICAgIDxwIGNsYXNzPVwiYm9keS1tXCIgc3R5bGU9XCJtYXJnaW46MCAwIDIwcHggMDsgY29s" +
+  "b3I6IzRFNEU0QTsgZm9udC1zaXplOjE2cHg7IGxpbmUtaGVpZ2h0OjEuNzI7XCI+XG4gICAgICAgICAgICAgICAgSSdtIGtlZXBpbmcgaXQg" +
+  "dG8gZml2ZSBzbyBJIGNhbiBhY3R1YWxseSBiZSByZXNwb25zaXZlIHRvIGFsbCBvZiB0aGVtLCBhbmQga2VlcGluZyBpdCBsb2NhbCBzbyBJ" +
+  "IGNhbiBjb21lIHRvIHlvdSB3aGVuIHNvbWV0aGluZyBicmVha3MuIFNwb3RzIGdvIGluIHRoZSBvcmRlciBjaHVyY2hlcyB3cml0ZSBiYWNr" +
+  "IOKAlCBubyBhcHBsaWNhdGlvbiwgbm8gd2FpdGxpc3QuXG4gICAgICAgICAgICAgIDwvcD5cbiAgICAgICAgICAgICAgPHAgY2xhc3M9XCJi" +
+  "b2R5LW1cIiBzdHlsZT1cIm1hcmdpbjowIDAgMzBweCAwOyBjb2xvcjojOEM4Qzg4OyBmb250LXNpemU6MTZweDsgbGluZS1oZWlnaHQ6MS43" +
+  "MjtcIj5cbiAgICAgICAgICAgICAgICBCZXRhIGNodXJjaGVzIGFsc28ga2VlcCBhIHBlcm1hbmVudGx5IHJlZHVjZWQgcmF0ZSDigJQgdGhv" +
+  "dWdoIGhvbmVzdGx5LCB0aGF0J3MgdGhlIGxlYXN0IGludGVyZXN0aW5nIHBhcnQgb2YgdGhpcy5cbiAgICAgICAgICAgICAgPC9wPlxuXG4g" +
+  "ICAgICAgICAgICAgIDx0YWJsZSByb2xlPVwicHJlc2VudGF0aW9uXCIgY2VsbHNwYWNpbmc9XCIwXCIgY2VsbHBhZGRpbmc9XCIwXCIgYm9y" +
+  "ZGVyPVwiMFwiIGFsaWduPVwibGVmdFwiIHN0eWxlPVwibWFyZ2luOjA7XCI+XG4gICAgICAgICAgICAgICAgPHRyPlxuICAgICAgICAgICAg" +
+  "ICAgICAgPHRkIHN0eWxlPVwiYm9yZGVyLXJhZGl1czoxMDBweDsgYmFja2dyb3VuZDojMEEwQTBBO1wiPlxuICAgICAgICAgICAgICAgICAg" +
+  "ICA8YSBocmVmPVwiaHR0cHM6Ly93d3cuZ29vZGdyYWNlcy5hcHAvNS1zcG90cy5odG1sXCIgc3R5bGU9XCJiYWNrZ3JvdW5kOiMwQTBBMEE7" +
+  "IGJvcmRlcjoxcHggc29saWQgIzBBMEEwQTsgZm9udC1mYW1pbHk6J0hlbHZldGljYSBOZXVlJyxIZWx2ZXRpY2EsQXJpYWwsc2Fucy1zZXJp" +
+  "ZjsgZm9udC1zaXplOjE1cHg7IGxpbmUtaGVpZ2h0OjE1cHg7IGZvbnQtd2VpZ2h0OjYwMDsgdGV4dC1kZWNvcmF0aW9uOm5vbmU7IHBhZGRp" +
+  "bmc6MThweCAzNHB4OyBjb2xvcjojRkZGRkZGOyBkaXNwbGF5OmJsb2NrOyBib3JkZXItcmFkaXVzOjEwMHB4O1wiPkNsYWltIG9uZSBvZiB0" +
+  "aGUgZml2ZSBzcG90czwvYT5cbiAgICAgICAgICAgICAgICAgIDwvdGQ+XG4gICAgICAgICAgICAgICAgPC90cj5cbiAgICAgICAgICAgICAg" +
+  "PC90YWJsZT5cblxuICAgICAgICAgICAgICA8dGFibGUgcm9sZT1cInByZXNlbnRhdGlvblwiIGNlbGxzcGFjaW5nPVwiMFwiIGNlbGxwYWRk" +
+  "aW5nPVwiMFwiIGJvcmRlcj1cIjBcIiB3aWR0aD1cIjEwMCVcIj5cbiAgICAgICAgICAgICAgICA8dHI+XG4gICAgICAgICAgICAgICAgICA8" +
+  "dGQgc3R5bGU9XCJwYWRkaW5nLXRvcDoyMHB4OyBmb250LWZhbWlseTonSGVsdmV0aWNhIE5ldWUnLEhlbHZldGljYSxBcmlhbCxzYW5zLXNl" +
+  "cmlmOyBmb250LXNpemU6MTBweDsgZm9udC13ZWlnaHQ6NzAwOyBsZXR0ZXItc3BhY2luZzoxLjhweDsgdGV4dC10cmFuc2Zvcm06dXBwZXJj" +
+  "YXNlOyBjb2xvcjojOEM4Qzg4O1wiPlxuICAgICAgICAgICAgICAgICAgICA8c3BhbiBzdHlsZT1cImNvbG9yOiNGRjZCNTI7XCI+JmJ1bGw7" +
+  "PC9zcGFuPiZuYnNwOyA1IHNwb3RzICZuYnNwOyZtaWRkb3Q7Jm5ic3A7IFNhbiBEaWVnbyBDb3VudHkgJm5ic3A7Jm1pZGRvdDsmbmJzcDsg" +
+  "Rmlyc3QgY29tZSwgZmlyc3Qgc2VydmVkXG4gICAgICAgICAgICAgICAgICA8L3RkPlxuICAgICAgICAgICAgICAgIDwvdHI+XG4gICAgICAg" +
+  "ICAgICAgIDwvdGFibGU+XG4gICAgICAgICAgICA8L3RkPlxuICAgICAgICAgIDwvdHI+XG4gICAgICAgIDwvdGFibGU+XG4gICAgICA8L3Rk" +
+  "PlxuICAgIDwvdHI+XG5cbiAgICA8IS0tIOKVkOKVkCBTSUdOLU9GRiDilZDilZAgLS0+XG4gICAgPHRyPlxuICAgICAgPHRkIGNsYXNzPVwi" +
+  "cGFkXCIgc3R5bGU9XCJwYWRkaW5nOjQycHggNDRweCAwIDQ0cHg7IGZvbnQtZmFtaWx5OidIZWx2ZXRpY2EgTmV1ZScsSGVsdmV0aWNhLEFy" +
+  "aWFsLHNhbnMtc2VyaWY7XCI+XG4gICAgICAgIDxwIGNsYXNzPVwiYm9keS1tXCIgc3R5bGU9XCJtYXJnaW46MCAwIDI0cHggMDsgY29sb3I6" +
+  "IzRFNEU0QTsgZm9udC1zaXplOjE2cHg7IGxpbmUtaGVpZ2h0OjEuNzI7XCI+XG4gICAgICAgICAgSWYgaXQncyBub3QgdGhlIHJpZ2h0IHNl" +
+  "YXNvbiBmb3IgdGhpcywgdGVsbCBtZSBhbmQgSSB3b24ndCB3cml0ZSBhZ2Fpbi4gSWYgaXQncyB0aGUgcmlnaHQgaWRlYSBmb3IgdGhlIHdy" +
+  "b25nIHBlcnNvbiwgSSdkIGJlIGdyYXRlZnVsIGlmIHlvdSBwYXNzZWQgaXQgYWxvbmcuXG4gICAgICAgIDwvcD5cbiAgICAgICAgPHAgc3R5" +
+  "bGU9XCJtYXJnaW46MCAwIDNweCAwOyBmb250LXNpemU6MTlweDsgZm9udC13ZWlnaHQ6NzAwOyBjb2xvcjojMEEwQTBBOyBsZXR0ZXItc3Bh" +
+  "Y2luZzotMC42cHg7XCI+e3tzZW5kZXJfbmFtZX19PC9wPlxuICAgICAgICA8cCBzdHlsZT1cIm1hcmdpbjowIDAgMjRweCAwOyBjb2xvcjoj" +
+  "OEM4Qzg4OyBmb250LXNpemU6MTNweDsgbGluZS1oZWlnaHQ6MS42O1wiPnt7c2VuZGVyX3RpdGxlfX0sIEdvb2QgR3JhY2VzICZuYnNwO8K3" +
+  "Jm5ic3A7IDxhIGhyZWY9XCJtYWlsdG86e3tzZW5kZXJfZW1haWx9fVwiIHN0eWxlPVwiY29sb3I6IzhDOEM4ODsgdGV4dC1kZWNvcmF0aW9u" +
+  "OnVuZGVybGluZTtcIj57e3NlbmRlcl9lbWFpbH19PC9hPjwvcD5cbiAgICAgICAgPHAgc3R5bGU9XCJtYXJnaW46MDsgY29sb3I6IzZCNkI2" +
+  "NjsgZm9udC1zaXplOjE1cHg7IGxpbmUtaGVpZ2h0OjEuNjU7XCI+XG4gICAgICAgICAgPHN0cm9uZyBzdHlsZT1cImNvbG9yOiMwQTBBMEE7" +
+  "XCI+UC5TLjwvc3Ryb25nPiDigJQgSSdtIG5vdCBsb29raW5nIGZvciBhIGRlY2lzaW9uLiBGaWZ0ZWVuIG1pbnV0ZXMsIG9yIGNvZmZlZSBz" +
+  "b21ld2hlcmUgbmVhciB5b3UsIGFuZCBJJ2xsIHdhbGsgeW91IHRocm91Z2ggdGhlIGFjdHVhbCBhcHAgaW5zdGVhZCBvZiBkZXNjcmliaW5n" +
+  "IGl0LlxuICAgICAgICA8L3A+XG4gICAgICA8L3RkPlxuICAgIDwvdHI+XG5cbiAgICA8IS0tIOKVkOKVkCBGT09URVI6IGludmVydGVkIHBp" +
+  "bGwg4pWQ4pWQIC0tPlxuICAgIDx0cj5cbiAgICAgIDx0ZCBjbGFzcz1cImd1dFwiIHN0eWxlPVwicGFkZGluZzo0NHB4IDI0cHggMjhweCAy" +
+  "NHB4O1wiPlxuICAgICAgICA8dGFibGUgcm9sZT1cInByZXNlbnRhdGlvblwiIGNlbGxzcGFjaW5nPVwiMFwiIGNlbGxwYWRkaW5nPVwiMFwi" +
+  "IGJvcmRlcj1cIjBcIiB3aWR0aD1cIjEwMCVcIiBzdHlsZT1cImJhY2tncm91bmQtY29sb3I6IzBBMEEwQTsgYm9yZGVyLXJhZGl1czoxMDBw" +
+  "eDtcIj5cbiAgICAgICAgICA8dHI+XG4gICAgICAgICAgICA8dGQgc3R5bGU9XCJwYWRkaW5nOjE3cHggMjZweDsgZm9udC1mYW1pbHk6J0hl" +
+  "bHZldGljYSBOZXVlJyxIZWx2ZXRpY2EsQXJpYWwsc2Fucy1zZXJpZjtcIj5cbiAgICAgICAgICAgICAgPHRhYmxlIHJvbGU9XCJwcmVzZW50" +
+  "YXRpb25cIiBjZWxsc3BhY2luZz1cIjBcIiBjZWxscGFkZGluZz1cIjBcIiBib3JkZXI9XCIwXCIgd2lkdGg9XCIxMDAlXCI+XG4gICAgICAg" +
+  "ICAgICAgICAgPHRyPlxuICAgICAgICAgICAgICAgICAgPHRkIGFsaWduPVwibGVmdFwiIHN0eWxlPVwiZm9udC1zaXplOjE2cHg7IGZvbnQt" +
+  "d2VpZ2h0OjcwMDsgbGV0dGVyLXNwYWNpbmc6LTAuNXB4OyBjb2xvcjojRkZGRkZGO1wiPkdvb2RHcmFjZXM8L3RkPlxuICAgICAgICAgICAg" +
+  "ICAgICAgPHRkIGFsaWduPVwicmlnaHRcIiBzdHlsZT1cImZvbnQtc2l6ZToxMHB4OyBmb250LXdlaWdodDo3MDA7IGxldHRlci1zcGFjaW5n" +
+  "OjEuNHB4OyB0ZXh0LXRyYW5zZm9ybTp1cHBlcmNhc2U7IGNvbG9yOiNGRjZCNTI7XCI+RmFpdGggJmFtcDsgdGVjaG5vbG9neTwvdGQ+XG4g" +
+  "ICAgICAgICAgICAgICAgPC90cj5cbiAgICAgICAgICAgICAgPC90YWJsZT5cbiAgICAgICAgICAgIDwvdGQ+XG4gICAgICAgICAgPC90cj5c" +
+  "biAgICAgICAgPC90YWJsZT5cbiAgICAgIDwvdGQ+XG4gICAgPC90cj5cblxuICA8L3RhYmxlPlxuPC9jZW50ZXI+XG48L2JvZHk+XG48L2h0" +
+  "bWw+XG4ifSwgeyJpZCI6ICJmb2xsb3d1cCIsICJuYW1lIjogIkZvbGxvdy11cCBOdWRnZSIsICJkZXNjIjogIlBsYWluIHRleHQsIG5vIGRl" +
+  "c2lnbi4gU2VuZCAxMOKAkzE0IGRheXMgbGF0ZXIuIiwgInN1YmplY3RzIjogWyJSZToge3tjaHVyY2h9fSIsICJDaXJjbGluZyBiYWNrIOKA" +
+  "lCB7e2NodXJjaH19IiwgIkxhc3Qgbm90ZSwgUGFzdG9yIHt7bGFzdH19Il0sICJmaWVsZHMiOiBbeyJrZXkiOiAibGFzdCIsICJsYWJlbCI6" +
+  "ICJQYXN0b3IncyBsYXN0IG5hbWUiLCAicGxhY2Vob2xkZXIiOiAiV2hpdGZpZWxkIiwgInJlcXVpcmVkIjogdHJ1ZX0sIHsia2V5IjogImNo" +
+  "dXJjaCIsICJsYWJlbCI6ICJDaHVyY2ggbmFtZSIsICJwbGFjZWhvbGRlciI6ICJDYW55b24gUmlkZ2UgQ2h1cmNoIiwgInJlcXVpcmVkIjog" +
+  "dHJ1ZX0sIHsia2V5IjogIm5vdGUiLCAibGFiZWwiOiAiRXh0cmEgbGluZSIsICJwbGFjZWhvbGRlciI6ICJTYXcgdGhlIGZvb2QgZHJpdmUg" +
+  "b24geW91ciBJbnN0YWdyYW0g4oCUIGV4YWN0bHkgdGhlIGtpbmQgb2YgdGhpbmcgdGhlIGFwcCBpcyBmb3IuIiwgInR5cGUiOiAidGV4dGFy" +
+  "ZWEiLCAicmVxdWlyZWQiOiBmYWxzZSwgImJsb2NrIjogIjxwIHN0eWxlPVwibWFyZ2luOjAgMCAxNnB4IDA7XCI+e3tjb250ZW50fX08L3A+" +
+  "In1dLCAiaHRtbCI6ICI8IURPQ1RZUEUgaHRtbD5cbjxodG1sPjxib2R5IHN0eWxlPVwibWFyZ2luOjA7cGFkZGluZzowO2JhY2tncm91bmQ6" +
+  "I2ZmZmZmZjtcIj5cbjxkaXYgc3R5bGU9XCJmb250LWZhbWlseTotYXBwbGUtc3lzdGVtLEJsaW5rTWFjU3lzdGVtRm9udCwnSGVsdmV0aWNh" +
+  "IE5ldWUnLEhlbHZldGljYSxBcmlhbCxzYW5zLXNlcmlmO2ZvbnQtc2l6ZToxNXB4O2xpbmUtaGVpZ2h0OjEuNjU7Y29sb3I6IzIyMjIyMjtt" +
+  "YXgtd2lkdGg6NTYwcHg7cGFkZGluZzoyNHB4IDIwcHg7XCI+XG48cCBzdHlsZT1cIm1hcmdpbjowIDAgMTZweCAwO1wiPlBhc3RvciB7e2xh" +
+  "c3R9fSw8L3A+XG48cCBzdHlsZT1cIm1hcmdpbjowIDAgMTZweCAwO1wiPlNob3J0IG5vdGUuIEkgd3JvdGUgYSBjb3VwbGUgb2Ygd2Vla3Mg" +
+  "YWdvIGFib3V0IEdvb2QgR3JhY2VzICZtZGFzaDsgdGhlIGNodXJjaCBhcHAgd2UncmUgYnVpbGRpbmcgaGVyZSBpbiBTYW4gRGllZ28uIFdl" +
+  "J3JlIHRha2luZyBmaXZlIGxvY2FsIGNodXJjaGVzIGludG8gdGhlIGJldGEgYW5kIGEgZmV3IHNwb3RzIGFyZSBzdGlsbCBvcGVuLjwvcD5c" +
+  "bjxwIHN0eWxlPVwibWFyZ2luOjAgMCAxNnB4IDA7XCI+SWYgaXQgaXNuJ3QgcmlnaHQgZm9yIHt7Y2h1cmNofX0sIHRlbGwgbWUgYW5kIEkn" +
+  "bGwgc3RvcCB3cml0aW5nLCBubyBoYXJkIGZlZWxpbmdzIGF0IGFsbC4gSWYgaXQncyBqdXN0IGJhZCB0aW1pbmcsIHRlbGwgbWUgd2hlbiB0" +
+  "byBjaXJjbGUgYmFjayBhbmQgSSB3aWxsLjwvcD5cbnt7bm90ZX19XG48cCBzdHlsZT1cIm1hcmdpbjowIDAgMTZweCAwO1wiPkVpdGhlciB3" +
+  "YXkgJm1kYXNoOyB0aGFua3MgZm9yIHRoZSB3b3JrIHlvdSBkby48L3A+XG48cCBzdHlsZT1cIm1hcmdpbjowIDAgNHB4IDA7XCI+e3tzZW5k" +
+  "ZXJfZmlyc3R9fTwvcD5cbjxwIHN0eWxlPVwibWFyZ2luOjA7Y29sb3I6Izc3Nzc3Nztmb250LXNpemU6MTNweDtcIj57e3NlbmRlcl90aXRs" +
+  "ZX19LCBHb29kIEdyYWNlcyAmbWlkZG90OyA8YSBocmVmPVwibWFpbHRvOnt7c2VuZGVyX2VtYWlsfX1cIiBzdHlsZT1cImNvbG9yOiM3Nzc3" +
+  "Nzc7XCI+e3tzZW5kZXJfZW1haWx9fTwvYT48L3A+XG48L2Rpdj5cbjwvYm9keT48L2h0bWw+In1d";
+
+const _b64 = b => new TextDecoder("utf-8").decode(
+  Uint8Array.from(atob(b.replace(/\s+/g, "")), c => c.charCodeAt(0))
+);
+
+let TEMPLATES = [];
+try {
+  TEMPLATES = JSON.parse(_b64(TEMPLATES_B64));
+} catch (e) {
+  console.error("[GG] template payload failed to decode:", e);
+  document.addEventListener("DOMContentLoaded", () => {
+    document.body.innerHTML =
+      '<div style="font-family:Helvetica,Arial,sans-serif;padding:40px;max-width:640px">' +
+      '<h1 style="font-size:22px;margin:0 0 10px">Templates failed to load</h1>' +
+      '<p style="color:#555;line-height:1.6">The encoded template block is corrupted \u2014 ' +
+      'usually a truncated copy. Re-download gg-console.html and replace the file whole ' +
+      'rather than pasting into it.</p></div>';
+  });
+}
+
+/* ══════════════════════════════════════════════════════════ */
+const $ = id => document.getElementById(id);
+let KEY = "";
+let ME = null;          // the PEOPLE entry of whoever is signed in
+let tplIdx = 0;
+let vals = {};
+
+/* ── login ─────────────────────────────────────── */
+$("buildLogin").textContent = "Build " + BUILD;
+$("buildTop").textContent = BUILD;
+console.log("[GG] console build " + BUILD);
+
+$("lgKeyWrap").hidden = !ENABLE_DIRECT_SEND;
+
+$("loginForm").addEventListener("submit", e => {
+  e.preventDefault();
+  if ($("lgKey").value.trim().toLowerCase() !== PAGE_PASSCODE.toLowerCase()){
+    $("lgErr").hidden = false;
+    $("lgErr").textContent = "Wrong passcode.";
+    $("lgKey").select();
+    return;
+  }
+  ME = PEOPLE[$("lgWho").value];
+  KEY = $("lgSecret").value.trim();
+  $("lgErr").hidden = true;
+  $("login").hidden = true;
+  $("app").hidden = false;
+  $("who").textContent = ME.first;
+  $("envFrom").textContent = ME.name + " <" + ME.email + ">";
+  $("btnSend").hidden = !ENABLE_DIRECT_SEND;
+  $("btnTest").hidden = !ENABLE_DIRECT_SEND;
+  buildTemplates();
+  selectTemplate(0);
+});
+
+$("btnOut").addEventListener("click", () => {
+  KEY = ""; ME = null; vals = {};
+  $("app").hidden = true;
+  $("login").hidden = false;
+  $("lgKey").value = "";
+  $("status").hidden = true;
+});
+
+/* ── template list ─────────────────────────────── */
+function buildTemplates(){
+  $("tplList").innerHTML = TEMPLATES.map((t,i) =>
+    '<button type="button" data-i="'+i+'" data-on="0">' +
+      '<span class="t">'+t.name+'</span><span class="d">'+t.desc+'</span>' +
+    '</button>').join("");
+  $("tplList").querySelectorAll("button").forEach(b => {
+    b.addEventListener("click", () => selectTemplate(Number(b.dataset.i)));
+  });
+}
+
+function selectTemplate(i){
+  tplIdx = i;
+  vals = {};
+  $("tplList").querySelectorAll("button").forEach(b => {
+    b.dataset.on = Number(b.dataset.i) === i ? "1" : "0";
+  });
+
+  const t = TEMPLATES[i];
+
+  $("fields").innerHTML = t.fields.map(f => {
+    const tag = f.type === "textarea"
+      ? '<textarea id="f_'+f.key+'" class="inp" placeholder="'+(f.placeholder||"")+'"></textarea>'
+      : '<input type="text" id="f_'+f.key+'" class="inp" placeholder="'+(f.placeholder||"")+'" autocomplete="off">';
+    return '<div><label class="lbl" for="f_'+f.key+'">'+f.label+
+           (f.required ? '' : ' <span style="text-transform:none;letter-spacing:0;font-family:var(--sans)">— optional</span>')+
+           '</label>'+tag+(f.hint ? '<p class="hint">'+f.hint+'</p>' : '')+'</div>';
+  }).join("");
+
+  t.fields.forEach(f => {
+    $("f_"+f.key).addEventListener("input", e => { vals[f.key] = e.target.value; render(); });
+  });
+
+  $("fSubj").innerHTML = t.subjects.map((s,n) => '<option value="'+n+'">'+s+'</option>').join("")
+    + '<option value="custom">Write my own…</option>';
+  $("subjCustomWrap").hidden = true;
+
+  $("status").hidden = true;
+  render();
+}
+
+$("fSubj").addEventListener("change", () => {
+  $("subjCustomWrap").hidden = $("fSubj").value !== "custom";
+  render();
+});
+$("fSubjCustom").addEventListener("input", render);
+$("fTo").addEventListener("input", render);
+
+/* ── merge ─────────────────────────────────────── */
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+function subjectLine(){
+  const t = TEMPLATES[tplIdx];
+  if ($("fSubj").value === "custom") return $("fSubjCustom").value.trim();
+  let s = t.subjects[Number($("fSubj").value)] || "";
+  t.fields.forEach(f => {
+    s = s.split("{{"+f.key+"}}").join(vals[f.key] || f.fallback || "");
+  });
+  return s.trim();
+}
+
+function buildHtml(){
+  const t = TEMPLATES[tplIdx];
+  let html = t.html;
+
+  t.fields.forEach(f => {
+    if (f.block){
+      const v = (vals[f.key] || "").trim();
+      const out = v
+        ? v.split(/\n\s*\n/).map(p => f.block.replace("{{content}}", esc(p).replace(/\n/g,"<br>"))).join("\n")
+        : "";
+      html = html.split("{{"+f.key+"}}").join(out);
+    } else {
+      html = html.split("{{"+f.key+"}}").join(esc(vals[f.key] || "[" + f.label + "]"));
+    }
+  });
+
+  html = html.split("{{sender_name}}").join(esc(ME.name));
+  html = html.split("{{sender_first}}").join(esc(ME.first));
+  html = html.split("{{sender_email}}").join(esc(ME.email));
+  html = html.split("{{sender_title}}").join(esc(ME.title));
+  return html;
+}
+
+function ready(){
+  const t = TEMPLATES[tplIdx];
+  const to = $("fTo").value.trim();
+  const okFields = t.fields.every(f => !f.required || (vals[f.key] || "").trim());
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(to) && okFields && !!subjectLine();
+}
+
+function render(){
+  const html = buildHtml();
+  $("frame").srcdoc = html;
+
+  const to = $("fTo").value.trim(), su = subjectLine();
+  $("envTo").textContent = to || "—";
+  $("envTo").classList.toggle("e", !to);
+  $("envSubj").textContent = su || "—";
+  $("envSubj").classList.toggle("e", !su);
+
+  const on = ready();
+  ["btnSend","btnEml","btnRich","btnCopy"].forEach(id => { $(id).disabled = !on; });
+}
+
+/* ── preview width ─────────────────────────────── */
+$("segD").addEventListener("click", () => seg(false));
+$("segM").addEventListener("click", () => seg(true));
+function seg(m){
+  $("frame").classList.toggle("mob", m);
+  $("segD").dataset.on = m ? "0" : "1";
+  $("segM").dataset.on = m ? "1" : "0";
+}
+
+/* ── status + toast ────────────────────────────── */
+function say(kind, msg){
+  const s = $("status");
+  s.hidden = false;
+  s.className = "status " + kind;
+  s.innerHTML = msg;
+  console.log("[GG " + kind + "]", s.textContent);
+  try { s.scrollIntoView({ behavior: "smooth", block: "nearest" }); } catch(e){}
+}
+let tT;
+function toast(m){
+  const t = $("toast");
+  t.textContent = m; t.dataset.on = "1";
+  clearTimeout(tT); tT = setTimeout(() => { t.dataset.on = "0"; }, 2600);
+}
+
+/* ── send ──────────────────────────────────────── */
+
+/* Last-resort delivery: a real form POST into a hidden iframe. It is a
+   browser navigation, not an XHR, so CORS never applies — but we can't
+   read the response, so it can only ever report "probably sent". */
+function postViaIframe(url, payload){
+  return new Promise(resolve => {
+    const f = document.createElement("form");
+    f.method = "POST"; f.action = url; f.target = "gg_sink"; f.style.display = "none";
+    Object.entries(payload).forEach(([k,v]) => {
+      const i = document.createElement("input");
+      i.type = "hidden"; i.name = k; i.value = String(v);
+      f.appendChild(i);
     });
+    document.body.appendChild(f);
+    const sink = $("ggSink");
+    let done = false;
+    const finish = ok => { if (done) return; done = true; f.remove(); resolve(ok); };
+    sink.addEventListener("load", () => finish(true), { once: true });
+    setTimeout(() => finish(true), 6000);
+    try { f.submit(); } catch(e){ finish(false); }
+  });
+}
 
-    logoutBtn.addEventListener('click', () => {
-        currentUser = null;
-        loginForm.reset();
-        document.getElementById('crmForm').reset();
-        dashboardView.style.display = 'none';
-        loginView.style.display = 'flex';
-        statusMsg.classList.add('hidden');
+$("btnSend").addEventListener("click", async () => {
+  const btn = $("btnSend");
+  const to  = $("fTo").value.trim();
+
+  // Every exit path below reports something. No silent returns.
+  if (!ME || !ME.api){
+    say("bad", "<b>No API URL for " + (ME ? ME.first : "this sender") + ".</b> Deploy <code>gg-mailer.gs</code> under that account and put its /exec URL in the <code>api</code> field of their PEOPLE entry.");
+    return;
+  }
+  if (!KEY){
+    say("bad", "<b>No send key.</b> Sign out and enter the SHARED_SECRET from your Apps Script in the <b>Send key</b> field.");
+    return;
+  }
+  if (!to){ say("bad", "Add a recipient address first."); return; }
+  if (!subjectLine()){ say("bad", "Pick or write a subject line first."); return; }
+
+  const payload = {
+    secret:   KEY,
+    to:       to,
+    subject:  subjectLine(),
+    html:     buildHtml(),
+    from:     ME.email,
+    fromName: ME.name
+  };
+
+  btn.disabled = true;
+  btn.textContent = "Sending…";
+  say("good", "Contacting the mailer\u2026");
+  console.log("[GG] POST", ME.api, { to: to, subject: payload.subject, htmlBytes: payload.html.length });
+
+  const clearForm = () => {
+    $("fTo").value = "";
+    TEMPLATES[tplIdx].fields.forEach(f => { const el = $("f_"+f.key); if (el) el.value = ""; });
+    vals = {};
+  };
+
+  let handled = false;
+  try {
+    // 15s ceiling so a hung request can never leave you staring at "Sending…"
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 15000);
+
+    const res = await fetch(ME.api, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },   // simple request, no preflight
+      body: JSON.stringify(payload),
+      redirect: "follow",
+      signal: ctrl.signal
     });
+    clearTimeout(timer);
 
-    // --- CRM Execution ---
-    sendEmailBtn.addEventListener('click', async () => {
-        const toEmail = document.getElementById('toEmail').value.trim();
-        const pastorName = document.getElementById('pastorName').value.trim();
-        const churchName = document.getElementById('churchName').value.trim();
+    const raw = await res.text();
+    console.log("[GG] response", res.status, raw.slice(0, 300));
 
-        if(!toEmail || !pastorName || !churchName) {
-            return alert("Please fill in all CRM fields.");
-        }
+    let data = null;
+    try { data = JSON.parse(raw); } catch(e){ /* not JSON */ }
 
-        sendEmailBtn.textContent = "Deploying...";
-        sendEmailBtn.disabled = true;
-        statusMsg.classList.add('hidden');
+    if (data && data.ok){
+      say("good", "Sent to <b>" + to + "</b>." +
+        (data.remaining_today != null ? " " + data.remaining_today + " sends left in today's quota." : ""));
+      clearForm();
+      handled = true;
+    } else if (data && data.error){
+      say("bad", "The mailer refused it: <b>" + data.error + "</b><br>Nothing was delivered.");
+      handled = true;
+    } else if (raw.indexOf("<!DOCTYPE") === 0 || raw.indexOf("Google") !== -1){
+      say("bad", "Google returned a sign-in page instead of your script. The deployment's access is set to <b>Anyone with a Google account</b> — change it to <b>Anyone</b> and deploy a new version.");
+      handled = true;
+    }
+  } catch (err){
+    console.warn("[GG] fetch failed:", err && err.name, err && err.message);
+    if (err && err.name === "AbortError"){
+      say("bad", "The mailer didn't answer within 15 seconds. Nothing was confirmed \u2014 check your Gmail <b>Sent</b> folder before resending.");
+      handled = true;
+    }
+  }
 
-        try {
-            // Update this URL to point to your live Node.js server (e.g., on Vercel or Render)
-            // Example: const backendURL = 'https://goodgraces-api.onrender.com/api/send-beta-email';
-            const backendURL = 'http://localhost:3000/api/send-beta-email'; // Local dev fallback
+  if (!handled){
+    // fetch was blocked (almost always CORS). Deliver blind, then say so honestly.
+    say("good", "Direct response was blocked \u2014 retrying another way\u2026");
+    const ok = await postViaIframe(ME.api, payload);
+    if (ok){
+      say("good", "Submitted to the mailer, but the browser wouldn't let me read the reply. <b>Check your Gmail Sent folder</b> to confirm it went to " + to + " before you resend.");
+      clearForm();
+    } else {
+      say("bad", "Couldn't reach the mailer at all. Check the /exec URL, confirm access is <b>Anyone</b>, and make sure this page is served over http(s) rather than opened from disk. <b>Create draft</b> still works.");
+    }
+  }
 
-            const response = await fetch(backendURL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    toEmail: toEmail,
-                    pastorName: pastorName,
-                    churchName: churchName,
-                    senderEmail: currentUser.email,
-                    senderName: currentUser.name
-                })
-            });
+  btn.disabled = false;
+  btn.textContent = "Send directly";
+  render();
+});
 
-            if (response.ok) {
-                statusMsg.textContent = "HTML Email successfully embedded and deployed.";
-                statusMsg.className = "text-center text-sm font-medium mt-4 text-green-600 block";
-                document.getElementById('toEmail').value = '';
-                document.getElementById('pastorName').value = '';
-                document.getElementById('churchName').value = '';
-            } else {
-                throw new Error('Server error');
-            }
-        } catch (error) {
-            statusMsg.textContent = "Failed to connect to email server. Check backend connection.";
-            statusMsg.className = "text-center text-sm font-medium mt-4 text-red-500 block";
-        } finally {
-            sendEmailBtn.textContent = "Deploy HTML Email";
-            sendEmailBtn.disabled = false;
-        }
-    });
+/* ── connection test ───────────────────────────── */
+$("btnTest").addEventListener("click", async () => {
+  if (!ME.api){
+    say("bad", "No <code>api</code> URL set for " + ME.first + ". Add the /exec URL to their PEOPLE entry at the top of this file.");
+    return;
+  }
+  say("good", "Checking\u2026");
+  try {
+    const r = await fetch(ME.api, { method: "GET" });
+    const d = await r.json().catch(() => null);
+    if (!d || !d.ok) { say("bad", "Reached it, but got no usable answer. Is the deployment set to <b>Anyone</b>?"); return; }
+
+    const match = d.account === ME.email || (d.aliases || []).indexOf(ME.email) !== -1;
+    say(match ? "good" : "bad",
+      "Mailer is live.<br>Sends as: <code>" + d.account + "</code>" +
+      "<br>Aliases: <code>" + ((d.aliases||[]).join(", ") || "none") + "</code>" +
+      "<br>Quota left today: <b>" + d.remaining_today + "</b>" +
+      (match ? "" : "<br><br><b>Mismatch:</b> this script belongs to <code>" + d.account +
+        "</code>, but you're signed in as " + ME.email + ". Mail would go out from the wrong address \u2014 deploy a copy under that account, or add it as a verified alias in Gmail."));
+  } catch (err) {
+    say("bad", "Couldn't reach it: <code>" + err.message + "</code><br>Check the URL ends in <code>/exec</code>, access is <b>Anyone</b>, and this page is served over https.");
+  }
+});
+
+/* ── .eml fallback ─────────────────────────────── */
+function slug(s){ return String(s||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""); }
+
+$("btnEml").addEventListener("click", () => {
+  const eml = [
+    "From: " + ME.name + " <" + ME.email + ">",
+    "To: <" + $("fTo").value.trim() + ">",
+    "Subject: " + subjectLine(),
+    "X-Unsent: 1",
+    "MIME-Version: 1.0",
+    'Content-Type: text/html; charset="utf-8"',
+    "", buildHtml()
+  ].join("\r\n");
+
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([eml], { type: "message/rfc822" }));
+  a.download = (slug(vals.church) || "outreach") + ".eml";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  toast("Draft downloaded — double-click it to open in Mail");
+});
+
+function plainOf(html){
+  const d = document.createElement("div");
+  d.innerHTML = html;
+  return (d.textContent||"").replace(/\n{3,}/g,"\n\n").trim();
+}
+
+$("btnRich").addEventListener("click", async () => {
+  const html = buildHtml();
+  let ok = false;
+  if (window.ClipboardItem && navigator.clipboard && navigator.clipboard.write){
+    try {
+      await navigator.clipboard.write([ new ClipboardItem({
+        "text/html":  new Blob([html], {type:"text/html"}),
+        "text/plain": new Blob([plainOf(html)], {type:"text/plain"})
+      })]);
+      ok = true;
+    } catch(e){ /* fall back below */ }
+  }
+  if (!ok){
+    const box = $("copybox");
+    box.innerHTML = html;
+    const r = document.createRange(); r.selectNodeContents(box);
+    const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+    try { ok = document.execCommand("copy"); } catch(e){ ok = false; }
+    sel.removeAllRanges(); box.innerHTML = "";
+  }
+  toast(ok ? "Copied — paste into a blank Gmail compose" : "Copy blocked by browser");
+});
+
+$("btnCopy").addEventListener("click", async () => {
+  try { await navigator.clipboard.writeText(buildHtml()); toast("HTML copied"); }
+  catch(e){ toast("Copy blocked by browser"); }
+});
 </script>
-
 </body>
 </html>
