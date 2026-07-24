@@ -123,6 +123,24 @@ select.inp{appearance:none;-webkit-appearance:none;cursor:pointer}
 #frame{width:100%;max-width:620px;height:720px;border:1px solid var(--line);border-radius:20px;background:#fff;transition:max-width .3s var(--ease)}
 #frame.mob{max-width:390px}
 
+/* log */
+.logwrap{overflow-x:auto;padding:4px 30px 30px}
+table.log{width:100%;border-collapse:collapse;font-size:13.5px}
+table.log th{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-3);text-align:left;padding:0 14px 12px 0;font-weight:400;white-space:nowrap;
+  border-bottom:1px solid var(--line)}
+table.log td{padding:14px 14px 14px 0;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.45}
+table.log tr:hover td{background:rgba(17,17,16,.02)}
+table.log .when{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);white-space:nowrap}
+table.log .who{white-space:nowrap;color:var(--ink-2)}
+table.log .subj{color:var(--ink-2);max-width:280px}
+.tag{display:inline-block;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+  padding:5px 10px;border-radius:999px;white-space:nowrap}
+.tag.sent{background:rgba(46,125,82,.12);color:#1E5537}
+.tag.draft{background:rgba(17,17,16,.07);color:var(--ink-2)}
+.tag.test{background:rgba(255,107,82,.14);color:#9C3418}
+.logempty{padding:60px 30px 70px;text-align:center;color:var(--ink-3);font-size:14.5px;line-height:1.6}
+
 #toast{position:fixed;left:50%;bottom:30px;transform:translate(-50%,20px);background:var(--ink);color:#fff;
   font-size:14px;font-weight:500;padding:14px 24px;border-radius:999px;opacity:0;pointer-events:none;
   transition:.25s var(--ease);z-index:150;box-shadow:0 18px 40px -14px rgba(0,0,0,.5)}
@@ -178,11 +196,12 @@ select.inp{appearance:none;-webkit-appearance:none;cursor:pointer}
     <div class="r">
       <span style="font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)" id="buildTop"></span>
       <span style="color:var(--ink-3)" id="who">—</span>
+      <button id="btnLog">Log</button>
       <button id="btnOut">Sign out</button>
     </div>
   </div>
 
-  <div class="cols">
+  <div class="cols" id="composer">
 
     <!-- LEFT -->
     <div class="soft-card pad">
@@ -238,6 +257,25 @@ select.inp{appearance:none;-webkit-appearance:none;cursor:pointer}
     </div>
 
   </div>
+
+  <!-- ══ LOG ══ -->
+  <div id="logView" hidden>
+    <div class="soft-card" style="overflow:hidden">
+      <div class="pvhead" style="padding:26px 30px 18px">
+        <div>
+          <span class="lbl" style="margin:0 0 6px">Send log</span>
+          <span id="logCount" style="font-size:22px;font-weight:800;letter-spacing:-.03em;display:block">—</span>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn ghost sm" id="btnLogRefresh">Refresh</button>
+          <button class="btn ghost sm" id="btnLogCsv">Export CSV</button>
+          <button class="btn dark sm" id="btnLogBack">Back to composer</button>
+        </div>
+      </div>
+      <div class="status" id="logStatus" hidden style="margin:0 30px 18px"></div>
+      <div class="logwrap" id="logBody"></div>
+    </div>
+  </div>
 </div>
 
 <iframe name="gg_sink" id="ggSink" style="display:none;width:0;height:0;border:0" title="sink" aria-hidden="true"></iframe>
@@ -248,7 +286,7 @@ select.inp{appearance:none;-webkit-appearance:none;cursor:pointer}
 /* ══════════════════════════════════════════════════════════
    CONFIG — set this to your Apps Script /exec URL
    ══════════════════════════════════════════════════════════ */
-const BUILD = "b9 \u00b7 24 Jul";   // bump me when you edit; shown on screen
+const BUILD = "b10 \u00b7 24 Jul";   // bump me when you edit; shown on screen
 const PAGE_PASSCODE = "graces";        // page gate only. Not security.
 
 const PEOPLE = {
@@ -591,6 +629,7 @@ $("loginForm").addEventListener("submit", e => {
 
 $("btnOut").addEventListener("click", () => {
   KEY = ""; ME = null; vals = {};
+  showComposer();
   $("app").hidden = true;
   $("login").hidden = false;
   $("lgKey").value = "";
@@ -810,7 +849,9 @@ $("btnSend").addEventListener("click", async () => {
 
     if (data && data.ok){
       say("good", "Sent to <b>" + to + "</b>." +
-        (data.remaining_today != null ? " " + data.remaining_today + " sends left in today's quota." : ""));
+        (data.remaining_today != null ? " " + data.remaining_today + " sends left in today's quota." : "") +
+        " <a href=\"#\" id=\"jumpLog\" style=\"color:inherit;text-decoration:underline\">View log</a>");
+      const jl = $("jumpLog"); if (jl) jl.addEventListener("click", e => { e.preventDefault(); $("btnLog").click(); });
       clearForm();
       handled = true;
     } else if (data && data.error){
@@ -843,6 +884,152 @@ $("btnSend").addEventListener("click", async () => {
   btn.disabled = false;
   btn.textContent = "Send directly";
   render();
+});
+
+/* ── send log ──────────────────────────────────── */
+let LOG_ROWS = [];
+
+function ctx(){
+  const t = TEMPLATES[tplIdx] || {};
+  return {
+    template: t.name || "",
+    church:   vals.church || "",
+    pastor:   vals.last || "",
+    subject:  subjectLine()
+  };
+}
+
+/* Fire-and-forget. A logging failure must never look like a send failure. */
+function recordLog(method, to, status){
+  if (!ME || !ME.api || !KEY) return;
+  const c = ctx();
+  fetch(ME.api, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({
+      secret: KEY, action: "log", method: method, status: status || "",
+      to: to, from: ME.email,
+      template: c.template, church: c.church, pastor: c.pastor, subject: c.subject
+    })
+  }).then(() => console.log("[GG] logged", method, to))
+    .catch(e => console.warn("[GG] log write failed (harmless):", e.message));
+}
+
+function showComposer(){
+  $("composer").hidden = false;
+  $("logView").hidden = true;
+}
+
+$("btnLog").addEventListener("click", () => {
+  $("composer").hidden = true;
+  $("logView").hidden = false;
+  loadLog();
+});
+$("btnLogBack").addEventListener("click", showComposer);
+$("btnLogRefresh").addEventListener("click", loadLog);
+
+function logSay(kind, msg){
+  const el = $("logStatus");
+  el.hidden = false;
+  el.className = "status " + kind;
+  el.innerHTML = msg;
+}
+
+async function loadLog(){
+  const body = $("logBody");
+  $("logStatus").hidden = true;
+
+  if (!ME || !ME.api){
+    body.innerHTML = '<p class="logempty">No mailer connected for ' + (ME ? ME.first : "this account") +
+      ', so there\u2019s nothing to read from.</p>';
+    $("logCount").textContent = "—";
+    return;
+  }
+  if (!KEY){
+    body.innerHTML = '<p class="logempty">Sign out and enter your send key to read the log.</p>';
+    $("logCount").textContent = "—";
+    return;
+  }
+
+  body.innerHTML = '<p class="logempty">Loading\u2026</p>';
+
+  try {
+    const url = ME.api + "?action=log&secret=" + encodeURIComponent(KEY) + "&limit=300";
+    const res = await fetch(url);
+    const raw = await res.text();
+    let d = null;
+    try { d = JSON.parse(raw); } catch(e){}
+
+    if (!d){
+      body.innerHTML = "";
+      logSay("bad", "Couldn\u2019t read the log. Google returned something unexpected \u2014 usually the deployment needs a <b>new version</b> after adding the log code.");
+      return;
+    }
+    if (!d.ok){
+      body.innerHTML = "";
+      logSay("bad", "Log unavailable: <b>" + d.error + "</b>" +
+        (String(d.error).indexOf("LOG_SHEET_ID") !== -1
+          ? "<br>Create a Google Sheet, paste its ID into <code>LOG_SHEET_ID</code> in the Apps Script, and redeploy."
+          : ""));
+      return;
+    }
+
+    LOG_ROWS = d.rows || [];
+    $("logCount").textContent = d.total + (d.total === 1 ? " message" : " messages");
+    renderLog();
+
+  } catch (err){
+    body.innerHTML = "";
+    logSay("bad", "Couldn\u2019t reach the mailer: <code>" + err.message + "</code>");
+  }
+}
+
+function fmtWhen(iso){
+  const d = new Date(iso);
+  if (isNaN(d)) return iso || "";
+  return d.toLocaleDateString(undefined, { month:"short", day:"numeric" }) + "  " +
+         d.toLocaleTimeString(undefined, { hour:"numeric", minute:"2-digit" });
+}
+
+function esc2(v){ return String(v == null ? "" : v).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+function renderLog(){
+  const body = $("logBody");
+  if (!LOG_ROWS.length){
+    body.innerHTML = '<p class="logempty">Nothing sent yet.<br>Your first outreach will show up here.</p>';
+    return;
+  }
+  // columns: sent_at sender method template to church pastor subject status note
+  const rows = LOG_ROWS.map(r => {
+    const method = (r[2] || "draft").toLowerCase();
+    const cls = method === "sent" ? "sent" : (method === "test" ? "test" : "draft");
+    return "<tr>" +
+      '<td class="when">' + esc2(fmtWhen(r[0])) + "</td>" +
+      '<td><span class="tag ' + cls + '">' + esc2(r[2] || "draft") + "</span></td>" +
+      "<td><b>" + esc2(r[5] || "\u2014") + "</b><br><span class=\"who\">" + esc2(r[4]) + "</span></td>" +
+      '<td class="subj">' + esc2(r[7]) + "</td>" +
+      '<td class="who">' + esc2(r[3]) + "</td>" +
+      '<td class="who">' + esc2((r[1] || "").split("@")[0]) + "</td>" +
+    "</tr>";
+  }).join("");
+
+  body.innerHTML =
+    '<table class="log"><thead><tr>' +
+      "<th>When</th><th>How</th><th>Church / recipient</th><th>Subject</th><th>Template</th><th>By</th>" +
+    "</tr></thead><tbody>" + rows + "</tbody></table>";
+}
+
+$("btnLogCsv").addEventListener("click", () => {
+  if (!LOG_ROWS.length){ logSay("bad", "Nothing to export yet."); return; }
+  const head = ["sent_at","sender","method","template","to","church","pastor","subject","status","note"];
+  const q = v => '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"';
+  const csv = [head.map(q).join(",")].concat(LOG_ROWS.map(r => r.map(q).join(","))).join("\r\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+  a.download = "good-graces-send-log.csv";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  toast("CSV downloaded");
 });
 
 /* ── connection test ───────────────────────────── */
@@ -888,6 +1075,7 @@ $("btnEml").addEventListener("click", () => {
   a.download = (slug(vals.church) || "outreach") + ".eml";
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  recordLog("draft", $("fTo").value.trim(), "draft created");
   toast("Draft downloaded — double-click it to open in Mail");
 });
 
