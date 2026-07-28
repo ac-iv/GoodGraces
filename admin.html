@@ -48,6 +48,7 @@ select.inp{appearance:none;-webkit-appearance:none;cursor:pointer}
 .selwrap::after{content:"";position:absolute;right:18px;top:50%;pointer-events:none;width:7px;height:7px;
   border-right:1.5px solid var(--ink-3);border-bottom:1.5px solid var(--ink-3);transform:translateY(-70%) rotate(45deg)}
 .hint{font-family:var(--mono);font-size:10px;letter-spacing:.05em;color:var(--ink-3);margin-top:7px;line-height:1.5}
+.hint.warn{color:#9C3418}
 
 .btn{font-family:var(--sans);font-size:15px;font-weight:600;padding:15px 26px;border-radius:999px;
   border:1px solid transparent;cursor:pointer;transition:transform .2s var(--ease),opacity .2s var(--ease);
@@ -102,6 +103,7 @@ select.inp{appearance:none;-webkit-appearance:none;cursor:pointer}
   padding:4px 8px;border-radius:999px;border:1px solid var(--line);color:var(--ink-3);white-space:nowrap}
 .tbadge.full{background:rgba(255,107,82,.1);border-color:rgba(255,107,82,.28);color:#9C3418}
 .tbadge.ref{background:rgba(46,125,82,.1);border-color:rgba(46,125,82,.28);color:#1E5537}
+.tbadge.bulk{background:rgba(58,110,214,.1);border-color:rgba(58,110,214,.28);color:#274C97}
 .tpl button[data-on="1"] .tbadge{border-color:rgba(255,255,255,.22);color:rgba(255,255,255,.7);background:rgba(255,255,255,.08)}
 
 .rule{height:1px;background:var(--line);margin:24px 0}
@@ -313,9 +315,10 @@ table.log .actbtn:hover{border-color:rgba(17,17,16,.28);color:var(--ink);transfo
 
       <div class="rule"></div>
 
-      <span class="lbl">Recipient</span>
+      <span class="lbl" id="recipLbl">Recipient</span>
       <div style="margin-bottom:18px">
         <input type="email" id="fTo" class="inp" placeholder="pastor@church.org" autocomplete="off" spellcheck="false">
+        <p class="hint" id="toBreak" hidden></p>
       </div>
 
       <div class="fields" id="fields"></div>
@@ -1699,7 +1702,215 @@ const TEMPLATES_B64 =
   "bWFyZ2luOjA7Y29sb3I6Izc3Nzc3Nztmb250LXNpemU6MTNweDtcIj57e3NlbmRlcl90aXRsZX19" +
   "LCBHb29kIEdyYWNlcyAmbWlkZG90OyA8YSBocmVmPVwibWFpbHRvOnt7c2VuZGVyX2VtYWlsfX1c" +
   "IiBzdHlsZT1cImNvbG9yOiM3Nzc3Nzc7XCI+e3tzZW5kZXJfZW1haWx9fTwvYT48L3A+XG48L2Rp" +
-  "dj5cbjwvYm9keT48L2h0bWw+IiwgInRhZyI6ICJMaWdodCJ9XQ==";
+  "dj5cbjwvYm9keT48L2h0bWw+IiwgInRhZyI6ICJMaWdodCJ9LCB7ImlkIjogImJ1bGstaW50ZXJl" +
+  "c3QiLCAibmFtZSI6ICJCdWxrIEludGVyZXN0IEJsYXN0IiwgInRhZyI6ICJCdWxrIiwgImRlc2Mi" +
+  "OiAiT25lIGdlbmVyaWMgZW1haWwsIHNlbnQgaW5kaXZpZHVhbGx5IHRvIGEgd2hvbGUgbGlzdC4g" +
+  "Tm8gY2h1cmNoIG9yIHBhc3RvciBuZWVkZWQg4oCUIHBhc3RlIHVwIHRvIDUwIGFkZHJlc3Nlcy4i" +
+  "LCAiYnVsayI6IHRydWUsICJzdWJqZWN0cyI6IFsiQSBuZXcgYXBwIGZvciB5b3VyIGNodXJjaCBj" +
+  "b21tdW5pdHkiLCAiQnVpbHQgc29tZXRoaW5nIGZvciBjaHVyY2hlcyDigJQgd29ydGggYSBsb29r" +
+  "PyIsICJPbmUgYXBwIGZvciBldmVyeXRoaW5nIHlvdXIgY2h1cmNoIGFscmVhZHkgZG9lcyIsICJU" +
+  "aG91Z2h0IHRoaXMgbWlnaHQgYmUgd29ydGggeW91ciB0aW1lIl0sICJmaWVsZHMiOiBbXSwgImh0" +
+  "bWwiOiAiPCFET0NUWVBFIGh0bWw+XG48aHRtbCBsYW5nPVwiZW5cIiB4bWxucz1cImh0dHA6Ly93" +
+  "d3cudzMub3JnLzE5OTkveGh0bWxcIiB4bWxuczp2PVwidXJuOnNjaGVtYXMtbWljcm9zb2Z0LWNv" +
+  "bTp2bWxcIiB4bWxuczpvPVwidXJuOnNjaGVtYXMtbWljcm9zb2Z0LWNvbTpvZmZpY2U6b2ZmaWNl" +
+  "XCI+XG48aGVhZD5cbiAgPG1ldGEgY2hhcnNldD1cInV0Zi04XCI+XG4gIDxtZXRhIG5hbWU9XCJ2" +
+  "aWV3cG9ydFwiIGNvbnRlbnQ9XCJ3aWR0aD1kZXZpY2Utd2lkdGhcIj5cbiAgPG1ldGEgaHR0cC1l" +
+  "cXVpdj1cIlgtVUEtQ29tcGF0aWJsZVwiIGNvbnRlbnQ9XCJJRT1lZGdlXCI+XG4gIDxtZXRhIG5h" +
+  "bWU9XCJ4LWFwcGxlLWRpc2FibGUtbWVzc2FnZS1yZWZvcm1hdHRpbmdcIj5cbiAgPHRpdGxlPkdv" +
+  "b2RHcmFjZXMg4oCUIEV2ZXJ5dGhpbmcgeW91ciBjaHVyY2ggZG9lcywgaW4gb25lIGFwcDwvdGl0" +
+  "bGU+XG4gIDxzdHlsZT5cbiAgICBodG1sLCBib2R5IHtcbiAgICAgIG1hcmdpbjogMCBhdXRvICFp" +
+  "bXBvcnRhbnQ7XG4gICAgICBwYWRkaW5nOiAwICFpbXBvcnRhbnQ7XG4gICAgICBoZWlnaHQ6IDEw" +
+  "MCUgIWltcG9ydGFudDtcbiAgICAgIHdpZHRoOiAxMDAlICFpbXBvcnRhbnQ7XG4gICAgICBiYWNr" +
+  "Z3JvdW5kLWNvbG9yOiAjRURFQ0VBO1xuICAgIH1cbiAgICAqIHsgLW1zLXRleHQtc2l6ZS1hZGp1" +
+  "c3Q6IDEwMCU7IC13ZWJraXQtdGV4dC1zaXplLWFkanVzdDogMTAwJTsgfVxuICAgIHRhYmxlLCB0" +
+  "ZCB7IG1zby10YWJsZS1sc3BhY2U6IDBwdCAhaW1wb3J0YW50OyBtc28tdGFibGUtcnNwYWNlOiAw" +
+  "cHQgIWltcG9ydGFudDsgfVxuICAgIHRhYmxlIHsgYm9yZGVyLXNwYWNpbmc6IDAgIWltcG9ydGFu" +
+  "dDsgYm9yZGVyLWNvbGxhcHNlOiBjb2xsYXBzZSAhaW1wb3J0YW50OyB0YWJsZS1sYXlvdXQ6IGZp" +
+  "eGVkICFpbXBvcnRhbnQ7IG1hcmdpbjogMCBhdXRvICFpbXBvcnRhbnQ7IH1cbiAgICBpbWcgeyAt" +
+  "bXMtaW50ZXJwb2xhdGlvbi1tb2RlOiBiaWN1YmljOyBib3JkZXI6IDA7IGhlaWdodDogYXV0bzsg" +
+  "bGluZS1oZWlnaHQ6IDEwMCU7IG91dGxpbmU6IG5vbmU7IHRleHQtZGVjb3JhdGlvbjogbm9uZTsg" +
+  "ZGlzcGxheTogYmxvY2s7IH1cbiAgICBhIHsgdGV4dC1kZWNvcmF0aW9uOiBub25lOyB9XG5cbiAg" +
+  "ICBAbWVkaWEgc2NyZWVuIGFuZCAobWF4LXdpZHRoOiA2MDBweCkge1xuICAgICAgLmVtYWlsLWNv" +
+  "bnRhaW5lciB7IHdpZHRoOiAxMDAlICFpbXBvcnRhbnQ7IG1hcmdpbjogYXV0byAhaW1wb3J0YW50" +
+  "OyB9XG4gICAgICAuZ3V0IHsgcGFkZGluZy1sZWZ0OiAxNnB4ICFpbXBvcnRhbnQ7IHBhZGRpbmct" +
+  "cmlnaHQ6IDE2cHggIWltcG9ydGFudDsgfVxuICAgICAgLnBhZCB7IHBhZGRpbmctbGVmdDogMjRw" +
+  "eCAhaW1wb3J0YW50OyBwYWRkaW5nLXJpZ2h0OiAyNHB4ICFpbXBvcnRhbnQ7IH1cbiAgICAgIC5o" +
+  "MS1tIHsgZm9udC1zaXplOiAzNHB4ICFpbXBvcnRhbnQ7IGxpbmUtaGVpZ2h0OiAxLjAzICFpbXBv" +
+  "cnRhbnQ7IGxldHRlci1zcGFjaW5nOiAtMS40cHggIWltcG9ydGFudDsgfVxuICAgICAgLmJvZHkt" +
+  "bSB7IGZvbnQtc2l6ZTogMTZweCAhaW1wb3J0YW50OyB9XG4gICAgfVxuICA8L3N0eWxlPlxuPC9o" +
+  "ZWFkPlxuPGJvZHkgd2lkdGg9XCIxMDAlXCIgc3R5bGU9XCJtYXJnaW46MDsgcGFkZGluZzowICFp" +
+  "bXBvcnRhbnQ7IG1zby1saW5lLWhlaWdodC1ydWxlOmV4YWN0bHk7IGJhY2tncm91bmQtY29sb3I6" +
+  "I0VERUNFQTtcIj5cbjxjZW50ZXIgc3R5bGU9XCJ3aWR0aDoxMDAlOyBiYWNrZ3JvdW5kLWNvbG9y" +
+  "OiNFREVDRUE7XCI+XG5cbiAgPCEtLSBQcmVoZWFkZXIgLS0+XG4gIDxkaXYgc3R5bGU9XCJkaXNw" +
+  "bGF5Om5vbmU7IGZvbnQtc2l6ZToxcHg7IGxpbmUtaGVpZ2h0OjFweDsgbWF4LWhlaWdodDowOyBt" +
+  "YXgtd2lkdGg6MDsgb3BhY2l0eTowOyBvdmVyZmxvdzpoaWRkZW47IG1zby1oaWRlOmFsbDsgZm9u" +
+  "dC1mYW1pbHk6c2Fucy1zZXJpZjtcIj5cbiAgICBPbmUgcGxhY2UgZm9yIGFubm91bmNlbWVudHMs" +
+  "IHByYXllciwgZ2l2aW5nIOKAlCBhbmQgdGhlIHBlb3BsZSB0cnlpbmcgdG8gZmluZCB5b3UuXG4g" +
+  "IDwvZGl2PlxuXG4gIDx0YWJsZSBhbGlnbj1cImNlbnRlclwiIHJvbGU9XCJwcmVzZW50YXRpb25c" +
+  "IiBjZWxsc3BhY2luZz1cIjBcIiBjZWxscGFkZGluZz1cIjBcIiBib3JkZXI9XCIwXCIgd2lkdGg9" +
+  "XCI2MDBcIiBjbGFzcz1cImVtYWlsLWNvbnRhaW5lclwiIHN0eWxlPVwibWFyZ2luOmF1dG87IGJh" +
+  "Y2tncm91bmQtY29sb3I6I0ZGRkZGRjtcIj5cblxuICAgIDwhLS0gR0xBU1MgUElMTCBOQVYgLS0+" +
+  "XG4gICAgPHRyPlxuICAgICAgPHRkIGNsYXNzPVwiZ3V0XCIgc3R5bGU9XCJwYWRkaW5nOjIycHgg" +
+  "MjRweCAwIDI0cHg7XCI+XG4gICAgICAgIDx0YWJsZSByb2xlPVwicHJlc2VudGF0aW9uXCIgY2Vs" +
+  "bHNwYWNpbmc9XCIwXCIgY2VsbHBhZGRpbmc9XCIwXCIgYm9yZGVyPVwiMFwiIHdpZHRoPVwiMTAw" +
+  "JVwiIHN0eWxlPVwiYmFja2dyb3VuZC1jb2xvcjojRkZGRkZGOyBib3JkZXI6MXB4IHNvbGlkICNF" +
+  "NkU1RTI7IGJvcmRlci1yYWRpdXM6MTAwcHg7XCI+XG4gICAgICAgICAgPHRyPlxuICAgICAgICAg" +
+  "ICAgPHRkIHN0eWxlPVwicGFkZGluZzoxNXB4IDI2cHg7IGZvbnQtZmFtaWx5OidIZWx2ZXRpY2Eg" +
+  "TmV1ZScsSGVsdmV0aWNhLEFyaWFsLHNhbnMtc2VyaWY7XCI+XG4gICAgICAgICAgICAgIDx0YWJs" +
+  "ZSByb2xlPVwicHJlc2VudGF0aW9uXCIgY2VsbHNwYWNpbmc9XCIwXCIgY2VsbHBhZGRpbmc9XCIw" +
+  "XCIgYm9yZGVyPVwiMFwiIHdpZHRoPVwiMTAwJVwiPlxuICAgICAgICAgICAgICAgIDx0cj5cbiAg" +
+  "ICAgICAgICAgICAgICAgIDx0ZCBhbGlnbj1cImxlZnRcIiBzdHlsZT1cImZvbnQtc2l6ZToxNnB4" +
+  "OyBmb250LXdlaWdodDo3MDA7IGxldHRlci1zcGFjaW5nOi0wLjVweDsgY29sb3I6IzBBMEEwQTtc" +
+  "Ij5Hb29kR3JhY2VzPC90ZD5cbiAgICAgICAgICAgICAgICAgIDx0ZCBhbGlnbj1cInJpZ2h0XCIg" +
+  "c3R5bGU9XCJmb250LXNpemU6MTBweDsgZm9udC13ZWlnaHQ6NzAwOyBsZXR0ZXItc3BhY2luZzox" +
+  "LjhweDsgdGV4dC10cmFuc2Zvcm06dXBwZXJjYXNlOyBjb2xvcjojOEM4Qzg4O1wiPjxzcGFuIHN0" +
+  "eWxlPVwiY29sb3I6I0ZGNkI1MjtcIj4mYnVsbDs8L3NwYW4+Jm5ic3A7IFNhbiBEaWVnbzwvdGQ+" +
+  "XG4gICAgICAgICAgICAgICAgPC90cj5cbiAgICAgICAgICAgICAgPC90YWJsZT5cbiAgICAgICAg" +
+  "ICAgIDwvdGQ+XG4gICAgICAgICAgPC90cj5cbiAgICAgICAgPC90YWJsZT5cbiAgICAgIDwvdGQ+" +
+  "XG4gICAgPC90cj5cblxuICAgIDwhLS0gSEVSTyAtLT5cbiAgICA8dHI+XG4gICAgICA8dGQgY2xh" +
+  "c3M9XCJwYWRcIiBzdHlsZT1cInBhZGRpbmc6NTBweCA0NHB4IDAgNDRweDsgdGV4dC1hbGlnbjps" +
+  "ZWZ0OyBmb250LWZhbWlseTonSGVsdmV0aWNhIE5ldWUnLEhlbHZldGljYSxBcmlhbCxzYW5zLXNl" +
+  "cmlmO1wiPlxuICAgICAgICA8ZGl2IHN0eWxlPVwiaGVpZ2h0OjNweDsgd2lkdGg6NDRweDsgYmFj" +
+  "a2dyb3VuZC1jb2xvcjojRkY2QjUyOyBmb250LXNpemU6MDsgbGluZS1oZWlnaHQ6MDsgYm9yZGVy" +
+  "LXJhZGl1czoxMDBweDtcIj4mbmJzcDs8L2Rpdj5cbiAgICAgICAgPHAgc3R5bGU9XCJtYXJnaW46" +
+  "MjBweCAwIDEycHggMDsgZm9udC1zaXplOjEwcHg7IGZvbnQtd2VpZ2h0OjcwMDsgbGV0dGVyLXNw" +
+  "YWNpbmc6MS44cHg7IHRleHQtdHJhbnNmb3JtOnVwcGVyY2FzZTsgY29sb3I6IzhDOEM4ODtcIj5B" +
+  "IHF1aWNrIGludHJvZHVjdGlvbjwvcD5cbiAgICAgICAgPGgxIGNsYXNzPVwiaDEtbVwiIHN0eWxl" +
+  "PVwibWFyZ2luOjA7IGZvbnQtc2l6ZTo0NnB4OyBsaW5lLWhlaWdodDoxLjA7IGZvbnQtd2VpZ2h0" +
+  "OjgwMDsgY29sb3I6IzBBMEEwQTsgbGV0dGVyLXNwYWNpbmc6LTIuMHB4O1wiPlxuICAgICAgICAg" +
+  "IEV2ZXJ5dGhpbmcgeW91cjxicj5jaHVyY2ggZG9lcyw8YnI+PHNwYW4gc3R5bGU9XCJjb2xvcjoj" +
+  "RkY2QjUyO1wiPmluIG9uZSBhcHAuPC9zcGFuPlxuICAgICAgICA8L2gxPlxuICAgICAgPC90ZD5c" +
+  "biAgICA8L3RyPlxuXG4gICAgPHRyPlxuICAgICAgPHRkIGNsYXNzPVwicGFkXCIgc3R5bGU9XCJw" +
+  "YWRkaW5nOjIycHggNDRweCAwIDQ0cHg7IGZvbnQtZmFtaWx5OidIZWx2ZXRpY2EgTmV1ZScsSGVs" +
+  "dmV0aWNhLEFyaWFsLHNhbnMtc2VyaWY7XCI+XG4gICAgICAgIDxwIGNsYXNzPVwiYm9keS1tXCIg" +
+  "c3R5bGU9XCJtYXJnaW46MDsgY29sb3I6IzRFNEU0QTsgZm9udC1zaXplOjE3cHg7IGxpbmUtaGVp" +
+  "Z2h0OjEuNjI7XCI+XG4gICAgICAgICAgSSdtIHt7c2VuZGVyX2ZpcnN0fX0sIGFuZCBJJ20gYnVp" +
+  "bGRpbmcgR29vZCBHcmFjZXMgaGVyZSBpbiBTYW4gRGllZ28g4oCUIG9uZSBwbGFjZSBmb3IgYSBj" +
+  "aHVyY2ggdG8gaG9sZCBldmVyeXRoaW5nIGl0IGFscmVhZHkganVnZ2xlczogYW5ub3VuY2VtZW50" +
+  "cywgcHJheWVyLCB0aGUgY2FsZW5kYXIsIGdpdmluZywgYW5kIGEgd2F5IGZvciBuZXcgcGVvcGxl" +
+  "IHRvIGFjdHVhbGx5IGZpbmQgeW91LlxuICAgICAgICA8L3A+XG4gICAgICA8L3RkPlxuICAgIDwv" +
+  "dHI+XG5cbiAgICA8IS0tIFRocmVlIG1vY2t1cHMsIG1pZGRsZSByYWlzZWQgLS0+XG4gICAgPHRy" +
+  "PlxuICAgICAgPHRkIGNsYXNzPVwiZ3V0XCIgc3R5bGU9XCJwYWRkaW5nOjM0cHggMjRweCAwIDI0" +
+  "cHg7IGZvbnQtc2l6ZTowOyBsaW5lLWhlaWdodDowO1wiPlxuICAgICAgICA8dGFibGUgcm9sZT1c" +
+  "InByZXNlbnRhdGlvblwiIGNlbGxzcGFjaW5nPVwiMFwiIGNlbGxwYWRkaW5nPVwiMFwiIGJvcmRl" +
+  "cj1cIjBcIiB3aWR0aD1cIjEwMCVcIiBzdHlsZT1cInRhYmxlLWxheW91dDpmaXhlZDtcIj5cbiAg" +
+  "ICAgICAgICA8dHI+XG4gICAgICAgICAgICA8dGQgd2lkdGg9XCIxODRcIiB2YWxpZ249XCJib3R0" +
+  "b21cIiBzdHlsZT1cIndpZHRoOjMzLjMzJTsgcGFkZGluZzoyMnB4IDVweCAwIDA7IGZvbnQtc2l6" +
+  "ZTowOyBsaW5lLWhlaWdodDowO1wiPlxuICAgICAgICAgICAgICA8aW1nIHNyYz1cImh0dHBzOi8v" +
+  "Z29vZGdyYWNlcy5hcHAvaW1nL25ldy1tb2NrdXBzLzIucG5nXCIgd2lkdGg9XCIxNzlcIiBhbHQ9" +
+  "XCJDb21tdW5pdHkgZmVlZFwiIHN0eWxlPVwid2lkdGg6MTAwJTsgbWF4LXdpZHRoOjE3OXB4OyBo" +
+  "ZWlnaHQ6YXV0bzsgZGlzcGxheTpibG9jaztcIj5cbiAgICAgICAgICAgIDwvdGQ+XG4gICAgICAg" +
+  "ICAgICA8dGQgd2lkdGg9XCIxODRcIiB2YWxpZ249XCJib3R0b21cIiBzdHlsZT1cIndpZHRoOjMz" +
+  "LjMzJTsgcGFkZGluZzowIDVweCAwIDVweDsgZm9udC1zaXplOjA7IGxpbmUtaGVpZ2h0OjA7XCI+" +
+  "XG4gICAgICAgICAgICAgIDxpbWcgc3JjPVwiaHR0cHM6Ly9nb29kZ3JhY2VzLmFwcC9pbWcvbmV3" +
+  "LW1vY2t1cHMvNS5wbmdcIiB3aWR0aD1cIjE3OVwiIGFsdD1cIkhvbWUgZGFzaGJvYXJkXCIgc3R5" +
+  "bGU9XCJ3aWR0aDoxMDAlOyBtYXgtd2lkdGg6MTc5cHg7IGhlaWdodDphdXRvOyBkaXNwbGF5OmJs" +
+  "b2NrO1wiPlxuICAgICAgICAgICAgPC90ZD5cbiAgICAgICAgICAgIDx0ZCB3aWR0aD1cIjE4NFwi" +
+  "IHZhbGlnbj1cImJvdHRvbVwiIHN0eWxlPVwid2lkdGg6MzMuMzMlOyBwYWRkaW5nOjIycHggMCAw" +
+  "IDVweDsgZm9udC1zaXplOjA7IGxpbmUtaGVpZ2h0OjA7XCI+XG4gICAgICAgICAgICAgIDxpbWcg" +
+  "c3JjPVwiaHR0cHM6Ly9nb29kZ3JhY2VzLmFwcC9pbWcvbmV3LW1vY2t1cHMvNC5wbmdcIiB3aWR0" +
+  "aD1cIjE3OVwiIGFsdD1cIkdpdmluZ1wiIHN0eWxlPVwid2lkdGg6MTAwJTsgbWF4LXdpZHRoOjE3" +
+  "OXB4OyBoZWlnaHQ6YXV0bzsgZGlzcGxheTpibG9jaztcIj5cbiAgICAgICAgICAgIDwvdGQ+XG4g" +
+  "ICAgICAgICAgPC90cj5cbiAgICAgICAgPC90YWJsZT5cbiAgICAgIDwvdGQ+XG4gICAgPC90cj5c" +
+  "blxuICAgIDwhLS0gUEFORUw6IFdIQVQgSVQgUFVMTFMgVE9HRVRIRVIgLS0+XG4gICAgPHRyPlxu" +
+  "ICAgICAgPHRkIGNsYXNzPVwiZ3V0XCIgc3R5bGU9XCJwYWRkaW5nOjM2cHggMjRweCAwIDI0cHg7" +
+  "XCI+XG4gICAgICAgIDx0YWJsZSByb2xlPVwicHJlc2VudGF0aW9uXCIgY2VsbHNwYWNpbmc9XCIw" +
+  "XCIgY2VsbHBhZGRpbmc9XCIwXCIgYm9yZGVyPVwiMFwiIHdpZHRoPVwiMTAwJVwiIHN0eWxlPVwi" +
+  "YmFja2dyb3VuZC1jb2xvcjojRkZGRkZGOyBib3JkZXI6MXB4IHNvbGlkICNFNkU1RTI7IGJvcmRl" +
+  "ci1yYWRpdXM6MjRweDtcIj5cbiAgICAgICAgICA8dHI+XG4gICAgICAgICAgICA8dGQgY2xhc3M9" +
+  "XCJwYWRcIiBzdHlsZT1cInBhZGRpbmc6MzRweCAzNHB4IDEycHggMzRweDsgZm9udC1mYW1pbHk6" +
+  "J0hlbHZldGljYSBOZXVlJyxIZWx2ZXRpY2EsQXJpYWwsc2Fucy1zZXJpZjtcIj5cbiAgICAgICAg" +
+  "ICAgICAgPHAgc3R5bGU9XCJtYXJnaW46MCAwIDRweCAwOyBmb250LXNpemU6MTBweDsgZm9udC13" +
+  "ZWlnaHQ6NzAwOyBsZXR0ZXItc3BhY2luZzoxLjhweDsgdGV4dC10cmFuc2Zvcm06dXBwZXJjYXNl" +
+  "OyBjb2xvcjojOEM4Qzg4O1wiPjxzcGFuIHN0eWxlPVwiY29sb3I6I0ZGNkI1MjtcIj4mYnVsbDs8" +
+  "L3NwYW4+Jm5ic3A7IFdoYXQgaXQgcHVsbHMgdG9nZXRoZXI8L3A+XG4gICAgICAgICAgICAgIDx0" +
+  "YWJsZSByb2xlPVwicHJlc2VudGF0aW9uXCIgY2VsbHNwYWNpbmc9XCIwXCIgY2VsbHBhZGRpbmc9" +
+  "XCIwXCIgYm9yZGVyPVwiMFwiIHdpZHRoPVwiMTAwJVwiPlxuICAgICAgICAgICAgICAgIDx0cj5c" +
+  "biAgICAgICAgICAgICAgICAgIDx0ZCBzdHlsZT1cInBhZGRpbmc6MjBweCAwO1wiPlxuICAgICAg" +
+  "ICAgICAgICAgICAgICA8cCBzdHlsZT1cIm1hcmdpbjowIDAgNnB4IDA7IGZvbnQtc2l6ZToxN3B4" +
+  "OyBmb250LXdlaWdodDo3MDA7IGNvbG9yOiMwQTBBMEE7IGxldHRlci1zcGFjaW5nOi0wLjRweDtc" +
+  "Ij5PbmUgZmVlZCB5b3VyIHBlb3BsZSBvcGVuPC9wPlxuICAgICAgICAgICAgICAgICAgICA8cCBz" +
+  "dHlsZT1cIm1hcmdpbjowOyBjb2xvcjojNkI2QjY2OyBmb250LXNpemU6MTVweDsgbGluZS1oZWln" +
+  "aHQ6MS42O1wiPkFubm91bmNlbWVudHMsIHByYXllciwgYW5kIGEgZGFpbHkgaW52aXRhdGlvbiDi" +
+  "gJQgaW4gdGhlIG9uZSBwbGFjZSB0aGV5J2xsIGFjdHVhbGx5IGxvb2suPC9wPlxuICAgICAgICAg" +
+  "ICAgICAgICAgPC90ZD5cbiAgICAgICAgICAgICAgICA8L3RyPlxuICAgICAgICAgICAgICAgIDx0" +
+  "cj5cbiAgICAgICAgICAgICAgICAgIDx0ZCBzdHlsZT1cInBhZGRpbmc6MjBweCAwOyBib3JkZXIt" +
+  "dG9wOjFweCBzb2xpZCAjRUVFREVBO1wiPlxuICAgICAgICAgICAgICAgICAgICA8cCBzdHlsZT1c" +
+  "Im1hcmdpbjowIDAgNnB4IDA7IGZvbnQtc2l6ZToxN3B4OyBmb250LXdlaWdodDo3MDA7IGNvbG9y" +
+  "OiMwQTBBMEE7IGxldHRlci1zcGFjaW5nOi0wLjRweDtcIj5Gb3VuZCBieSBwZW9wbGUgbmVhcmJ5" +
+  "PC9wPlxuICAgICAgICAgICAgICAgICAgICA8cCBzdHlsZT1cIm1hcmdpbjowOyBjb2xvcjojNkI2" +
+  "QjY2OyBmb250LXNpemU6MTVweDsgbGluZS1oZWlnaHQ6MS42O1wiPkhvdyBzb21lb25lIG5ldyB0" +
+  "byB0aGUgYXJlYSBsYW5kcyBvbiB5b3VyIGNodXJjaCBpbnN0ZWFkIG9mIHNjcm9sbGluZyByaWdo" +
+  "dCBwYXN0IGl0LjwvcD5cbiAgICAgICAgICAgICAgICAgIDwvdGQ+XG4gICAgICAgICAgICAgICAg" +
+  "PC90cj5cbiAgICAgICAgICAgICAgICA8dHI+XG4gICAgICAgICAgICAgICAgICA8dGQgc3R5bGU9" +
+  "XCJwYWRkaW5nOjIwcHggMDsgYm9yZGVyLXRvcDoxcHggc29saWQgI0VFRURFQTtcIj5cbiAgICAg" +
+  "ICAgICAgICAgICAgICAgPHAgc3R5bGU9XCJtYXJnaW46MCAwIDZweCAwOyBmb250LXNpemU6MTdw" +
+  "eDsgZm9udC13ZWlnaHQ6NzAwOyBjb2xvcjojMEEwQTBBOyBsZXR0ZXItc3BhY2luZzotMC40cHg7" +
+  "XCI+R2l2aW5nLCBoYW5kbGVkPC9wPlxuICAgICAgICAgICAgICAgICAgICA8cCBzdHlsZT1cIm1h" +
+  "cmdpbjowOyBjb2xvcjojNkI2QjY2OyBmb250LXNpemU6MTVweDsgbGluZS1oZWlnaHQ6MS42O1wi" +
+  "PkdpdmluZyBlbmQgdG8gZW5kLCBhbmQgYSBjbGVhciB2aWV3IG9mIHdoYXQncyBjb21pbmcgaW4g" +
+  "4oCUIG5vIHNwcmVhZHNoZWV0IGV4cG9ydHMuPC9wPlxuICAgICAgICAgICAgICAgICAgPC90ZD5c" +
+  "biAgICAgICAgICAgICAgICA8L3RyPlxuICAgICAgICAgICAgICA8L3RhYmxlPlxuICAgICAgICAg" +
+  "ICAgPC90ZD5cbiAgICAgICAgICA8L3RyPlxuICAgICAgICA8L3RhYmxlPlxuICAgICAgPC90ZD5c" +
+  "biAgICA8L3RyPlxuXG4gICAgPCEtLSBUSEUgQVNLIC8gTEVBRCBDQVBUVVJFIC0tPlxuICAgIDx0" +
+  "cj5cbiAgICAgIDx0ZCBjbGFzcz1cInBhZFwiIHN0eWxlPVwicGFkZGluZzozNnB4IDQ0cHggMCA0" +
+  "NHB4OyBmb250LWZhbWlseTonSGVsdmV0aWNhIE5ldWUnLEhlbHZldGljYSxBcmlhbCxzYW5zLXNl" +
+  "cmlmO1wiPlxuICAgICAgICA8cCBjbGFzcz1cImJvZHktbVwiIHN0eWxlPVwibWFyZ2luOjAgMCAy" +
+  "NnB4IDA7IGNvbG9yOiM0RTRFNEE7IGZvbnQtc2l6ZToxNnB4OyBsaW5lLWhlaWdodDoxLjcyO1wi" +
+  "PlxuICAgICAgICAgIEknbSByZWFjaGluZyBvdXQgdG8gYSBoYW5kZnVsIG9mIGNodXJjaGVzIHRv" +
+  "IHNlZSB3aG8nZCB3YW50IGluIGVhcmx5LiBObyBwaXRjaCBhbmQgbm8gcHJlc3N1cmUg4oCUIEkn" +
+  "ZCBqdXN0IGxpa2UgdG8ga25vdyB3aGV0aGVyIHRoaXMgaXMgc29tZXRoaW5nIHdvcnRoIHNob3dp" +
+  "bmcgeW91LlxuICAgICAgICA8L3A+XG5cbiAgICAgICAgPHRhYmxlIHJvbGU9XCJwcmVzZW50YXRp" +
+  "b25cIiBjZWxsc3BhY2luZz1cIjBcIiBjZWxscGFkZGluZz1cIjBcIiBib3JkZXI9XCIwXCIgYWxp" +
+  "Z249XCJsZWZ0XCIgc3R5bGU9XCJtYXJnaW46MDtcIj5cbiAgICAgICAgICA8dHI+XG4gICAgICAg" +
+  "ICAgICA8dGQgc3R5bGU9XCJib3JkZXItcmFkaXVzOjEwMHB4OyBiYWNrZ3JvdW5kOiMwQTBBMEE7" +
+  "XCI+XG4gICAgICAgICAgICAgIDxhIGhyZWY9XCJtYWlsdG86e3tzZW5kZXJfZW1haWx9fT9zdWJq" +
+  "ZWN0PUknbSUyMGludGVyZXN0ZWQlMjBpbiUyMEdvb2QlMjBHcmFjZXMmYW1wO2JvZHk9SGklMjB7" +
+  "e3NlbmRlcl9maXJzdH19JTJDJTBBJTBBWWVzJTIwJUUyJTgwJTk0JTIwSSdkJTIwbGlrZSUyMHRv" +
+  "JTIwaGVhciUyMG1vcmUlMjBhYm91dCUyMEdvb2QlMjBHcmFjZXMlMjBmb3IlMjBvdXIlMjBjaHVy" +
+  "Y2guJTBBJTBBXCIgc3R5bGU9XCJiYWNrZ3JvdW5kOiMwQTBBMEE7IGJvcmRlcjoxcHggc29saWQg" +
+  "IzBBMEEwQTsgZm9udC1mYW1pbHk6J0hlbHZldGljYSBOZXVlJyxIZWx2ZXRpY2EsQXJpYWwsc2Fu" +
+  "cy1zZXJpZjsgZm9udC1zaXplOjE1cHg7IGxpbmUtaGVpZ2h0OjE1cHg7IGZvbnQtd2VpZ2h0OjYw" +
+  "MDsgdGV4dC1kZWNvcmF0aW9uOm5vbmU7IHBhZGRpbmc6MThweCAzNHB4OyBjb2xvcjojRkZGRkZG" +
+  "OyBkaXNwbGF5OmJsb2NrOyBib3JkZXItcmFkaXVzOjEwMHB4O1wiPlllcywgSSdtIGludGVyZXN0" +
+  "ZWQ8L2E+XG4gICAgICAgICAgICA8L3RkPlxuICAgICAgICAgIDwvdHI+XG4gICAgICAgIDwvdGFi" +
+  "bGU+XG5cbiAgICAgICAgPHRhYmxlIHJvbGU9XCJwcmVzZW50YXRpb25cIiBjZWxsc3BhY2luZz1c" +
+  "IjBcIiBjZWxscGFkZGluZz1cIjBcIiBib3JkZXI9XCIwXCIgd2lkdGg9XCIxMDAlXCI+XG4gICAg" +
+  "ICAgICAgPHRyPlxuICAgICAgICAgICAgPHRkIHN0eWxlPVwicGFkZGluZy10b3A6MThweDsgZm9u" +
+  "dC1mYW1pbHk6J0hlbHZldGljYSBOZXVlJyxIZWx2ZXRpY2EsQXJpYWwsc2Fucy1zZXJpZjsgZm9u" +
+  "dC1zaXplOjE0cHg7IGNvbG9yOiM2QjZCNjY7IGxpbmUtaGVpZ2h0OjEuNjtcIj5cbiAgICAgICAg" +
+  "ICAgICAgSnVzdCBjdXJpb3VzPyBUYWtlIGEgbG9vayBmaXJzdCBhdCA8YSBocmVmPVwiaHR0cHM6" +
+  "Ly93d3cuZ29vZGdyYWNlcy5hcHBcIiBzdHlsZT1cImNvbG9yOiMwQTBBMEE7IHRleHQtZGVjb3Jh" +
+  "dGlvbjp1bmRlcmxpbmU7XCI+Z29vZGdyYWNlcy5hcHA8L2E+LlxuICAgICAgICAgICAgPC90ZD5c" +
+  "biAgICAgICAgICA8L3RyPlxuICAgICAgICA8L3RhYmxlPlxuICAgICAgPC90ZD5cbiAgICA8L3Ry" +
+  "PlxuXG4gICAgPCEtLSBTSUdOLU9GRiAtLT5cbiAgICA8dHI+XG4gICAgICA8dGQgY2xhc3M9XCJw" +
+  "YWRcIiBzdHlsZT1cInBhZGRpbmc6MzhweCA0NHB4IDAgNDRweDsgZm9udC1mYW1pbHk6J0hlbHZl" +
+  "dGljYSBOZXVlJyxIZWx2ZXRpY2EsQXJpYWwsc2Fucy1zZXJpZjtcIj5cbiAgICAgICAgPHAgc3R5" +
+  "bGU9XCJtYXJnaW46MCAwIDNweCAwOyBmb250LXNpemU6MTlweDsgZm9udC13ZWlnaHQ6NzAwOyBj" +
+  "b2xvcjojMEEwQTBBOyBsZXR0ZXItc3BhY2luZzotMC42cHg7XCI+e3tzZW5kZXJfbmFtZX19PC9w" +
+  "PlxuICAgICAgICA8cCBzdHlsZT1cIm1hcmdpbjowOyBjb2xvcjojOEM4Qzg4OyBmb250LXNpemU6" +
+  "MTNweDsgbGluZS1oZWlnaHQ6MS42O1wiPnt7c2VuZGVyX3RpdGxlfX0sIEdvb2QgR3JhY2VzICZu" +
+  "YnNwO8K3Jm5ic3A7IDxhIGhyZWY9XCJtYWlsdG86e3tzZW5kZXJfZW1haWx9fVwiIHN0eWxlPVwi" +
+  "Y29sb3I6IzhDOEM4ODsgdGV4dC1kZWNvcmF0aW9uOnVuZGVybGluZTtcIj57e3NlbmRlcl9lbWFp" +
+  "bH19PC9hPjwvcD5cbiAgICAgIDwvdGQ+XG4gICAgPC90cj5cblxuICAgIDwhLS0gRk9PVEVSOiBp" +
+  "bnZlcnRlZCBwaWxsIC0tPlxuICAgIDx0cj5cbiAgICAgIDx0ZCBjbGFzcz1cImd1dFwiIHN0eWxl" +
+  "PVwicGFkZGluZzo0MHB4IDI0cHggMjhweCAyNHB4O1wiPlxuICAgICAgICA8dGFibGUgcm9sZT1c" +
+  "InByZXNlbnRhdGlvblwiIGNlbGxzcGFjaW5nPVwiMFwiIGNlbGxwYWRkaW5nPVwiMFwiIGJvcmRl" +
+  "cj1cIjBcIiB3aWR0aD1cIjEwMCVcIiBzdHlsZT1cImJhY2tncm91bmQtY29sb3I6IzBBMEEwQTsg" +
+  "Ym9yZGVyLXJhZGl1czoxMDBweDtcIj5cbiAgICAgICAgICA8dHI+XG4gICAgICAgICAgICA8dGQg" +
+  "c3R5bGU9XCJwYWRkaW5nOjE3cHggMjZweDsgZm9udC1mYW1pbHk6J0hlbHZldGljYSBOZXVlJyxI" +
+  "ZWx2ZXRpY2EsQXJpYWwsc2Fucy1zZXJpZjtcIj5cbiAgICAgICAgICAgICAgPHRhYmxlIHJvbGU9" +
+  "XCJwcmVzZW50YXRpb25cIiBjZWxsc3BhY2luZz1cIjBcIiBjZWxscGFkZGluZz1cIjBcIiBib3Jk" +
+  "ZXI9XCIwXCIgd2lkdGg9XCIxMDAlXCI+XG4gICAgICAgICAgICAgICAgPHRyPlxuICAgICAgICAg" +
+  "ICAgICAgICAgPHRkIGFsaWduPVwibGVmdFwiIHN0eWxlPVwiZm9udC1zaXplOjE2cHg7IGZvbnQt" +
+  "d2VpZ2h0OjcwMDsgbGV0dGVyLXNwYWNpbmc6LTAuNXB4OyBjb2xvcjojRkZGRkZGO1wiPkdvb2RH" +
+  "cmFjZXM8L3RkPlxuICAgICAgICAgICAgICAgICAgPHRkIGFsaWduPVwicmlnaHRcIiBzdHlsZT1c" +
+  "ImZvbnQtc2l6ZToxMHB4OyBmb250LXdlaWdodDo3MDA7IGxldHRlci1zcGFjaW5nOjEuNHB4OyB0" +
+  "ZXh0LXRyYW5zZm9ybTp1cHBlcmNhc2U7IGNvbG9yOiNGRjZCNTI7XCI+RmFpdGggJmFtcDsgdGVj" +
+  "aG5vbG9neTwvdGQ+XG4gICAgICAgICAgICAgICAgPC90cj5cbiAgICAgICAgICAgICAgPC90YWJs" +
+  "ZT5cbiAgICAgICAgICAgIDwvdGQ+XG4gICAgICAgICAgPC90cj5cbiAgICAgICAgPC90YWJsZT5c" +
+  "biAgICAgIDwvdGQ+XG4gICAgPC90cj5cblxuICA8L3RhYmxlPlxuPC9jZW50ZXI+XG48L2JvZHk+" +
+  "XG48L2h0bWw+XG4ifV0=";
 const _b64 = b => new TextDecoder("utf-8").decode(
   Uint8Array.from(atob(b.replace(/\s+/g, "")), c => c.charCodeAt(0))
 );
@@ -1725,6 +1936,79 @@ let KEY = "";
 let ME = null;          // the PEOPLE entry of whoever is signed in
 let tplIdx = 0;
 let vals = {};
+
+/* ══════════════════════════════════════════════════════════
+   BULK MODE  ·  drives the generic "Interest Blast" template
+   A template with bulk:true lets the Recipient box hold a whole
+   comma / newline / semicolon separated list. On send we loop the
+   list and fire ONE email per address — each person gets their own
+   copy and never sees anyone else on the list.
+   ══════════════════════════════════════════════════════════ */
+const EMAIL_RE     = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const MAX_BULK     = 50;      // hard cap per blast
+const BULK_DELAY_MS = 500;    // gap between sends — polite, and lets the UI paint
+let bulkRemaining  = null;    // last quota figure the mailer reported
+
+function isBulk(){ return !!(TEMPLATES[tplIdx] && TEMPLATES[tplIdx].bulk); }
+function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
+
+function normalizeEntry(e){ const m = e.match(/<([^>]+)>/); return (m ? m[1] : e).trim(); }
+function parseRecipients(raw){
+  return String(raw || "")
+    .split(/[,;\r\n]+/)
+    .map(s => s.trim())
+    .filter(Boolean)
+    .map(normalizeEntry);
+}
+/* split a raw box into {valid, invalid, dupes}, case-insensitively deduped */
+function classifyRecipients(raw){
+  const seen = Object.create(null);
+  const valid = [], invalid = [], dupes = [];
+  parseRecipients(raw).forEach(e => {
+    if (!EMAIL_RE.test(e)){ invalid.push(e); return; }
+    const k = e.toLowerCase();
+    if (seen[k]){ dupes.push(e); return; }
+    seen[k] = 1; valid.push(e);
+  });
+  return { valid, invalid, dupes };
+}
+
+/* the small line under the Recipient box, bulk only */
+function updateToBreak(){
+  const el = $("toBreak"); if (!el) return;
+  if (!isBulk()){ el.hidden = true; return; }
+  el.hidden = false;
+  const { valid, invalid, dupes } = classifyRecipients($("fTo").value);
+  if (!valid.length && !invalid.length && !dupes.length){
+    el.className = "hint";
+    el.textContent = "Paste up to " + MAX_BULK + " addresses, separated by commas. Each person is emailed on their own \u2014 nobody sees the rest of the list.";
+    return;
+  }
+  const bits = [valid.length + " ready"];
+  if (invalid.length) bits.push(invalid.length + (invalid.length === 1 ? " looks off" : " look off"));
+  if (dupes.length)   bits.push(dupes.length + (dupes.length === 1 ? " duplicate" : " duplicates") + " removed");
+  const over = valid.length > MAX_BULK;
+  let msg = bits.join("  \u00b7  ");
+  if (over) msg += "  \u00b7  over the " + MAX_BULK + " max \u2014 trim it or send in batches";
+  if (invalid.length) msg += "  \u00b7  skipping: " + invalid.slice(0, 3).join(", ") + (invalid.length > 3 ? "\u2026" : "");
+  el.className = "hint" + (over || invalid.length ? " warn" : "");
+  el.textContent = msg;
+}
+
+/* swap the composer chrome when the template changes (single <-> bulk) */
+function applyComposerMode(){
+  const bulk = isBulk();
+  const to = $("fTo");
+  if (to){
+    to.placeholder = bulk ? ("Paste up to " + MAX_BULK + " emails, separated by commas") : "pastor@church.org";
+    to.setAttribute("type", bulk ? "text" : "email");   // no <form> here, so this is purely cosmetic
+  }
+  const rl = $("recipLbl"); if (rl) rl.textContent = bulk ? "Recipients" : "Recipient";
+  const eml = $("btnEml");  if (eml) eml.hidden = bulk;  // a 50-way .eml draft makes no sense
+  const send = $("btnSend");
+  if (send && !bulk && ENABLE_DIRECT_SEND) send.textContent = "Send directly";
+  updateToBreak();
+}
 
 /* ── login ─────────────────────────────────────── */
 $("buildLogin").textContent = "Build " + BUILD;
@@ -1765,7 +2049,7 @@ $("btnOut").addEventListener("click", () => {
 
 /* ── template list ─────────────────────────────── */
 function buildTemplates(){
-  const badgeCls = t => t.tag === "Full design" ? "full" : (t.tag === "Referral" ? "ref" : "");
+  const badgeCls = t => t.tag === "Full design" ? "full" : (t.tag === "Referral" ? "ref" : (t.tag === "Bulk" ? "bulk" : ""));
   $("tplList").innerHTML = TEMPLATES.map((t,i) =>
     '<button type="button" data-i="'+i+'" data-on="0">' +
       '<span class="trow"><span class="t">'+t.name+'</span>' +
@@ -1804,6 +2088,7 @@ function selectTemplate(i){
   $("subjCustomWrap").hidden = true;
 
   $("status").hidden = true;
+  applyComposerMode();
   render();
 }
 
@@ -1852,18 +2137,39 @@ function buildHtml(){
 
 function ready(){
   const t = TEMPLATES[tplIdx];
+  if (t && t.bulk){
+    const { valid } = classifyRecipients($("fTo").value);
+    return valid.length > 0 && valid.length <= MAX_BULK && !!subjectLine();
+  }
   const to = $("fTo").value.trim();
   const okFields = t.fields.every(f => !f.required || (vals[f.key] || "").trim());
-  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(to) && okFields && !!subjectLine();
+  return EMAIL_RE.test(to) && okFields && !!subjectLine();
 }
 
 function render(){
   const html = buildHtml();
   $("frame").srcdoc = html;
 
-  const to = $("fTo").value.trim(), su = subjectLine();
-  $("envTo").textContent = to || "—";
-  $("envTo").classList.toggle("e", !to);
+  const su = subjectLine();
+  const bulk = isBulk();
+
+  if (bulk){
+    const { valid } = classifyRecipients($("fTo").value);
+    $("envTo").textContent = valid.length
+      ? (valid.length + (valid.length === 1 ? " recipient" : " recipients") + "  ·  each sent on its own")
+      : "—";
+    $("envTo").classList.toggle("e", !valid.length);
+    const send = $("btnSend");
+    if (send) send.textContent = valid.length
+      ? ("Send to " + valid.length + (valid.length === 1 ? " recipient" : " recipients"))
+      : "Send to your list";
+    updateToBreak();
+  } else {
+    const to = $("fTo").value.trim();
+    $("envTo").textContent = to || "—";
+    $("envTo").classList.toggle("e", !to);
+  }
+
   $("envSubj").textContent = su || "—";
   $("envSubj").classList.toggle("e", !su);
 
@@ -1921,6 +2227,7 @@ function postViaIframe(url, payload){
 }
 
 $("btnSend").addEventListener("click", async () => {
+  if (isBulk()) return runBulkSend();
   const btn = $("btnSend");
   const to  = $("fTo").value.trim();
 
@@ -2017,6 +2324,137 @@ $("btnSend").addEventListener("click", async () => {
   btn.textContent = "Send directly";
   render();
 });
+
+/* ══════════════════════════════════════════════════════════
+   BULK SEND  ·  one email per address, fired sequentially
+   Reuses the exact same mailer as a single send; the only
+   difference is the loop and the per-recipient bookkeeping.
+   ══════════════════════════════════════════════════════════ */
+
+/* Send a single payload. Mirrors the single-send flow, including the
+   CORS-blind iframe fallback, but returns a result instead of drawing UI. */
+async function sendOne(payload){
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 15000);
+    const res = await fetch(ME.api, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload),
+      redirect: "follow",
+      signal: ctrl.signal
+    });
+    clearTimeout(timer);
+    const raw = await res.text();
+    let data = null; try { data = JSON.parse(raw); } catch(e){}
+    if (data && data.ok)    return { outcome: "sent", remaining: data.remaining_today };
+    if (data && data.error) return { outcome: "refused", detail: data.error };
+    if (raw.indexOf("<!DOCTYPE") === 0 || raw.indexOf("Google") !== -1)
+      return { outcome: "error", detail: "Google sign-in page returned \u2014 set the deployment to Anyone" };
+    /* readable-but-unknown 200: fall through to the blind path below */
+  } catch (err){
+    if (err && err.name === "AbortError") return { outcome: "error", detail: "no answer within 15s" };
+    /* network / CORS: fall through to the blind path below */
+  }
+  const ok = await postViaIframe(ME.api, payload);
+  return ok ? { outcome: "blind" } : { outcome: "error", detail: "couldn't reach the mailer" };
+}
+
+function bulkProgress(i, total, sent, blind, failed, cur){
+  return "Sending to your list \u2014 <b>" + (i + 1) + " of " + total + "</b>" +
+    "<br><span style=\"font-family:var(--mono);font-size:11px;letter-spacing:.05em;color:var(--ink-2)\">" +
+    sent + " sent" + (blind ? "  \u00b7  " + blind + " unverified" : "") + (failed ? "  \u00b7  " + failed + " failed" : "") +
+    "  \u00b7  now: " + esc(cur) + "</span>";
+}
+
+async function runBulkSend(){
+  const btn = $("btnSend");
+
+  if (!ME || !ME.api){
+    say("bad", "<b>No API URL for " + (ME ? ME.first : "this sender") + ".</b> Bulk sending goes through the mailer \u2014 deploy <code>gg-mailer.gs</code> under that account and put its /exec URL in the <code>api</code> field of their PEOPLE entry.");
+    return;
+  }
+  if (!KEY){
+    say("bad", "<b>No send key.</b> Sign out and enter the SHARED_SECRET in the <b>Send key</b> field \u2014 the mailer needs it for every send.");
+    return;
+  }
+  if (!subjectLine()){ say("bad", "Pick or write a subject line first."); return; }
+
+  const { valid, invalid, dupes } = classifyRecipients($("fTo").value);
+  if (!valid.length){ say("bad", "No valid email addresses in the list yet."); return; }
+  if (valid.length > MAX_BULK){
+    say("bad", "That's " + valid.length + " addresses \u2014 the most per blast is " + MAX_BULK + ". Trim the list or send it in two batches.");
+    return;
+  }
+
+  const skipNote =
+    (invalid.length ? "\n\u2022 " + invalid.length + " malformed address" + (invalid.length === 1 ? "" : "es") + " will be skipped" : "") +
+    (dupes.length   ? "\n\u2022 " + dupes.length + " duplicate" + (dupes.length === 1 ? "" : "s") + " removed" : "");
+  if (!confirm("Send this email individually to " + valid.length + " recipient" + (valid.length === 1 ? "" : "s") + "?" +
+      skipNote + "\n\nEach gets their own copy \u2014 this can't be undone.")) return;
+
+  const subject = subjectLine();
+  const html    = buildHtml();      // identical for everyone — the template is generic
+  const total   = valid.length;
+  let sent = 0, blind = 0, failed = 0;
+  const fails = [];
+  bulkRemaining = null;
+
+  btn.disabled = true;
+  ["btnEml","btnRich","btnCopy","btnTest"].forEach(id => { const e = $(id); if (e) e.disabled = true; });
+
+  for (let i = 0; i < valid.length; i++){
+    const to = valid[i];
+    btn.textContent = "Sending " + (i + 1) + " / " + total + "\u2026";
+    say("good", bulkProgress(i, total, sent, blind, failed, to));
+
+    let r;
+    try {
+      r = await sendOne({ secret: KEY, to: to, subject: subject, html: html, from: ME.email, fromName: ME.name });
+    } catch (e){ r = { outcome: "error", detail: (e && e.message) || "unknown error" }; }
+
+    if (r.outcome === "sent"){ sent++; noteActivity("sent", to, "contacted"); }
+    else if (r.outcome === "blind"){ blind++; noteActivity("sent", to, "contacted"); }
+    else { failed++; fails.push(to + (r.detail ? " (" + r.detail + ")" : "")); }
+
+    if (r && r.remaining != null) bulkRemaining = r.remaining;
+
+    /* stop early if Gmail's daily quota is clearly spent */
+    if (r.outcome === "refused" && /quota|limit|exceed/i.test(r.detail || "")){
+      say("bad", "Gmail's daily send limit was hit after " + sent + " send" + (sent === 1 ? "" : "s") +
+        ". The remaining " + (total - i - 1) + " weren't sent \u2014 try again tomorrow, or from the other account.");
+      $("fTo").value = valid.slice(i).join(", ");   // leave the un-sent ones in the box
+      finishBulk(btn);
+      return;
+    }
+
+    if (i < valid.length - 1) await sleep(BULK_DELAY_MS);
+  }
+
+  const lines = [];
+  lines.push("<b>Done.</b> " + sent + " sent" +
+    (blind ? "  \u00b7  " + blind + " submitted (unverified)" : "") +
+    (failed ? "  \u00b7  " + failed + " failed" : "") + " of " + total + ".");
+  if (bulkRemaining != null) lines.push(bulkRemaining + " send" + (bulkRemaining === 1 ? "" : "s") + " left in today's quota.");
+  if (blind)  lines.push("The " + blind + " unverified one" + (blind === 1 ? "" : "s") +
+    " went out through the browser-blind path \u2014 check your Gmail <b>Sent</b> folder to be sure.");
+  if (failed) lines.push("Didn't go: " + fails.slice(0, 5).map(esc).join("; ") +
+    (fails.length > 5 ? " \u2026and " + (fails.length - 5) + " more" : "") + ".");
+  if (invalid.length) lines.push("Skipped " + invalid.length + " malformed address" + (invalid.length === 1 ? "" : "es") + ".");
+  lines.push('<a href="#" id="jumpLog" style="color:inherit;text-decoration:underline">View log</a>');
+
+  say((failed && !sent && !blind) ? "bad" : "good", lines.join("<br>"));
+  const jl = $("jumpLog"); if (jl) jl.addEventListener("click", e => { e.preventDefault(); $("btnLog").click(); });
+  if (sent || blind) $("fTo").value = "";
+
+  finishBulk(btn);
+}
+
+function finishBulk(btn){
+  ["btnEml","btnRich","btnCopy","btnTest"].forEach(id => { const e = $(id); if (e) e.disabled = false; });
+  if (btn) btn.disabled = false;
+  render();   // resets the button label + re-evaluates enabled state
+}
 
 /* ══════════════════════════════════════════════════════════
    ACTIVITY + CONTACTS  ·  stored locally on this device
