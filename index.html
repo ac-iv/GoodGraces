@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Good Graces | A home for your community, all week long</title>
+<meta name="description" content="Good Graces is one app for events, giving, groups and announcements, made for churches, mosques, synagogues, temples, gurdwaras and sanghas.">
+<meta property="og:title" content="Good Graces">
+<meta property="og:description" content="A home for your community, all week long. Made for every tradition.">
+<meta property="og:url" content="https://goodgraces.app/">
+<meta name="theme-color" content="#FFFFFF">
+<link rel="icon" type="image/svg+xml" href="img/gg-logomark.svg">
+<link rel="icon" type="image/png" href="img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..600&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/gg.css">
+<style>
+/* section colors */
+.bg-sand{background:#F4F0E8}
+.bg-sage{background:#E9EDE6}
+.bg-paper{background:#FBFAF7}
+.bg-mist{background:#E8EDF1}
+.bg-blush{background:#F4ECE8}
+.bg-moss{background:#ECECE2}
+.bg-lilac{background:#EFEDF3}
+.bg-oat{background:#EFE8DD}
+.bg-pine{background:#E4EAE7}
+.bg-stone{background:#F3F2EF}
+:root{--tint-2:rgba(27,26,24,.12)}
+.words{border:0 !important}
+.prow{border-bottom-color:rgba(27,26,24,.12) !important}
+
+.sec{padding:128px 0}
+@media (max-width:760px){.sec{padding:88px 0}}
+.sec-head{text-align:center;max-width:740px;margin:0 auto 72px}
+.sec-head .h2{margin-bottom:18px}
+.sec-head .lede{margin:0 auto}
+.ctas{display:flex;gap:12px;flex-wrap:wrap}
+
+/* slots: drop images at the src paths and they show up */
+.slot{position:relative;margin:0;display:grid;place-items:center;border-radius:28px;
+  background:rgba(27,26,24,.035);border:1px dashed #CBC8C1;overflow:hidden}
+.slot::before{content:attr(data-label);font:400 13px/1.5 var(--sans);color:var(--muted);text-align:center;padding:0 20px;white-space:pre-line}
+.slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.slot:has(img){border:0;background:none}
+.slot-phone{width:min(320px,78vw);aspect-ratio:1339/2716;border-radius:44px}
+.slot-tablet{width:100%;aspect-ratio:2610/1890}
+
+/* hero */
+.hero{padding:56px 0 96px}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:64px;align-items:center}
+.hero .display{margin-bottom:28px;max-width:14ch;text-wrap:wrap}
+.hero .lede{margin-bottom:38px}
+.hero-note{margin-top:28px;font:400 14px/1.5 var(--sans);color:var(--muted)}
+.hero-note a{color:var(--ink);text-underline-offset:3px}
+.hero-mock{display:flex;justify-content:center}
+@media (max-width:900px){
+  .hero{padding:32px 0 80px}
+  .hero-grid{grid-template-columns:1fr;gap:56px}
+}
+
+/* traditions band */
+.words{padding:56px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.words p{font-family:var(--serif);font-style:italic;font-weight:300;font-size:clamp(1.3rem,2.4vw,1.9rem);text-align:center;line-height:1.5;color:var(--ink-2)}
+.words p span{white-space:nowrap}
+.words small{display:block;text-align:center;font:400 14px/1.5 var(--sans);color:var(--muted);margin-top:14px}
+
+/* replaces */
+.swap{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:48px;align-items:center;max-width:1000px;margin:0 auto}
+.swap-col h3{font:500 14px/1.4 var(--sans);color:var(--muted);margin-bottom:18px}
+.old{list-style:none;margin:0;padding:0}
+.old li{padding:12px 0;border-bottom:1px solid var(--tint-2);color:var(--muted);text-decoration:line-through;text-decoration-color:rgba(27,26,24,.35)}
+.arrow{width:56px;height:1px;background:var(--ink);position:relative}
+.arrow::after{content:"";position:absolute;right:0;top:-4px;width:9px;height:9px;border-top:1px solid var(--ink);border-right:1px solid var(--ink);transform:rotate(45deg)}
+.new{background:var(--canvas);border-radius:24px;padding:36px;box-shadow:0 30px 60px -40px rgba(27,26,24,.35)}
+.new .brand{margin-bottom:18px}
+.new p{color:var(--ink-2);margin-bottom:18px}
+.new ul{list-style:none;margin:0;padding:0;font:400 15.5px/1.5 var(--sans)}
+.new li{padding:8px 0 8px 26px;position:relative}
+.new li::before{content:"";position:absolute;left:2px;top:15px;width:12px;height:6px;border-left:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink);transform:rotate(-45deg)}
+@media (max-width:860px){.swap{grid-template-columns:1fr;gap:28px}.arrow{transform:rotate(90deg);margin:8px auto}}
+
+/* statement */
+.statement{padding:128px 0;text-align:center}
+.statement p{font-family:var(--serif);font-weight:300;font-size:clamp(1.7rem,3.3vw,2.6rem);line-height:1.3;letter-spacing:-.015em;max-width:24em;margin:0 auto}
+.statement p + p{margin-top:.8em;color:var(--muted)}
+@media (max-width:760px){.statement{padding:88px 0}}
+
+/* inside */
+.inside{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:56px 80px;max-width:960px;margin:0 auto}
+.inside h3{margin-bottom:10px}
+.inside p{color:var(--ink-2)}
+.inside em{color:var(--ink)}
+.phones{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:40px;max-width:960px;margin:96px auto 0;justify-items:center}
+.phones .slot-phone{width:100%;max-width:260px}
+.phones figure{margin:0;width:100%;display:flex;flex-direction:column;align-items:center}
+.phones figcaption{font:400 14px/1.4 var(--sans);color:var(--muted);text-align:center;margin-top:16px}
+@media (max-width:760px){.inside{grid-template-columns:1fr;gap:40px}.phones{grid-template-columns:1fr;gap:40px}.phones .slot-phone{max-width:280px}}
+
+/* leaders */
+.leaders-in{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:72px;align-items:center}
+.leaders .h2{margin-bottom:22px}
+.leaders ul{list-style:none;margin:32px 0 0;padding:0}
+.leaders li{padding:16px 0;border-bottom:1px solid var(--tint-2)}
+.leaders li:first-child{border-top:1px solid var(--tint-2)}
+.leaders li b{font-weight:600;display:block;margin-bottom:2px}
+.leaders li span{color:var(--ink-2);font-size:17px}
+@media (max-width:960px){.leaders-in{grid-template-columns:1fr;gap:56px}}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:48px;max-width:1040px;margin:0 auto;counter-reset:s}
+.step{border-top:1px solid var(--ink);padding-top:24px}
+.step .n{font-family:var(--serif);font-size:2.6rem;font-weight:300;line-height:1;margin-bottom:18px;display:block}
+.step h3{margin-bottom:8px}
+.step p{color:var(--ink-2)}
+@media (max-width:820px){.steps{grid-template-columns:1fr;gap:40px}}
+
+/* pricing */
+.prices{max-width:780px;margin:0 auto;border-top:1px solid var(--ink)}
+.prow{display:grid;grid-template-columns:1fr 1.5fr 130px;gap:24px;align-items:baseline;padding:26px 0;border-bottom:1px solid var(--line)}
+.prow h3{font-size:1.4rem;font-weight:400}
+.prow span{color:var(--ink-2)}
+.prow .amt{font-family:var(--serif);font-size:1.4rem;text-align:right;white-space:nowrap}
+.prow .amt small{font-size:15px;color:var(--muted)}
+.price-foot{text-align:center;margin-top:40px}
+.price-foot p{color:var(--muted);font-size:16px;margin-bottom:24px}
+.price-foot .ctas{justify-content:center}
+@media (max-width:600px){.prow{grid-template-columns:1fr auto;gap:4px 16px}.prow span{grid-column:1/-1;grid-row:2}}
+
+/* founders */
+.note{max-width:720px;margin:0 auto;text-align:center}
+.note blockquote{margin:0;font-family:var(--serif);font-weight:300;font-size:clamp(1.4rem,2.6vw,1.95rem);line-height:1.45;letter-spacing:-.01em}
+.note cite{display:block;margin-top:28px;font:400 15px/1.5 var(--sans);font-style:normal;color:var(--muted)}
+.note cite b{color:var(--ink);font-weight:500}
+
+/* investors */
+.inv{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:72px;max-width:1040px;margin:0 auto;align-items:start}
+.inv p{color:var(--ink-2);margin-bottom:18px}
+@media (max-width:860px){.inv{grid-template-columns:1fr;gap:24px}}
+
+/* faq */
+.faq{max-width:780px;margin:0 auto}
+.faq details{border-bottom:1px solid var(--tint-2)}
+.faq details:first-child{border-top:1px solid var(--tint-2)}
+.faq summary{list-style:none;cursor:pointer;padding:24px 40px 24px 0;font-size:1.2rem;position:relative}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";position:absolute;right:4px;top:50%;transform:translateY(-50%);font:300 26px/1 var(--sans);color:var(--muted);transition:transform .25s}
+.faq details[open] summary::after{transform:translateY(-50%) rotate(45deg)}
+.faq details p{padding:0 0 26px;color:var(--ink-2);max-width:36em}
+.faq a{color:var(--ink)}
+
+/* closing, dark */
+.close{background:var(--ink);color:#F4F2EE;padding:150px 0;text-align:center}
+.close-mark{width:96px;height:auto;fill:#F4F2EE;margin:0 auto 40px}
+.close .display{font-size:clamp(2.6rem,5.6vw,4.6rem);max-width:14ch;margin:0 auto 24px}
+.close .lede{color:#B9B5AD;margin:0 auto 40px}
+.close .ctas{justify-content:center}
+.btn-light{background:#F4F2EE;color:var(--ink)}
+.btn-light:hover{background:#fff}
+.btn-outline-light{border-color:rgba(244,242,238,.3);color:#F4F2EE}
+.btn-outline-light:hover{border-color:#F4F2EE}
+.close .fine{margin-top:26px;font:400 14px/1.5 var(--sans);color:#8C887F}
+.close .fine a{color:#F4F2EE}
+.footer{border-top:0}
+</style>
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#top" aria-label="Good Graces home"><svg viewBox="209 353 523 319" aria-hidden="true"><path d="M427.1,556c.2-20.1-19.4-23.2-41-23l.3-8.9h112.4c0,0,6.5-.5,6.5-.5,1.8-.1,2.1,5.8,1.5,7.5-1.2,3.9-29.5-.3-29.6,26.9v81.5c-.1,0-36.5,15.5-36.5,15.5-87.9,37.5-193.6,9.6-222.7-86-12.5-41-10.3-85.3,6.7-124.9,41-95.9,160.9-110.8,246.9-61.8l.9,78.2-4.2.5c-3,.4-6.3-35.1-34.7-64.8-36.8-38.3-96.3-36.3-130.2,5.4-22.3,27.4-32.6,62.2-34.2,98.2-2.1,46.5,6.4,97.7,38.2,131.6,26.6,28.4,68.8,35.7,102,14.9,6.1-3.8,17-12.2,17.1-19.6l.6-70.7h0Z"/><path d="M513.9,469c-.2,20.1,19.4,23.2,41,23l-.3,8.9h-112.4c0,0-6.5.5-6.5.5-1.8.1-2.1-5.8-1.5-7.5,1.2-3.9,29.5.3,29.6-26.9v-81.5c.1,0,36.5-15.5,36.5-15.5,87.9-37.5,193.6-9.6,222.7,86,12.5,41,10.3,85.3-6.7,124.9-41,95.9-160.9,110.8-246.9,61.8l-.9-78.2,4.2-.5c3-.4,6.3,35.1,34.7,64.8,36.8,38.3,96.3,36.3,130.2-5.4,22.3-27.4,32.6-62.2,34.2-98.2,2.1-46.5-6.4-97.7-38.2-131.6-26.6-28.4-68.8-35.7-102-14.9-6.1,3.8-17,12.2-17.1,19.6l-.6,70.7h0Z"/></svg><span>Good Graces</span></a>
+    <ul class="nav-links">
+      <li><a href="#inside">The app</a></li>
+      <li><a href="#leaders">For leaders</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#investors">Investors</a></li>
+    </ul>
+    <a class="btn btn-primary" href="#" data-gg-open data-gg-path="church">Request access</a>
+  </div>
+</header>
+
+<main id="top">
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <h1 class="display">A home for your community, all&nbsp;week&nbsp;long.</h1>
+      <p class="lede">Good Graces is one app for events, giving, groups and announcements, made for churches, mosques, synagogues, temples, gurdwaras and sanghas. Your members get one place to belong. Your leaders get their evenings back.</p>
+      <div class="ctas">
+        <a class="btn btn-primary" href="#" data-gg-open data-gg-path="church">Request early access</a>
+        <a class="btn btn-ghost" href="#inside">See how it works</a>
+      </div>
+      <p class="hero-note">Five founding spots in the beta. <a href="5-spots.html">Apply for one</a></p>
+    </div>
+    <div class="hero-mock">
+      <figure class="slot slot-phone" data-label="iPhone mockup&#10;img/mockups/iphone-hero.png"><img src="img/mockups/iphone-hero.png" alt="The Good Graces member app on iPhone" onerror="this.remove()"></figure>
+    </div>
+  </div>
+</section>
+
+<section class="words bg-sand" aria-label="Made for every tradition">
+  <div class="wrap">
+    <p><span>Sunday worship.</span> <span>Jumu’ah.</span> <span>Shabbat.</span> <span>Aarti.</span> <span>Kirtan and langar.</span> <span>Zazen.</span></p>
+    <small>However your community gathers, Good Graces speaks its language.</small>
+  </div>
+</section>
+
+<section class="sec bg-sage">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 class="h2">Seven tools your members ignore, or one they open.</h2>
+      <p class="lede">Most communities hold their week together with a patchwork. Every new tool is one more login, one more place for news to get lost.</p>
+    </div>
+    <div class="swap">
+      <div class="swap-col">
+        <h3>What most communities use today</h3>
+        <ul class="old">
+          <li>The group text</li>
+          <li>The Facebook group</li>
+          <li>The paper bulletin</li>
+          <li>The email newsletter</li>
+          <li>The sign-up sheet</li>
+          <li>The giving website</li>
+          <li>The volunteer spreadsheet</li>
+        </ul>
+      </div>
+      <div class="arrow" aria-hidden="true"></div>
+      <div class="new">
+        <span class="brand"><svg viewBox="209 353 523 319" aria-hidden="true"><path d="M427.1,556c.2-20.1-19.4-23.2-41-23l.3-8.9h112.4c0,0,6.5-.5,6.5-.5,1.8-.1,2.1,5.8,1.5,7.5-1.2,3.9-29.5-.3-29.6,26.9v81.5c-.1,0-36.5,15.5-36.5,15.5-87.9,37.5-193.6,9.6-222.7-86-12.5-41-10.3-85.3,6.7-124.9,41-95.9,160.9-110.8,246.9-61.8l.9,78.2-4.2.5c-3,.4-6.3-35.1-34.7-64.8-36.8-38.3-96.3-36.3-130.2,5.4-22.3,27.4-32.6,62.2-34.2,98.2-2.1,46.5,6.4,97.7,38.2,131.6,26.6,28.4,68.8,35.7,102,14.9,6.1-3.8,17-12.2,17.1-19.6l.6-70.7h0Z"/><path d="M513.9,469c-.2,20.1,19.4,23.2,41,23l-.3,8.9h-112.4c0,0-6.5.5-6.5.5-1.8.1-2.1-5.8-1.5-7.5,1.2-3.9,29.5.3,29.6-26.9v-81.5c.1,0,36.5-15.5,36.5-15.5,87.9-37.5,193.6-9.6,222.7,86,12.5,41,10.3,85.3-6.7,124.9-41,95.9-160.9,110.8-246.9,61.8l-.9-78.2,4.2-.5c3-.4,6.3,35.1,34.7,64.8,36.8,38.3,96.3,36.3,130.2-5.4,22.3-27.4,32.6-62.2,34.2-98.2,2.1-46.5-6.4-97.7-38.2-131.6-26.6-28.4-68.8-35.7-102-14.9-6.1,3.8-17,12.2-17.1,19.6l-.6,70.7h0Z"/></svg><span>Good Graces</span></span>
+        <p>One app for members. One dashboard for leaders. Everything in between, finally in the same place.</p>
+        <ul>
+          <li>Announcements that actually get seen</li>
+          <li>Every event, RSVP and reminder</li>
+          <li>Groups that run themselves</li>
+          <li>Giving in a few taps, one-time or recurring</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="statement bg-paper">
+  <div class="wrap">
+    <p>Services happen once a week. Community happens in between: the study circle, the shared meal, the volunteer shift, the quiet check-in.</p>
+    <p>Good Graces gives all of it one place to live.</p>
+  </div>
+</section>
+
+<section class="sec bg-mist" id="inside">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 class="h2">Everything in one place, in your own words.</h2>
+      <p class="lede">Good Graces doesn’t assume a tradition. You name your services, groups and giving the way your community does, and the app follows.</p>
+    </div>
+    <div class="inside">
+      <div><h3 class="h3">Announcements</h3><p>News, prayer and support requests, and updates from every group, in one feed members actually read.</p></div>
+      <div><h3 class="h3">Calendar</h3><p>Services, classes, holidays and volunteer shifts, with RSVPs and gentle reminders.</p></div>
+      <div><h3 class="h3">Groups</h3><p>Study circles, youth groups, choirs and committees, each with its own space and its own leaders.</p></div>
+      <div><h3 class="h3">Giving</h3><p>One-time and recurring gifts, called what your tradition calls them: <em>tithes, zakat, tzedakah, dakshina, dasvandh, dāna.</em></p></div>
+    </div>
+    <div class="phones">
+      <figure><div class="slot slot-phone" data-label="iPhone mockup&#10;img/mockups/iphone-1.png"><img src="img/mockups/iphone-1.png" alt="Home feed" onerror="this.remove()"></div><figcaption>The feed</figcaption></figure>
+      <figure><div class="slot slot-phone" data-label="iPhone mockup&#10;img/mockups/iphone-2.png"><img src="img/mockups/iphone-2.png" alt="Calendar" onerror="this.remove()"></div><figcaption>The calendar</figcaption></figure>
+      <figure><div class="slot slot-phone" data-label="iPhone mockup&#10;img/mockups/iphone-3.png"><img src="img/mockups/iphone-3.png" alt="Giving" onerror="this.remove()"></div><figcaption>Giving</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section class="sec leaders bg-blush" id="leaders">
+  <div class="wrap leaders-in">
+    <div>
+      <h2 class="h2">Made for the people who hold it together.</h2>
+      <p class="lede">Clergy, administrators, volunteers and boards. Most of them already have full lives. Good Graces gives them time back.</p>
+      <ul>
+        <li><b>Share it once</b><span>One post reaches the feed, the right groups and every phone.</span></li>
+        <li><b>Know who’s coming</b><span>RSVPs for every gathering, no sign-up sheet.</span></li>
+        <li><b>Share the work</b><span>Group leaders and volunteers get their own access.</span></li>
+        <li><b>See giving clearly</b><span>Totals and campaigns, ready for the board meeting.</span></li>
+      </ul>
+    </div>
+    <figure class="slot slot-tablet" data-label="iPad mockup (admin dashboard)&#10;img/mockups/ipad-admin.png"><img src="img/mockups/ipad-admin.png" alt="The Good Graces admin dashboard on iPad" onerror="this.remove()"></figure>
+  </div>
+</section>
+
+<section class="sec bg-moss" id="start">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 class="h2">Up and running without the headache.</h2>
+      <p class="lede">You don’t need a tech volunteer. We set it up with you.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><span class="n">1</span><h3 class="h3">Tell us about your community</h3><p>A short form about your size, your gatherings and what isn’t working today.</p></div>
+      <div class="step"><span class="n">2</span><h3 class="h3">We build it with you</h3><p>Your groups, calendar and giving, set up in your community’s own words.</p></div>
+      <div class="step"><span class="n">3</span><h3 class="h3">Invite your members</h3><p>Share a link or a QR code at your next gathering. Members join in a couple of minutes.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec bg-lilac" id="pricing">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 class="h2">Priced by the size of your community.</h2>
+      <p class="lede">A simple monthly plan. Small communities get the same app as large ones.</p>
+    </div>
+    <div class="prices">
+      <div class="prow"><h3>Starter</h3><span>Under 150 active members</span><p class="amt">$49<small> / mo</small></p></div>
+      <div class="prow"><h3>Growth</h3><span>150 to 500 active members</span><p class="amt">$149<small> / mo</small></p></div>
+      <div class="prow"><h3>Network</h3><span>500 to 2,000 active members</span><p class="amt">$349<small> / mo</small></p></div>
+      <div class="prow"><h3>Enterprise</h3><span>Networks, councils and multiple locations</span><p class="amt">$799<small> / mo</small></p></div>
+    </div>
+    <div class="price-foot">
+      <p>Starting prices. Every plan includes the member app and the admin dashboard.</p>
+      <div class="ctas"><a class="btn btn-primary" href="#" data-gg-open data-gg-path="church">Talk with us about your community</a></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec bg-oat">
+  <div class="wrap note">
+    <blockquote>“We started Good Graces because the communities we love were holding everything together with group texts and good intentions. They deserve a tool as thoughtful as the people running them.”</blockquote>
+    <cite><b>Avelino and Nora</b>, co-founders</cite>
+  </div>
+</section>
+
+<section class="sec bg-pine" id="investors">
+  <div class="wrap inv">
+    <h2 class="h2">For investors</h2>
+    <div>
+      <p>Faith communities are among the most lasting organizations people belong to. Most still run on group texts, paper bulletins and software made for a single denomination.</p>
+      <p>Good Graces is built for all of them from day one, with recurring revenue that grows with each community.</p>
+      <a class="btn btn-ghost" href="#" data-gg-open data-gg-path="investor" style="margin-top:8px">Request the investor deck</a>
+    </div>
+  </div>
+</section>
+
+<section class="sec bg-stone" id="faq">
+  <div class="wrap">
+    <div class="sec-head" style="margin-bottom:48px"><h2 class="h2">Questions</h2></div>
+    <div class="faq">
+      <details><summary>Is Good Graces tied to a religion?</summary><p>No. Good Graces is independent and nondenominational. It’s made for churches, mosques, synagogues, temples, gurdwaras, sanghas and interfaith groups, and nothing in the app assumes one tradition.</p></details>
+      <details><summary>Can we use our own names for things?</summary><p>Yes. You decide what your services, groups and giving are called, so members see the words they already use.</p></details>
+      <details><summary>Do we need someone technical to set it up?</summary><p>No. We set up your community with you, and members join with a link or QR code.</p></details>
+      <details><summary>How does the beta work?</summary><p>We’re welcoming five founding communities and setting each one up with them personally. <a href="5-spots.html">Apply for a spot</a>.</p></details>
+      <details><summary>How do we get started?</summary><p>Request early access and tell us a little about your community. We’ll be in touch within two business days.</p></details>
+    </div>
+  </div>
+</section>
+
+<section class="close">
+  <div class="wrap">
+    <svg class="close-mark" viewBox="209 353 523 319" aria-hidden="true"><path d="M427.1,556c.2-20.1-19.4-23.2-41-23l.3-8.9h112.4c0,0,6.5-.5,6.5-.5,1.8-.1,2.1,5.8,1.5,7.5-1.2,3.9-29.5-.3-29.6,26.9v81.5c-.1,0-36.5,15.5-36.5,15.5-87.9,37.5-193.6,9.6-222.7-86-12.5-41-10.3-85.3,6.7-124.9,41-95.9,160.9-110.8,246.9-61.8l.9,78.2-4.2.5c-3,.4-6.3-35.1-34.7-64.8-36.8-38.3-96.3-36.3-130.2,5.4-22.3,27.4-32.6,62.2-34.2,98.2-2.1,46.5,6.4,97.7,38.2,131.6,26.6,28.4,68.8,35.7,102,14.9,6.1-3.8,17-12.2,17.1-19.6l.6-70.7h0Z"/><path d="M513.9,469c-.2,20.1,19.4,23.2,41,23l-.3,8.9h-112.4c0,0-6.5.5-6.5.5-1.8.1-2.1-5.8-1.5-7.5,1.2-3.9,29.5.3,29.6-26.9v-81.5c.1,0,36.5-15.5,36.5-15.5,87.9-37.5,193.6-9.6,222.7,86,12.5,41,10.3,85.3-6.7,124.9-41,95.9-160.9,110.8-246.9,61.8l-.9-78.2,4.2-.5c3-.4,6.3,35.1,34.7,64.8,36.8,38.3,96.3,36.3,130.2-5.4,22.3-27.4,32.6-62.2,34.2-98.2,2.1-46.5-6.4-97.7-38.2-131.6-26.6-28.4-68.8-35.7-102-14.9-6.1,3.8-17,12.2-17.1,19.6l-.6,70.7h0Z"/></svg>
+    <h2 class="display">Bring your community home.</h2>
+    <p class="lede">Tell us about your community and we’ll show you how Good Graces would work for it.</p>
+    <div class="ctas">
+      <a class="btn btn-light" href="#" data-gg-open data-gg-path="church">Request early access</a>
+      <a class="btn btn-ghost btn-outline-light" href="5-spots.html">Apply for the beta</a>
+    </div>
+    <p class="fine">Five founding spots. Personal setup for each one.</p>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-in">
+      <div>
+        <a class="brand" href="#top"><svg viewBox="209 353 523 319" aria-hidden="true"><path d="M427.1,556c.2-20.1-19.4-23.2-41-23l.3-8.9h112.4c0,0,6.5-.5,6.5-.5,1.8-.1,2.1,5.8,1.5,7.5-1.2,3.9-29.5-.3-29.6,26.9v81.5c-.1,0-36.5,15.5-36.5,15.5-87.9,37.5-193.6,9.6-222.7-86-12.5-41-10.3-85.3,6.7-124.9,41-95.9,160.9-110.8,246.9-61.8l.9,78.2-4.2.5c-3,.4-6.3-35.1-34.7-64.8-36.8-38.3-96.3-36.3-130.2,5.4-22.3,27.4-32.6,62.2-34.2,98.2-2.1,46.5,6.4,97.7,38.2,131.6,26.6,28.4,68.8,35.7,102,14.9,6.1-3.8,17-12.2,17.1-19.6l.6-70.7h0Z"/><path d="M513.9,469c-.2,20.1,19.4,23.2,41,23l-.3,8.9h-112.4c0,0-6.5.5-6.5.5-1.8.1-2.1-5.8-1.5-7.5,1.2-3.9,29.5.3,29.6-26.9v-81.5c.1,0,36.5-15.5,36.5-15.5,87.9-37.5,193.6-9.6,222.7,86,12.5,41,10.3,85.3-6.7,124.9-41,95.9-160.9,110.8-246.9,61.8l-.9-78.2,4.2-.5c3-.4,6.3,35.1,34.7,64.8,36.8,38.3,96.3,36.3,130.2-5.4,22.3-27.4,32.6-62.2,34.2-98.2,2.1-46.5-6.4-97.7-38.2-131.6-26.6-28.4-68.8-35.7-102-14.9-6.1,3.8-17,12.2-17.1,19.6l-.6,70.7h0Z"/></svg><span>Good Graces</span></a>
+        <p>A home for your community, all week long. Made for every tradition.</p>
+      </div>
+      <div class="footer-links">
+        <div><h4>Product</h4><ul><li><a href="#inside">The app</a></li><li><a href="#leaders">For leaders</a></li><li><a href="#pricing">Pricing</a></li></ul></div>
+        <div><h4>Company</h4><ul><li><a href="#investors">Investors</a></li><li><a href="5-spots.html">Beta</a></li><li><a href="mailto:avelino@goodgraces.app">Contact</a></li></ul></div>
+      </div>
+    </div>
+    <p class="footer-base">© 2026 Good Graces, a product of AC4 Ventures LLC.</p>
+  </div>
+</footer>
+
+<div class="gg-overlay" id="ggOverlay" hidden><div class="gg" id="gg" role="dialog" aria-modal="true" aria-labelledby="ggCount">
+<button type="button" class="gg-close" id="ggClose" aria-label="Close">✕</button>
+<div class="gg-top"><span class="gg-count" id="ggCount">Step 1 of 3</span><button type="button" class="gg-chip" id="ggChip" hidden></button></div>
+<div class="gg-prog" id="ggProg" style="--n:3"><span></span><span></span><span></span></div>
+<div class="gg-prog-label" id="ggProgLabel"></div>
+<form id="ggForm" novalidate>
+<input class="gg-hp" type="text" name="company_website" tabindex="-1" autocomplete="off" aria-hidden="true">
+<section class="gg-step" data-step="1">
+<h2 class="gg-q">First, who are you?</h2><p class="gg-sub">We’ll only ask what’s relevant. It takes about a minute.</p>
+<div class="gg-forks" role="radiogroup" aria-label="Who you are">
+<label class="gg-fork"><input type="radio" name="path" value="church"><span class="gg-fork-box"><b>I’m with a faith community</b><span>You lead, staff or volunteer at a congregation and want to see how Good Graces would work for your members.</span></span></label>
+<label class="gg-fork"><input type="radio" name="path" value="investor"><span class="gg-fork-box"><b>I’m an investor</b><span>You’re looking at Good Graces as an opportunity and want the deck, the numbers or a conversation.</span></span></label>
+</div><span class="gg-err" data-err="path"></span></section><section class="gg-step" data-step="2" data-path="church" hidden>
+<h2 class="gg-q">Tell us about your community.</h2><p class="gg-sub">The basics, so we can reach you and set things up at the right size.</p>
+<div class="gg-grid">
+<div class="gg-field"><label for="gg_name_c">Full name</label>
+<input id="gg_name_c" name="name" type="text" autocomplete="name" data-req><span class="gg-err" data-err="gg_name_c"></span></div>
+<div class="gg-field"><label for="gg_role">Your role</label>
+<select id="gg_role" name="role" data-req><option value="">Select one</option><option>Lead clergy (pastor, imam, rabbi, priest, granthi, teacher)</option><option>Assistant or associate clergy</option><option>Administrator or executive director</option><option>Communications or media</option><option>Program or ministry lead</option><option>Board or lay leader</option><option>Volunteer or member</option><option>Other</option></select><span class="gg-err" data-err="gg_role"></span></div>
+<div class="gg-field"><label for="gg_church_name">Community name</label>
+<input id="gg_church_name" name="church_name" type="text" autocomplete="organization" data-req><span class="gg-err" data-err="gg_church_name"></span></div>
+<div class="gg-field"><label for="gg_tradition">Tradition <small>optional</small></label>
+<select id="gg_tradition" name="tradition"><option value="">Select one</option><option>Christian</option><option>Muslim</option><option>Jewish</option><option>Hindu</option><option>Sikh</option><option>Buddhist</option><option>Interfaith or multi-faith</option><option>Another tradition</option><option>Prefer not to say</option></select><span class="gg-err" data-err="gg_tradition"></span></div>
+<div class="gg-field"><label for="gg_city_state">City and state</label>
+<input id="gg_city_state" name="city_state" type="text" autocomplete="address-level2" data-req><span class="gg-err" data-err="gg_city_state"></span></div>
+<div class="gg-field"><label for="gg_congregation_size">Active members</label>
+<select id="gg_congregation_size" name="congregation_size" data-req><option value="">Select one</option><option>Under 150</option><option>150–500</option><option>500–2,000</option><option>2,000+</option><option>Multiple locations</option></select><span class="gg-err" data-err="gg_congregation_size"></span></div>
+<div class="gg-field"><label for="gg_email_c">Email</label>
+<input id="gg_email_c" name="email" type="email" autocomplete="email" data-req data-email><span class="gg-err" data-err="gg_email_c"></span></div>
+<div class="gg-field"><label for="gg_phone_c">Phone <small>optional</small></label>
+<input id="gg_phone_c" name="phone" type="tel" autocomplete="tel"><span class="gg-err" data-err="gg_phone_c"></span></div>
+<div class="gg-field full"><label for="gg_website_c">Website or social <small>optional</small></label>
+<input id="gg_website_c" name="website" type="text" autocomplete="url"><span class="gg-err" data-err="gg_website_c"></span></div>
+</div></section><section class="gg-step" data-step="3" data-path="church" hidden>
+<h2 class="gg-q">How you stay in touch now.</h2><p class="gg-sub">Select everything your community uses during the week.</p>
+<div class="gg-grid">
+<fieldset class="full" style="border:0;margin:0;padding:0"><legend class="gg-legend">Current tools</legend>
+<div class="gg-pills" data-reqgroup="tools_c"><label class="gg-pill"><input type="checkbox" name="current_tools" value="Group texts"><span>Group texts</span></label><label class="gg-pill"><input type="checkbox" name="current_tools" value="Email newsletter"><span>Email newsletter</span></label><label class="gg-pill"><input type="checkbox" name="current_tools" value="Facebook group or page"><span>Facebook group or page</span></label><label class="gg-pill"><input type="checkbox" name="current_tools" value="Instagram"><span>Instagram</span></label><label class="gg-pill"><input type="checkbox" name="current_tools" value="WhatsApp or GroupMe"><span>WhatsApp or GroupMe</span></label><label class="gg-pill"><input type="checkbox" name="current_tools" value="Membership software"><span>Membership software</span></label><label class="gg-pill"><input type="checkbox" name="current_tools" value="Another app"><span>Another app</span></label><label class="gg-pill"><input type="checkbox" name="current_tools" value="Announcements at services"><span>Announcements at services</span></label><label class="gg-pill"><input type="checkbox" name="current_tools" value="Printed bulletin"><span>Printed bulletin</span></label><label class="gg-pill"><input type="checkbox" name="current_tools" value="Nothing consistent"><span>Nothing consistent</span></label></div><span class="gg-err" data-err="tools_c"></span></fieldset>
+<div class="gg-field full"><label for="gg_pain_point_c">What’s hardest about it right now?</label>
+<textarea id="gg_pain_point_c" name="pain_point"></textarea></div>
+<div class="gg-field"><label for="gg_heard_from_c">How did you hear about Good Graces?</label>
+<select id="gg_heard_from_c" name="heard_from" data-req><option value="">Select one</option><option>Another congregation</option><option>A friend or colleague</option><option>Someone at Good Graces</option><option>Instagram</option><option>TikTok</option><option>LinkedIn</option><option>Search</option><option>A conference or event</option><option>Other</option></select><span class="gg-err" data-err="gg_heard_from_c"></span></div>
+<div class="gg-field"><label for="gg_heard_from_detail_c">Who or where? <small>optional</small></label>
+<input id="gg_heard_from_detail_c" name="heard_from_detail" type="text"><span class="gg-err" data-err="gg_heard_from_detail_c"></span></div>
+<div class="gg-field full"><label for="gg_notes_c">Anything else we should know? <small>optional</small></label>
+<textarea id="gg_notes_c" name="notes"></textarea></div>
+<div class="full"><label class="gg-consent"><input type="checkbox" id="gg_consent_c" name="consent" value="yes" data-req>
+<span>Good Graces can email or text me about this request.</span></label><span class="gg-err" data-err="gg_consent_c"></span></div>
+</div></section><section class="gg-step" data-step="2" data-path="investor" hidden>
+<h2 class="gg-q">Tell us about you.</h2><p class="gg-sub">Enough context to send the right materials.</p>
+<div class="gg-grid">
+<div class="gg-field"><label for="gg_name_i">Full name</label>
+<input id="gg_name_i" name="name" type="text" autocomplete="name" data-req><span class="gg-err" data-err="gg_name_i"></span></div>
+<div class="gg-field"><label for="gg_firm">Firm or organization <small>optional</small></label>
+<input id="gg_firm" name="firm" type="text" autocomplete="organization"><span class="gg-err" data-err="gg_firm"></span></div>
+<div class="gg-field"><label for="gg_title">Title <small>optional</small></label>
+<input id="gg_title" name="title" type="text" autocomplete="organization-title"><span class="gg-err" data-err="gg_title"></span></div>
+<div class="gg-field"><label for="gg_investor_type">Investor type</label>
+<select id="gg_investor_type" name="investor_type" data-req><option value="">Select one</option><option>Angel</option><option>Venture fund</option><option>Family office</option><option>Faith-based or mission fund</option><option>Strategic or operator</option><option>Syndicate or SPV</option><option>Other</option></select><span class="gg-err" data-err="gg_investor_type"></span></div>
+<div class="gg-field"><label for="gg_email_i">Email</label>
+<input id="gg_email_i" name="email" type="email" autocomplete="email" data-req data-email><span class="gg-err" data-err="gg_email_i"></span></div>
+<div class="gg-field"><label for="gg_phone_i">Phone <small>optional</small></label>
+<input id="gg_phone_i" name="phone" type="tel" autocomplete="tel"><span class="gg-err" data-err="gg_phone_i"></span></div>
+<div class="gg-field"><label for="gg_check_size">Typical check size</label>
+<select id="gg_check_size" name="check_size" data-req><option value="">Select one</option><option>Under $25k</option><option>$25k–$100k</option><option>$100k–$500k</option><option>$500k–$1M</option><option>$1M+</option><option>Still exploring</option></select><span class="gg-err" data-err="gg_check_size"></span></div>
+<div class="gg-field"><label for="gg_website_i">LinkedIn or firm site <small>optional</small></label>
+<input id="gg_website_i" name="website" type="text" autocomplete="url"><span class="gg-err" data-err="gg_website_i"></span></div>
+</div></section><section class="gg-step" data-step="3" data-path="investor" hidden>
+<h2 class="gg-q">What would help you?</h2><p class="gg-sub">Select everything you’d like us to send or set up.</p>
+<div class="gg-grid">
+<fieldset class="full" style="border:0;margin:0;padding:0"><legend class="gg-legend">What you’re after</legend>
+<div class="gg-pills" data-reqgroup="interests_i"><label class="gg-pill"><input type="checkbox" name="interests" value="Investor deck"><span>Investor deck</span></label><label class="gg-pill"><input type="checkbox" name="interests" value="Financial model"><span>Financial model</span></label><label class="gg-pill"><input type="checkbox" name="interests" value="Product demo"><span>Product demo</span></label><label class="gg-pill"><input type="checkbox" name="interests" value="Founder conversation"><span>Founder conversation</span></label><label class="gg-pill"><input type="checkbox" name="interests" value="Traction and roadmap"><span>Traction and roadmap</span></label><label class="gg-pill"><input type="checkbox" name="interests" value="Just following along"><span>Just following along</span></label></div><span class="gg-err" data-err="interests_i"></span></fieldset>
+<div class="gg-field"><label for="gg_timeline">Your timeline</label>
+<select id="gg_timeline" name="timeline" data-req><option value="">Select one</option><option>Deploying now</option><option>Next 1–3 months</option><option>Next 3–6 months</option><option>Watching for later</option></select><span class="gg-err" data-err="gg_timeline"></span></div>
+<div class="gg-field"><label for="gg_stage_focus">Stage you usually back <small>optional</small></label>
+<select id="gg_stage_focus" name="stage_focus"><option value="">Select one</option><option>Pre-seed</option><option>Seed</option><option>Series A</option><option>Stage agnostic</option></select><span class="gg-err" data-err="gg_stage_focus"></span></div>
+<div class="gg-field"><label for="gg_heard_from_i">How did you hear about Good Graces?</label>
+<select id="gg_heard_from_i" name="heard_from" data-req><option value="">Select one</option><option>A founder or portfolio company</option><option>Another investor</option><option>Someone at Good Graces</option><option>LinkedIn</option><option>Instagram</option><option>Search</option><option>A pitch event or demo day</option><option>Other</option></select><span class="gg-err" data-err="gg_heard_from_i"></span></div>
+<div class="gg-field"><label for="gg_heard_from_detail_i">Who or where? <small>optional</small></label>
+<input id="gg_heard_from_detail_i" name="heard_from_detail" type="text"><span class="gg-err" data-err="gg_heard_from_detail_i"></span></div>
+<div class="gg-field full"><label for="gg_notes_i">Anything you want us to know? <small>optional</small></label>
+<textarea id="gg_notes_i" name="notes"></textarea></div>
+<div class="full"><label class="gg-consent"><input type="checkbox" id="gg_consent_i" name="consent" value="yes" data-req>
+<span>Good Graces can email or text me about this request.</span></label><span class="gg-err" data-err="gg_consent_i"></span></div>
+</div></section>
+<section class="gg-step" data-step="done" hidden>
+<div class="gg-done-mark" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+<h2 class="gg-q">Request sent.</h2><p class="gg-sub" id="ggDoneMsg"></p></section>
+<div class="gg-fail" id="ggFail" hidden role="alert"></div>
+<div class="gg-nav" id="ggNav"><button type="button" class="btn btn-ghost" id="ggBack" hidden>Back</button><span class="spacer"></span><button type="button" class="btn btn-primary" id="ggNext">Continue</button></div>
+</form></div>
+<iframe name="gg_sink" id="ggSink" title="" hidden></iframe></div>
+
+<script>
+(function(){
+  const n=document.getElementById('nav');
+  const on=()=>n.classList.toggle('scrolled',scrollY>8);
+  on();addEventListener('scroll',on,{passive:true});
+})();
+</script>
+<script src="assets/gg-intake.js"></script>
+</body>
+</html>
