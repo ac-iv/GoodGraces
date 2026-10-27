@@ -16,6 +16,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..600&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/gg.css">
 <style>
+
+  
 /* section colors */
 .bg-sand{background:#F4F0E8}
 .bg-sage{background:#E9EDE6}
@@ -128,11 +130,14 @@
 .price-foot .ctas{justify-content:center}
 @media (max-width:600px){.prow{grid-template-columns:1fr auto;gap:4px 16px}.prow span{grid-column:1/-1;grid-row:2}}
 
-/* founders */
-.note{max-width:720px;margin:0 auto;text-align:center}
-.note blockquote{margin:0;font-family:var(--serif);font-weight:300;font-size:clamp(1.4rem,2.6vw,1.95rem);line-height:1.45;letter-spacing:-.01em}
-.note cite{display:block;margin-top:28px;font:400 15px/1.5 var(--sans);font-style:normal;color:var(--muted)}
-.note cite b{color:var(--ink);font-weight:500}
+/* founder */
+.founder{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:72px;align-items:center;max-width:1040px;margin:0 auto}
+.slot-portrait{width:100%;aspect-ratio:4/5;border-radius:28px}
+.slot-portrait img{object-fit:cover}
+.founder blockquote{margin:0;font-family:var(--serif);font-weight:300;font-size:clamp(1.4rem,2.4vw,1.85rem);line-height:1.45;letter-spacing:-.01em}
+.founder cite{display:block;margin-top:28px;font:400 15px/1.5 var(--sans);font-style:normal;color:var(--muted)}
+.founder cite b{color:var(--ink);font-weight:500}
+@media (max-width:860px){.founder{grid-template-columns:1fr;gap:40px}.slot-portrait{max-width:360px}}
 
 /* investors */
 .inv{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:72px;max-width:1040px;margin:0 auto;align-items:start}
@@ -317,9 +322,12 @@
 </section>
 
 <section class="sec bg-oat">
-  <div class="wrap note">
-    <blockquote>“I started Good Graces because I saw how much effort goes into keeping faith communities connected, and how unnecessarily complicated that work can be. I wanted to create something that makes life easier for the people bringing these communities together.”</blockquote>
-    <cite><b>Avelino Cortina IV</b>, Founder</cite>
+  <div class="wrap founder">
+    <figure class="slot slot-portrait" data-label="portrait&#10;img/avelino.jpg"><img src="img/avelino.jpg" alt="Avelino Cortina IV" onerror="this.remove()"></figure>
+    <div>
+      <blockquote>“I started Good Graces because I saw how much effort goes into keeping faith communities connected, and how unnecessarily complicated that work can be. I wanted to create something that makes life easier for the people bringing these communities together.”</blockquote>
+      <cite><b>Avelino Cortina IV</b>, Founder</cite>
+    </div>
   </div>
 </section>
 
